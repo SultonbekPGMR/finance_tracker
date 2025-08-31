@@ -5,11 +5,9 @@ import 'package:flutter/material.dart';
 
 import 'core/di/app_di.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp(options: AppFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: AppFirebaseOptions.currentPlatform);
   AppDi.initialize();
-
-
   runApp(const App());
 }

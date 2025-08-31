@@ -10,6 +10,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Finance Tracker',
       themeMode: ThemeMode.dark,
       theme: AppTheme.light,
