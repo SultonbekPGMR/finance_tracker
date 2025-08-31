@@ -22,17 +22,35 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "addExpense": MessageLookupByLibrary.simpleMessage("Add Expense"),
+    "adding": MessageLookupByLibrary.simpleMessage("Adding..."),
+    "amount": MessageLookupByLibrary.simpleMessage("Amount"),
     "appTitle": MessageLookupByLibrary.simpleMessage("Finance Tracker"),
+    "category": MessageLookupByLibrary.simpleMessage("Category"),
     "charts": MessageLookupByLibrary.simpleMessage("Charts"),
     "confirmPasswordHint": MessageLookupByLibrary.simpleMessage(
       "Confirm Password",
     ),
     "createAccount": MessageLookupByLibrary.simpleMessage("Create Account"),
+    "description": MessageLookupByLibrary.simpleMessage("Description"),
     "dontHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
     ),
     "emailHint": MessageLookupByLibrary.simpleMessage("Email"),
+    "enterAmount": MessageLookupByLibrary.simpleMessage("Enter amount"),
+    "enterDescription": MessageLookupByLibrary.simpleMessage(
+      "Enter description",
+    ),
     "error": MessageLookupByLibrary.simpleMessage("Error"),
+    "expenseAddedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Expense added successfully",
+    ),
+    "failedToAddExpense": MessageLookupByLibrary.simpleMessage(
+      "Failed to add expense",
+    ),
+    "failedToLoadCategories": MessageLookupByLibrary.simpleMessage(
+      "Failed to load categories",
+    ),
     "haveAccount": MessageLookupByLibrary.simpleMessage(
       "Do you have an account?",
     ),
@@ -43,10 +61,24 @@ class MessageLookup extends MessageLookupByLibrary {
     "passwordsDontMatch": MessageLookupByLibrary.simpleMessage(
       "Passwords don\'t match",
     ),
+    "pleaseEnterAmount": MessageLookupByLibrary.simpleMessage(
+      "Please enter an amount",
+    ),
+    "pleaseEnterDescription": MessageLookupByLibrary.simpleMessage(
+      "Please enter a description",
+    ),
+    "pleaseEnterValidAmount": MessageLookupByLibrary.simpleMessage(
+      "Please enter a valid amount",
+    ),
+    "pleaseSelectCategory": MessageLookupByLibrary.simpleMessage(
+      "Please select a category",
+    ),
     "profile": MessageLookupByLibrary.simpleMessage("Profile"),
     "records": MessageLookupByLibrary.simpleMessage("Records"),
     "register": MessageLookupByLibrary.simpleMessage("Register"),
     "reports": MessageLookupByLibrary.simpleMessage("Reports"),
+    "save": MessageLookupByLibrary.simpleMessage("Save"),
+    "selectCategory": MessageLookupByLibrary.simpleMessage("Select a category"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign In"),
     "signUp": MessageLookupByLibrary.simpleMessage("Sign Up"),
     "success": MessageLookupByLibrary.simpleMessage("Success"),

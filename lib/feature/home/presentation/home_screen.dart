@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               flex: 5,
               child: GestureDetector(
-                onTap: () => _showAddTransactionBottomSheet(context),
+                onTap: () => context.pushNamed('add-expense'),
                 child: Transform.translate(
                   offset: const Offset(0, -20),
                   child:  Container(
@@ -120,23 +120,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  void _showAddTransactionBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child:  Container(),
-      ),
-    );
-  }
 }
 
  

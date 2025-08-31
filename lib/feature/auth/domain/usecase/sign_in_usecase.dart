@@ -1,6 +1,6 @@
 // Created by Sultonbek Tulanov on 31-August 2025
 
-import 'package:finance_tracker/core/usecase/usecase.dart';
+import 'package:finance_tracker/core/util/usecase.dart';
 import 'package:finance_tracker/core/util/validator/auth_validator.dart';
 import 'package:result_dart/result_dart.dart';
 

@@ -198,6 +198,136 @@ class AppLocalizations {
   String get profile {
     return Intl.message('Profile', name: 'profile', desc: '', args: []);
   }
+
+  /// `Add Expense`
+  String get addExpense {
+    return Intl.message('Add Expense', name: 'addExpense', desc: '', args: []);
+  }
+
+  /// `Amount`
+  String get amount {
+    return Intl.message('Amount', name: 'amount', desc: '', args: []);
+  }
+
+  /// `Enter amount`
+  String get enterAmount {
+    return Intl.message(
+      'Enter amount',
+      name: 'enterAmount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter an amount`
+  String get pleaseEnterAmount {
+    return Intl.message(
+      'Please enter an amount',
+      name: 'pleaseEnterAmount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid amount`
+  String get pleaseEnterValidAmount {
+    return Intl.message(
+      'Please enter a valid amount',
+      name: 'pleaseEnterValidAmount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Category`
+  String get category {
+    return Intl.message('Category', name: 'category', desc: '', args: []);
+  }
+
+  /// `Select a category`
+  String get selectCategory {
+    return Intl.message(
+      'Select a category',
+      name: 'selectCategory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select a category`
+  String get pleaseSelectCategory {
+    return Intl.message(
+      'Please select a category',
+      name: 'pleaseSelectCategory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Description`
+  String get description {
+    return Intl.message('Description', name: 'description', desc: '', args: []);
+  }
+
+  /// `Enter description`
+  String get enterDescription {
+    return Intl.message(
+      'Enter description',
+      name: 'enterDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a description`
+  String get pleaseEnterDescription {
+    return Intl.message(
+      'Please enter a description',
+      name: 'pleaseEnterDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save`
+  String get save {
+    return Intl.message('Save', name: 'save', desc: '', args: []);
+  }
+
+  /// `Adding...`
+  String get adding {
+    return Intl.message('Adding...', name: 'adding', desc: '', args: []);
+  }
+
+  /// `Expense added successfully`
+  String get expenseAddedSuccessfully {
+    return Intl.message(
+      'Expense added successfully',
+      name: 'expenseAddedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to load categories`
+  String get failedToLoadCategories {
+    return Intl.message(
+      'Failed to load categories',
+      name: 'failedToLoadCategories',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to add expense`
+  String get failedToAddExpense {
+    return Intl.message(
+      'Failed to add expense',
+      name: 'failedToAddExpense',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {

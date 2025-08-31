@@ -1,5 +1,6 @@
 // Created by Sultonbek Tulanov on 30-August 2025
 
+import 'package:finance_tracker/feature/auth/data/model/user_model.dart';
 import 'package:finance_tracker/feature/auth/domain/repository/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:result_dart/result_dart.dart';
@@ -87,4 +88,12 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  UserModel? getCurrentUser() {
+    final user = auth.currentUser;
+    if (user == null) {
+      return null;
+    }
+    return UserModel(user.uid, user.displayName ?? '', user.email ?? '');
+  }
 }

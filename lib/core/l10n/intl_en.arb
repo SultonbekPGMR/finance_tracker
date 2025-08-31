@@ -21,5 +21,22 @@
   "records": "Records",
   "charts": "Charts",
   "reports": "Reports",
-  "profile": "Profile"
+  "profile": "Profile",
+  "addExpense": "Add Expense",
+  "amount": "Amount",
+  "enterAmount": "Enter amount",
+  "pleaseEnterAmount": "Please enter an amount",
+  "pleaseEnterValidAmount": "Please enter a valid amount",
+  "category": "Category",
+  "selectCategory": "Select a category",
+  "pleaseSelectCategory": "Please select a category",
+  "description": "Description",
+  "enterDescription": "Enter description",
+  "pleaseEnterDescription": "Please enter a description",
+  "save": "Save",
+  "adding": "Adding...",
+  "expenseAddedSuccessfully": "Expense added successfully",
+  "failedToLoadCategories": "Failed to load categories",
+  "failedToAddExpense": "Failed to add expense"
+
 }

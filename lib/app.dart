@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/di/app_di.dart';
 import 'core/l10n/generated/l10n.dart';
-import 'core/presentation/router/app_router.dart';
+import 'core/presentation/navigation/app_router.dart';
 import 'core/util/service/message_service.dart';
 import 'feature/auth/presentation/bloc/auth_bloc.dart';
 import 'feature/auth/presentation/bloc/auth_state_cubit.dart';

@@ -2,12 +2,13 @@
 import 'package:finance_tracker/feature/auth/presentation/screen/register_screen.dart';
 import 'package:finance_tracker/feature/home/presentation/home_screen.dart';
 import 'package:finance_tracker/feature/profile/presentation/screen/profile_screen.dart';
-import 'package:finance_tracker/feature/record/presentation/screen/records_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../feature/auth/presentation/screen/login_screen.dart';
 import '../../../feature/auth/presentation/screen/splash_screen.dart';
+import '../../../feature/expense/presentation/screen/add_expense_screen.dart';
+import '../../../feature/expense/presentation/screen/expense_screen.dart';
 
 class AppRouter {
   static final navigatorKey = GlobalKey<NavigatorState>();
@@ -47,6 +48,7 @@ class AppRouter {
       name: 'splash',
       builder: (context, state) => const SplashScreen(),
     ),
+
     GoRoute(
       path: '/login',
       name: 'login',
@@ -59,7 +61,11 @@ class AppRouter {
         ),
       ],
     ),
-
+    GoRoute(
+      path: '/home/add-expense',
+      name: 'add-expense',
+      builder: (context, state) => const AddExpenseScreen(),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return HomeScreen(navigationShell: navigationShell);
@@ -71,7 +77,7 @@ class AppRouter {
             GoRoute(
               path: '/home/records',
               name: 'records',
-              builder: (context, state) => RecordsScreen(),
+              builder: (context, state) => ExpensesScreen(),
             ),
           ],
         ),
