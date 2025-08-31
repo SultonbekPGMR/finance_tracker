@@ -4,7 +4,7 @@ import 'package:finance_tracker/core/usecase/usecase.dart';
 import 'package:finance_tracker/core/util/no_params.dart';
 import 'package:finance_tracker/feature/auth/domain/repository/auth_repository.dart';
 
-class IsUserSignedInUseCase extends UseCase<bool, Nothing> {
+class IsUserSignedInUseCase implements UseCase<bool, Nothing> {
   final AuthRepository authRepository;
 
   IsUserSignedInUseCase(this.authRepository);

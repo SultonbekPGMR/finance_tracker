@@ -21,5 +21,36 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
   final messages = _notInlinedMessages(_notInlinedMessages);
-  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{};
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "appTitle": MessageLookupByLibrary.simpleMessage("Finance Tracker"),
+    "charts": MessageLookupByLibrary.simpleMessage("Charts"),
+    "confirmPasswordHint": MessageLookupByLibrary.simpleMessage(
+      "Confirm Password",
+    ),
+    "createAccount": MessageLookupByLibrary.simpleMessage("Create Account"),
+    "dontHaveAccount": MessageLookupByLibrary.simpleMessage(
+      "Don\'t have an account?",
+    ),
+    "emailHint": MessageLookupByLibrary.simpleMessage("Email"),
+    "error": MessageLookupByLibrary.simpleMessage("Error"),
+    "haveAccount": MessageLookupByLibrary.simpleMessage(
+      "Do you have an account?",
+    ),
+    "info": MessageLookupByLibrary.simpleMessage("Info"),
+    "login": MessageLookupByLibrary.simpleMessage("Login"),
+    "ok": MessageLookupByLibrary.simpleMessage("OK"),
+    "passwordHint": MessageLookupByLibrary.simpleMessage("Password"),
+    "passwordsDontMatch": MessageLookupByLibrary.simpleMessage(
+      "Passwords don\'t match",
+    ),
+    "profile": MessageLookupByLibrary.simpleMessage("Profile"),
+    "records": MessageLookupByLibrary.simpleMessage("Records"),
+    "register": MessageLookupByLibrary.simpleMessage("Register"),
+    "reports": MessageLookupByLibrary.simpleMessage("Reports"),
+    "signIn": MessageLookupByLibrary.simpleMessage("Sign In"),
+    "signUp": MessageLookupByLibrary.simpleMessage("Sign Up"),
+    "success": MessageLookupByLibrary.simpleMessage("Success"),
+    "warning": MessageLookupByLibrary.simpleMessage("Warning"),
+    "welcomeBack": MessageLookupByLibrary.simpleMessage("Welcome Back"),
+  };
 }

@@ -1,3 +1,25 @@
 {
-
+  "@@locale": "en",
+  "appTitle": "Finance Tracker",
+  "error": "Error",
+  "success": "Success",
+  "warning": "Warning",
+  "info": "Info",
+  "ok": "OK",
+  "welcomeBack": "Welcome Back",
+  "emailHint": "Email",
+  "passwordHint": "Password",
+  "signIn": "Sign In",
+  "dontHaveAccount": "Don't have an account?",
+  "signUp": "Sign Up",
+  "createAccount": "Create Account",
+  "confirmPasswordHint": "Confirm Password",
+  "register": "Register",
+  "haveAccount": "Do you have an account?",
+  "login": "Login",
+  "passwordsDontMatch": "Passwords don't match",
+  "records": "Records",
+  "charts": "Charts",
+  "reports": "Reports",
+  "profile": "Profile"
 }

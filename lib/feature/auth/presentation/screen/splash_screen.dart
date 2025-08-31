@@ -1,27 +1,55 @@
 // Created by Sultonbek Tulanov on 30-August 2025
 
-import 'package:finance_tracker/core/di/app_di.dart';
+import 'package:finance_tracker/core/util/extension/build_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../home/presentation/home_screen.dart';
-import '../bloc/auth_bloc.dart';
-import 'login_screen.dart';
+import '../bloc/auth_state_cubit.dart';
 
-class SplashScreen extends StatelessWidget {
+// splash_screen.dart
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _navigate();
+  }
+
+  void _navigate() async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    if (!mounted) return;
+
+    final authStatusCubit = context.read<AuthStatusCubit>();
+    final destination = authStatusCubit.state ? '/home/records' : '/login';
+    context.go(destination);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => get<AuthBloc>(),
-      child: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          if (state is AuthInitial) {
-            return state.isSignedIn ? const HomeScreen() : const LoginScreen();
-          }
-          return SizedBox.shrink();
-        },
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Spacer(flex: 4),
+            Text(
+              'Personal Finance Tracker',
+              style: context.textTheme.headlineLarge,
+            ),
+            Spacer(flex: 3),
+            CircularProgressIndicator(),
+            Spacer(),
+
+          ],
+        ),
       ),
     );
   }
