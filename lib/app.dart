@@ -4,17 +4,18 @@ import 'dart:async';
 
 import 'package:finance_tracker/core/config/talker.dart';
 import 'package:finance_tracker/core/util/eventbus/global_message_bus.dart';
-import 'package:finance_tracker/feature/expense/presentation/bloc/expenses_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/di/app_di.dart';
 import 'core/l10n/generated/l10n.dart';
-import 'core/presentation/navigation/app_router.dart';
+import 'core/navigation/app_router.dart';
 import 'core/presentation/theme/app_theme.dart';
 import 'core/util/service/message_service.dart';
 import 'feature/auth/presentation/bloc/auth_bloc.dart';
 import 'feature/auth/presentation/bloc/auth_state_cubit.dart';
+import 'feature/profile/presentation/bloc/profile_cubit.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -62,21 +63,38 @@ class _AppState extends State<App> {
       providers: [
         BlocProvider(create: (context) => get<AuthStatusCubit>()),
         BlocProvider(create: (context) => get<AuthBloc>()),
+        BlocProvider(create: (context) => get<ProfileCubit>()..loadProfile()),
       ],
-      child: MaterialApp.router(
-        routerConfig: AppRouter.router,
-        debugShowCheckedModeBanner: false,
-        title: 'Finance Tracker',
-        themeMode: ThemeMode.system,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        localizationsDelegates: const [
-          AppLocalizations.delegate, // Your generated delegate
-        ],
-        supportedLocales: const [
-          Locale('en'),
-          // Locale('uz'),
-        ],
+      child: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) {
+          ThemeMode themeMode = ThemeMode.system;
+          Locale locale = Locale('en', 'US');
+
+          if (state is ProfileLoaded) {
+            themeMode = state.preferences.appTheme;
+            locale = state.preferences.appLocale;
+          } else if (state is ProfileUpdating) {
+            themeMode = state.preferences.appTheme;
+            locale = state.preferences.appLocale;
+          }
+
+          return MaterialApp.router(
+            routerConfig: AppRouter.router,
+            debugShowCheckedModeBanner: false,
+            title: 'Finance Tracker',
+            themeMode: themeMode,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            locale: locale,
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              AppLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en', 'US'), Locale('uz', 'UZ')],
+          );
+        },
       ),
     );
   }

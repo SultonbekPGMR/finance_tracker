@@ -17,7 +17,7 @@ class GetExpensesStreamUseCase implements StreamUseCase<List<ExpenseModel>, GetE
     final currentUser = getCurrentUserUseCase(Nothing());
     if (currentUser == null) return Stream.error('User not authenticated');
 
-    return repository.getExpensesStream(currentUser.id);
+    return repository.getExpensesStream(currentUser.id,month: params.month);
   }
 }
 

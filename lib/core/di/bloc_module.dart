@@ -2,6 +2,7 @@
 
 import 'package:finance_tracker/core/di/app_di.dart';
 import 'package:finance_tracker/feature/auth/presentation/bloc/auth_state_cubit.dart';
+import 'package:finance_tracker/feature/profile/presentation/bloc/profile_cubit.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../feature/auth/presentation/bloc/auth_bloc.dart';
@@ -17,15 +18,9 @@ class BlocModule {
       () => AuthBloc(getIt.get(), getIt.get(), getIt.get()),
     );
     getIt.registerFactory(
-      () => ExpensesBloc(
-        getIt.get(),
-        getIt.get(),
-        getIt.get(),
-        getIt.get(),
-        getIt.get(),
-        getIt.get(),
-      ),
+      () => ExpensesBloc(getIt.get(), getIt.get(), getIt.get()),
     );
     getIt.registerFactory(() => ExpenseDetailsCubit(get(), get(), get()));
+    getIt.registerFactory(() => ProfileCubit(get()));
   }
 }

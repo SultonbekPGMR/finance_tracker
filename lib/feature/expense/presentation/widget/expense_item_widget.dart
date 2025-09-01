@@ -12,11 +12,11 @@ class ExpenseItemWidget extends StatelessWidget {
   final VoidCallback? onLongPress;
 
   const ExpenseItemWidget({
-    Key? key,
+    super.key,
     required this.expense,
     this.onTap,
     this.onLongPress,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +39,10 @@ class ExpenseItemWidget extends StatelessWidget {
                 Container(
                   width: 40,
                   height: 40,
-                  decoration: BoxDecoration(
-                    color: context.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                decoration: BoxDecoration(
+                  color: ExpenseCategoryModel.fromString(expense.category).color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                   child: Center(
                     child: Text(
                       ExpenseCategoryModel.fromString(expense.category).icon,

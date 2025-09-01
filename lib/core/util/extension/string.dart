@@ -7,6 +7,8 @@ extension EmailValidator on String {
     );
     return regex.hasMatch(this);
   }
+  String get firstLetter =>
+      isNotEmpty ? substring(0, 1).toUpperCase() : '?';
 }
 
  

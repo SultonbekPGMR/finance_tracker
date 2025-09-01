@@ -3,7 +3,7 @@ import 'package:finance_tracker/core/util/extension/build_context.dart';
 import 'package:flutter/material.dart';
 
 import '../../config/talker.dart';
-import '../../presentation/navigation/app_router.dart';
+import '../../navigation/app_router.dart';
 
 class MessageService {
   static final GlobalKey<NavigatorState> navigatorKey = AppRouter.navigatorKey;

@@ -65,6 +65,24 @@
   "addedSuccessfully": "Expense added successfully",
   "updateSuccess": "Expense updated successfully",
   "updateError": "Error updating expense",
-  "updateExpense": "Update Expense"
+  "updateExpense": "Update Expense",
+  "preferences": "Preferences",
+  "theme": "Theme",
+  "language": "Language",
+  "currency": "Currency",
+  "notifications": "Notifications",
+  "editName": "Edit Name",
+  "setName": "Set Name",
+  "displayName": "Display Name",
+  "selectTheme": "Select Theme",
+  "selectLanguage": "Select Language",
+  "selectCurrency": "Select Currency",
+  "light": "Light",
+  "dark": "Dark",
+  "system": "System",
+  "exportData": "Export Data",
+  "signOut": "Sign Out",
+  "signOutConfirmation": "Are you sure you want to sign out?",
+  "errorLoadingProfile": "Error loading profile"
 
 }

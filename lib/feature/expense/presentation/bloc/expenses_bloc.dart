@@ -21,18 +21,12 @@ part 'expenses_state.dart';
 
 class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   final GetExpensesStreamUseCase _getExpensesStreamsUseCase;
-  final GetExpensesUseCase _getExpensesUseCase;
-  final AddExpenseUseCase _addExpenseUseCase;
-  final UpdateExpenseUseCase _updateExpenseUseCase;
   final DeleteExpenseUseCase _deleteExpenseUseCase;
   final GetCategoriesUseCase _getCategoriesUseCase;
 
   StreamSubscription<List<ExpenseModel>>? _expensesSubscription;
 
   ExpensesBloc(
-    this._getExpensesUseCase,
-    this._addExpenseUseCase,
-    this._updateExpenseUseCase,
     this._deleteExpenseUseCase,
     this._getCategoriesUseCase,
     this._getExpensesStreamsUseCase,
@@ -41,9 +35,8 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     on<LoadExpensesEvent>(_onLoadExpenses);
     on<RefreshExpensesEvent>(_onRefreshExpenses);
 
-    // CRUD Operations
-    on<AddExpenseEvent>(_onAddExpense);
-    on<UpdateExpenseEvent>(_onUpdateExpense);
+    on<ChangeMonthEvent>(_onChangeMonth);
+
     on<DeleteExpenseEvent>(_onDeleteExpense);
 
     // Categories
@@ -76,20 +69,20 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   }
 
   Future<void> _setupExpensesStream(
-    Emitter<ExpensesState> emit,
-    List<ExpenseCategoryModel> categories,
-    DateTime selectedMonth,
-  ) async {
+      Emitter<ExpensesState> emit,
+      List<ExpenseCategoryModel> categories,
+      DateTime selectedMonth,
+      ) async {
     await _expensesSubscription?.cancel();
+
+    appTalker?.debug('Setting up stream for month: $selectedMonth');
 
     await emit.forEach<List<ExpenseModel>>(
       _getExpensesStreamsUseCase(GetExpensesParams(month: selectedMonth)),
       onData: (expenses) {
+        appTalker?.debug('Received ${expenses.length} expenses');
         final groupedItems = _groupExpensesByDate(expenses);
-        final totalAmount = expenses.fold(
-          0.0,
-          (sum, expense) => sum + expense.amount,
-        );
+        final totalAmount = expenses.fold(0.0, (sum, expense) => sum + expense.amount);
 
         return ExpensesLoaded(
           expenses: groupedItems,
@@ -99,41 +92,30 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
         );
       },
       onError: (error, _) {
+        appTalker?.error('Stream error: $error');
         GlobalMessageBus.showError(error.toString());
         return ExpensesError('Failed to load expenses: $error');
       },
     );
   }
+  void _onChangeMonth(
+      ChangeMonthEvent event,
+      Emitter<ExpensesState> emit,
+      ) async {
+    final currentState = state;
+    if (currentState is ExpensesLoaded) {
+      emit(ExpensesLoading());
 
-  List<ExpenseListItem> _groupExpensesByDate(List<ExpenseModel> expenses) {
-    final DateFormat dateFormatter = DateFormat('yyyy-MM-dd');
-
-    // Group expenses by date
-    final Map<String, List<ExpenseModel>> groupedMap = {};
-    for (final expense in expenses) {
-      final dateKey = dateFormatter.format(expense.createdAt);
-      groupedMap.putIfAbsent(dateKey, () => []).add(expense);
+      try {
+        await _setupExpensesStream(
+          emit,
+          currentState.categories,
+          event.month,
+        );
+      } catch (e) {
+        emit(ExpensesError('Failed to load expenses for selected month: $e'));
+      }
     }
-
-    final List<ExpenseListItem> items = [];
-
-    // Create items with headers and data
-    for (final entry in groupedMap.entries) {
-      final dayTotal = entry.value.fold<double>(
-        0,
-        (sum, expense) => sum + expense.amount,
-      );
-
-      // Add header
-      items.add(
-        ExpenseHeaderItem(entry.key, DateTime.parse(entry.key), dayTotal),
-      );
-
-      // Add expenses for that day
-      items.addAll(entry.value.map((expense) => ExpenseDataItem(expense)));
-    }
-
-    return items;
   }
 
   void _onRefreshExpenses(
@@ -143,83 +125,6 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     add(LoadExpensesEvent());
   }
 
-  void _onAddExpense(AddExpenseEvent event, Emitter<ExpensesState> emit) async {
-    // Keep current state while processing
-    final currentState = state;
-
-    try {
-      final result = await _addExpenseUseCase(
-        AddExpenseParams(
-          amount: event.amount,
-          category: event.category,
-          description: event.description,
-          imageUrl: event.imageUrl,
-        ),
-      );
-
-      result.fold(
-        (data) {
-          // emit(ExpenseAddedSuccess('Expense added successfully'));
-          // Data will be automatically updated via stream
-        },
-        (error) {
-          if (currentState is ExpensesLoaded) {
-            emit(
-              ExpenseOperationError(
-                message: error,
-                expenses: currentState.expenses,
-                categories: currentState.categories,
-              ),
-            );
-          } else {
-            emit(ExpensesError(error));
-          }
-        },
-      );
-    } catch (e) {
-      emit(ExpensesError('Failed to details expense: $e'));
-    }
-  }
-
-  void _onUpdateExpense(
-    UpdateExpenseEvent event,
-    Emitter<ExpensesState> emit,
-  ) async {
-    final currentState = state;
-
-    try {
-      final result = await _updateExpenseUseCase(
-        UpdateExpenseParams(
-          expense: event.expense,
-          amount: event.amount,
-          category: event.category,
-          description: event.description,
-          imageUrl: event.imageUrl,
-        ),
-      );
-
-      result.fold(
-        (data) {
-          emit(ExpenseUpdatedSuccess('Expense updated successfully'));
-        },
-        (error) {
-          if (currentState is ExpensesLoaded) {
-            emit(
-              ExpenseOperationError(
-                message: error,
-                expenses: currentState.expenses,
-                categories: currentState.categories,
-              ),
-            );
-          } else {
-            emit(ExpensesError(error));
-          }
-        },
-      );
-    } catch (e) {
-      emit(ExpensesError('Failed to update expense: $e'));
-    }
-  }
 
   void _onDeleteExpense(
     DeleteExpenseEvent event,
@@ -272,6 +177,38 @@ appTalker?.debug('eventtttt-> $event');
       },
     );
   }
+
+  List<ExpenseListItem> _groupExpensesByDate(List<ExpenseModel> expenses) {
+    final DateFormat dateFormatter = DateFormat('yyyy-MM-dd');
+
+    // Group expenses by date
+    final Map<String, List<ExpenseModel>> groupedMap = {};
+    for (final expense in expenses) {
+      final dateKey = dateFormatter.format(expense.createdAt);
+      groupedMap.putIfAbsent(dateKey, () => []).add(expense);
+    }
+
+    final List<ExpenseListItem> items = [];
+
+    // Create items with headers and data
+    for (final entry in groupedMap.entries) {
+      final dayTotal = entry.value.fold<double>(
+        0,
+            (sum, expense) => sum + expense.amount,
+      );
+
+      // Add header
+      items.add(
+        ExpenseHeaderItem(entry.key, DateTime.parse(entry.key), dayTotal),
+      );
+
+      // Add expenses for that day
+      items.addAll(entry.value.map((expense) => ExpenseDataItem(expense)));
+    }
+
+    return items;
+  }
+
 
   void _onFilterByCategory(
     FilterExpensesByCategoryEvent event,

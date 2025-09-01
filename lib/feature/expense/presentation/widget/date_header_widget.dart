@@ -15,7 +15,6 @@ class DateHeaderWidget extends StatelessWidget {
     final currencyFormatter = NumberFormat.currency(symbol: '\$');
 
     return Container(
-      margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: context.colorScheme.surfaceContainerHighest.withValues(

@@ -1,6 +1,7 @@
 // Created by Sultonbek Tulanov on 31-August 2025
 import 'package:finance_tracker/feature/auth/presentation/screen/register_screen.dart';
 import 'package:finance_tracker/feature/home/presentation/home_screen.dart';
+import 'package:finance_tracker/feature/profile/presentation/bloc/profile_cubit.dart';
 import 'package:finance_tracker/feature/profile/presentation/screen/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,7 +14,7 @@ import '../../../feature/expense/presentation/bloc/details/expense_details_cubit
 import '../../../feature/expense/presentation/bloc/expenses_bloc.dart';
 import '../../../feature/expense/presentation/screen/expense_details_screen.dart';
 import '../../../feature/expense/presentation/screen/expenses_screen.dart';
-import '../../di/app_di.dart';
+import '../di/app_di.dart';
 
 class AppRouter {
   static final navigatorKey = GlobalKey<NavigatorState>();
@@ -128,7 +129,8 @@ class AppRouter {
             GoRoute(
               path: '/home/profile',
               name: 'profile',
-              builder: (context, state) => ProfileScreen(),
+              builder:
+                  (context, state) => ProfileScreen(),
             ),
           ],
         ),

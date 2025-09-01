@@ -21,7 +21,7 @@ Future<void> main() async {
     appTalker?.handle(details.exception, details.stack);
   };
   await Firebase.initializeApp(options: AppFirebaseOptions.currentPlatform);
-  AppDi.initialize();
+  await AppDi.initialize();
   initializeDateFormatting();
 
   runApp(const App());

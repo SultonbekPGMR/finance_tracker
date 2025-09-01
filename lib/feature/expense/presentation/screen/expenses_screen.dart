@@ -1,10 +1,10 @@
 // Created by Sultonbek Tulanov on 01-September 2025
-import 'package:finance_tracker/core/di/app_di.dart';
 import 'package:finance_tracker/core/util/extension/build_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 import '../../data/model/expense_model.dart';
 import '../bloc/expenses_bloc.dart';
@@ -159,7 +159,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     return Align(
       alignment: Alignment.bottomLeft,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 0, 16, 16),
+        padding: const EdgeInsets.fromLTRB(8, 0, 16, 16),
         child: Row(
           children: [
             // Month picker - hide when collapsed (moves to leading)
@@ -181,7 +181,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       onTap: () => _showMonthPicker(state.selectedDate),
       borderRadius: BorderRadius.circular(6),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4.0,horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -193,7 +193,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             ),
             const SizedBox(width: 4),
             Text(
-              DateFormat('MMM').format(state.selectedDate),
+              DateFormat('MMMM').format(state.selectedDate),
               style: context.textTheme.titleLarge?.copyWith(
                 color: context.colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
@@ -287,9 +287,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
   List<Widget> _buildExpensesSlivers(ExpensesLoaded state) {
     if (state.expenses.isEmpty) {
-      return [SliverToBoxAdapter(child: _buildEmptyState())];
+      return [
+        SliverFillRemaining(hasScrollBody: false, child: _buildEmptyState()),
+        const SliverToBoxAdapter(child: SizedBox(height: 140)),
+      ];
     }
-
     return [
       SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
@@ -308,7 +310,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           };
         }, childCount: state.expenses.length),
       ),
-      const SliverToBoxAdapter(child: SizedBox(height: 100)), // Space for FAB
+      if (state.expenses.length < 12)
+        const SliverToBoxAdapter(child: SizedBox(height: 140)),
     ];
   }
 
@@ -432,21 +435,19 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   }
 
   void _showMonthPicker(DateTime currentMonth) async {
-    final selectedDate = await showDatePicker(
+    final selected = await showMonthPicker(
       context: context,
       initialDate: currentMonth,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
-      initialDatePickerMode: DatePickerMode.year,
     );
 
-    if (selectedDate != null) {
-     if(mounted) context.read<ExpensesBloc>().add(ChangeMonthEvent(selectedDate));
+    if (selected != null && mounted) {
+      context.read<ExpensesBloc>().add(ChangeMonthEvent(selected));
     }
   }
 
   void _showExpenseOptions(ExpenseModel expense) {
-
     showModalBottomSheet(
       context: context,
       builder:
@@ -465,10 +466,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   ),
                   onTap: () {
                     context.pop();
-                    context.pushNamed(
-                      'update-expense',
-                      extra: expense,
-                    );
+                    context.pushNamed('update-expense', extra: expense);
                   },
                 ),
                 ListTile(
