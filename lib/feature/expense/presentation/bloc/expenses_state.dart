@@ -7,11 +7,12 @@ class ExpensesInitial extends ExpensesState {}
 class ExpensesLoading extends ExpensesState {}
 
 class ExpensesLoaded extends ExpensesState {
-  final List<ExpenseModel> expenses;
+  final List<ExpenseListItem> expenses; // For UI display
   final List<ExpenseCategoryModel> categories;
   final ExpenseCategoryModel? selectedCategory;
   final String searchQuery;
   final double totalAmount;
+  final DateTime selectedDate;
 
   ExpensesLoaded({
     required this.expenses,
@@ -19,40 +20,16 @@ class ExpensesLoaded extends ExpensesState {
     this.selectedCategory,
     this.searchQuery = '',
     required this.totalAmount,
+    required this.selectedDate,
   });
 
-  // Filtered expenses based on category and search
-  List<ExpenseModel> get filteredExpenses {
-    var filtered = expenses;
-
-    // Filter by category
-    if (selectedCategory != null) {
-      filtered = filtered.where((expense) =>
-      expense.category == selectedCategory!.name).toList();
-    }
-
-    // Filter by search query
-    if (searchQuery.isNotEmpty) {
-      filtered = filtered.where((expense) =>
-      expense.description.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          expense.category.toLowerCase().contains(searchQuery.toLowerCase())
-      ).toList();
-    }
-
-    return filtered;
-  }
-
-  // Filtered total amount
-  double get filteredTotalAmount {
-    return filteredExpenses.fold(0.0, (sum, expense) => sum + expense.amount);
-  }
-
   ExpensesLoaded copyWith({
-    List<ExpenseModel>? expenses,
+    List<ExpenseListItem>? expenses,
     List<ExpenseCategoryModel>? categories,
     ExpenseCategoryModel? selectedCategory,
     String? searchQuery,
     double? totalAmount,
+    DateTime? selectedMonth,
   }) {
     return ExpensesLoaded(
       expenses: expenses ?? this.expenses,
@@ -60,10 +37,10 @@ class ExpensesLoaded extends ExpensesState {
       selectedCategory: selectedCategory ?? this.selectedCategory,
       searchQuery: searchQuery ?? this.searchQuery,
       totalAmount: totalAmount ?? this.totalAmount,
+      selectedDate: selectedMonth ?? this.selectedDate,
     );
   }
 }
-
 
 // Success States
 class ExpenseAddedSuccess extends ExpensesState {
@@ -93,7 +70,7 @@ class ExpensesError extends ExpensesState {
 
 class ExpenseOperationError extends ExpensesState {
   final String message;
-  final List<ExpenseModel> expenses;
+  final List<ExpenseListItem> expenses;
   final List<ExpenseCategoryModel> categories;
 
   ExpenseOperationError({

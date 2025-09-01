@@ -20,31 +20,57 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
+  static String m0(amount) => "Total: ${amount}";
+
+  static String m1(amount) => "Total Spent: ${amount}";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "addExpense": MessageLookupByLibrary.simpleMessage("Add Expense"),
+    "addedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Expense added successfully",
+    ),
     "adding": MessageLookupByLibrary.simpleMessage("Adding..."),
+    "allCategories": MessageLookupByLibrary.simpleMessage("All Categories"),
     "amount": MessageLookupByLibrary.simpleMessage("Amount"),
     "appTitle": MessageLookupByLibrary.simpleMessage("Finance Tracker"),
+    "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "category": MessageLookupByLibrary.simpleMessage("Category"),
     "charts": MessageLookupByLibrary.simpleMessage("Charts"),
     "confirmPasswordHint": MessageLookupByLibrary.simpleMessage(
       "Confirm Password",
     ),
     "createAccount": MessageLookupByLibrary.simpleMessage("Create Account"),
+    "dayTotal": m0,
+    "delete": MessageLookupByLibrary.simpleMessage("Delete"),
+    "deleteConfirmation": MessageLookupByLibrary.simpleMessage(
+      "Are you sure you want to delete this expense?",
+    ),
+    "deleteError": MessageLookupByLibrary.simpleMessage(
+      "Error deleting expense",
+    ),
+    "deleteExpense": MessageLookupByLibrary.simpleMessage("Delete Expense"),
+    "deleteSuccess": MessageLookupByLibrary.simpleMessage(
+      "Expense deleted successfully",
+    ),
     "description": MessageLookupByLibrary.simpleMessage("Description"),
     "dontHaveAccount": MessageLookupByLibrary.simpleMessage(
       "Don\'t have an account?",
     ),
+    "edit": MessageLookupByLibrary.simpleMessage("Edit"),
     "emailHint": MessageLookupByLibrary.simpleMessage("Email"),
     "enterAmount": MessageLookupByLibrary.simpleMessage("Enter amount"),
     "enterDescription": MessageLookupByLibrary.simpleMessage(
       "Enter description",
     ),
     "error": MessageLookupByLibrary.simpleMessage("Error"),
+    "errorLoadingExpenses": MessageLookupByLibrary.simpleMessage(
+      "Error loading expenses",
+    ),
     "expenseAddedSuccessfully": MessageLookupByLibrary.simpleMessage(
       "Expense added successfully",
     ),
+    "expenses": MessageLookupByLibrary.simpleMessage("Expenses"),
     "failedToAddExpense": MessageLookupByLibrary.simpleMessage(
       "Failed to add expense",
     ),
@@ -54,8 +80,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "haveAccount": MessageLookupByLibrary.simpleMessage(
       "Do you have an account?",
     ),
+    "income": MessageLookupByLibrary.simpleMessage("Income"),
     "info": MessageLookupByLibrary.simpleMessage("Info"),
+    "loadingExpenses": MessageLookupByLibrary.simpleMessage(
+      "Loading expenses...",
+    ),
     "login": MessageLookupByLibrary.simpleMessage("Login"),
+    "moneyTracker": MessageLookupByLibrary.simpleMessage("Money Tracker"),
+    "noDescription": MessageLookupByLibrary.simpleMessage("No description"),
+    "noExpensesFound": MessageLookupByLibrary.simpleMessage(
+      "No expenses found",
+    ),
     "ok": MessageLookupByLibrary.simpleMessage("OK"),
     "passwordHint": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordsDontMatch": MessageLookupByLibrary.simpleMessage(
@@ -77,12 +112,31 @@ class MessageLookup extends MessageLookupByLibrary {
     "records": MessageLookupByLibrary.simpleMessage("Records"),
     "register": MessageLookupByLibrary.simpleMessage("Register"),
     "reports": MessageLookupByLibrary.simpleMessage("Reports"),
+    "retry": MessageLookupByLibrary.simpleMessage("Retry"),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
+    "saving": MessageLookupByLibrary.simpleMessage("Saving..."),
+    "searchExpenses": MessageLookupByLibrary.simpleMessage(
+      "Search expenses...",
+    ),
     "selectCategory": MessageLookupByLibrary.simpleMessage("Select a category"),
+    "selectMonth": MessageLookupByLibrary.simpleMessage("Select Month"),
     "signIn": MessageLookupByLibrary.simpleMessage("Sign In"),
     "signUp": MessageLookupByLibrary.simpleMessage("Sign Up"),
+    "startAddingExpenses": MessageLookupByLibrary.simpleMessage(
+      "Start by adding your first expense",
+    ),
     "success": MessageLookupByLibrary.simpleMessage("Success"),
+    "today": MessageLookupByLibrary.simpleMessage("Today"),
+    "totalSpent": m1,
+    "updateError": MessageLookupByLibrary.simpleMessage(
+      "Error updating expense",
+    ),
+    "updateExpense": MessageLookupByLibrary.simpleMessage("Update Expense"),
+    "updateSuccess": MessageLookupByLibrary.simpleMessage(
+      "Expense updated successfully",
+    ),
     "warning": MessageLookupByLibrary.simpleMessage("Warning"),
     "welcomeBack": MessageLookupByLibrary.simpleMessage("Welcome Back"),
+    "yesterday": MessageLookupByLibrary.simpleMessage("Yesterday"),
   };
 }

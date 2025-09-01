@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:finance_tracker/core/config/talker.dart';
 import 'package:finance_tracker/core/util/eventbus/global_message_bus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/util/no_params.dart';
 import '../../data/model/expense_category_model.dart';
@@ -12,27 +14,28 @@ import '../../domain/usecase/get_categories_usecase.dart';
 import '../../domain/usecase/get_expense_stream_usecase.dart';
 import '../../domain/usecase/get_expenses_usecase.dart';
 import '../../domain/usecase/update_expense_usecase.dart';
+import '../model/expense_list_item.dart';
 
 part 'expenses_event.dart';
 part 'expenses_state.dart';
 
 class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
-  final GetExpensesStreamUseCase getExpensesStreamsUseCase;
-  final GetExpensesUseCase getExpensesUseCase;
-  final AddExpenseUseCase addExpenseUseCase;
-  final UpdateExpenseUseCase updateExpenseUseCase;
-  final DeleteExpenseUseCase deleteExpenseUseCase;
-  final GetCategoriesUseCase getCategoriesUseCase;
+  final GetExpensesStreamUseCase _getExpensesStreamsUseCase;
+  final GetExpensesUseCase _getExpensesUseCase;
+  final AddExpenseUseCase _addExpenseUseCase;
+  final UpdateExpenseUseCase _updateExpenseUseCase;
+  final DeleteExpenseUseCase _deleteExpenseUseCase;
+  final GetCategoriesUseCase _getCategoriesUseCase;
 
   StreamSubscription<List<ExpenseModel>>? _expensesSubscription;
 
   ExpensesBloc(
-    this.getExpensesUseCase,
-    this.addExpenseUseCase,
-    this.updateExpenseUseCase,
-    this.deleteExpenseUseCase,
-    this.getCategoriesUseCase,
-    this.getExpensesStreamsUseCase,
+    this._getExpensesUseCase,
+    this._addExpenseUseCase,
+    this._updateExpenseUseCase,
+    this._deleteExpenseUseCase,
+    this._getCategoriesUseCase,
+    this._getExpensesStreamsUseCase,
   ) : super(ExpensesInitial()) {
     // Load Expenses
     on<LoadExpensesEvent>(_onLoadExpenses);
@@ -58,8 +61,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     emit(ExpensesLoading());
 
     try {
-      // Load categories first
-      final categoriesResult = getCategoriesUseCase(Nothing());
+      final categoriesResult = _getCategoriesUseCase(Nothing());
       List<ExpenseCategoryModel> categories = [];
 
       categoriesResult.fold(
@@ -67,7 +69,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
         (error) => emit(ExpensesError('Failed to load categories: $error')),
       );
 
-      await _setupExpensesStream(emit, categories);
+      await _setupExpensesStream(emit, categories, DateTime.now());
     } catch (e) {
       emit(ExpensesError('Failed to load records: $e'));
     }
@@ -76,21 +78,24 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   Future<void> _setupExpensesStream(
     Emitter<ExpensesState> emit,
     List<ExpenseCategoryModel> categories,
+    DateTime selectedMonth,
   ) async {
     await _expensesSubscription?.cancel();
 
     await emit.forEach<List<ExpenseModel>>(
-      getExpensesStreamsUseCase(Nothing()),
+      _getExpensesStreamsUseCase(GetExpensesParams(month: selectedMonth)),
       onData: (expenses) {
+        final groupedItems = _groupExpensesByDate(expenses);
         final totalAmount = expenses.fold(
           0.0,
           (sum, expense) => sum + expense.amount,
         );
 
         return ExpensesLoaded(
-          expenses: expenses,
+          expenses: groupedItems,
           categories: categories,
           totalAmount: totalAmount,
+          selectedDate: selectedMonth,
         );
       },
       onError: (error, _) {
@@ -98,6 +103,37 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
         return ExpensesError('Failed to load expenses: $error');
       },
     );
+  }
+
+  List<ExpenseListItem> _groupExpensesByDate(List<ExpenseModel> expenses) {
+    final DateFormat dateFormatter = DateFormat('yyyy-MM-dd');
+
+    // Group expenses by date
+    final Map<String, List<ExpenseModel>> groupedMap = {};
+    for (final expense in expenses) {
+      final dateKey = dateFormatter.format(expense.createdAt);
+      groupedMap.putIfAbsent(dateKey, () => []).add(expense);
+    }
+
+    final List<ExpenseListItem> items = [];
+
+    // Create items with headers and data
+    for (final entry in groupedMap.entries) {
+      final dayTotal = entry.value.fold<double>(
+        0,
+        (sum, expense) => sum + expense.amount,
+      );
+
+      // Add header
+      items.add(
+        ExpenseHeaderItem(entry.key, DateTime.parse(entry.key), dayTotal),
+      );
+
+      // Add expenses for that day
+      items.addAll(entry.value.map((expense) => ExpenseDataItem(expense)));
+    }
+
+    return items;
   }
 
   void _onRefreshExpenses(
@@ -112,7 +148,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     final currentState = state;
 
     try {
-      final result = await addExpenseUseCase(
+      final result = await _addExpenseUseCase(
         AddExpenseParams(
           amount: event.amount,
           category: event.category,
@@ -123,7 +159,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
 
       result.fold(
         (data) {
-          emit(ExpenseAddedSuccess('Expense added successfully'));
+          // emit(ExpenseAddedSuccess('Expense added successfully'));
           // Data will be automatically updated via stream
         },
         (error) {
@@ -141,7 +177,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
         },
       );
     } catch (e) {
-      emit(ExpensesError('Failed to add expense: $e'));
+      emit(ExpensesError('Failed to details expense: $e'));
     }
   }
 
@@ -152,7 +188,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     final currentState = state;
 
     try {
-      final result = await updateExpenseUseCase(
+      final result = await _updateExpenseUseCase(
         UpdateExpenseParams(
           expense: event.expense,
           amount: event.amount,
@@ -190,16 +226,15 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     Emitter<ExpensesState> emit,
   ) async {
     final currentState = state;
-
+appTalker?.debug('eventtttt-> $event');
     try {
-      final result = await deleteExpenseUseCase(
+      final result = await _deleteExpenseUseCase(
         DeleteExpenseParams(event.expenseId),
       );
 
+      appTalker?.debug('resulttttt-> $result');
       result.fold(
-        (data) {
-          emit(ExpenseDeletedSuccess('Expense deleted successfully'));
-        },
+        (data) {},
         (error) {
           if (currentState is ExpensesLoaded) {
             emit(
@@ -223,7 +258,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     LoadCategoriesEvent event,
     Emitter<ExpensesState> emit,
   ) {
-    final categoriesResult = getCategoriesUseCase(Nothing());
+    final categoriesResult = _getCategoriesUseCase(Nothing());
 
     categoriesResult.fold(
       (categories) {

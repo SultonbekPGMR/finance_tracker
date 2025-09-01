@@ -35,7 +35,7 @@ class AddExpenseUseCase
       await repository.addExpense(expense);
       return const Success(true);
     } catch (e) {
-      return Failure('Failed to add expense: $e');
+      return Failure('Failed to details expense: $e');
     }
   }
 

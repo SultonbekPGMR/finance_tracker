@@ -3,7 +3,7 @@
 import '../../data/model/expense_model.dart';
 
 abstract class ExpenseRepository {
-  Stream<List<ExpenseModel>> getExpensesStream(String userId);
+  Stream<List<ExpenseModel>> getExpensesStream(String userId , {DateTime? month});
   Future<List<ExpenseModel>> getExpenses(String userId);
   Future<void> addExpense(ExpenseModel expense);
   Future<void> updateExpense(ExpenseModel expense);

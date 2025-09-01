@@ -1,22 +1,33 @@
 // Created by Sultonbek Tulanov on 31-August 2025
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../domain/repository/expense_repository.dart';
 import '../model/expense_model.dart';
 
 class ExpenseRepositoryImpl implements ExpenseRepository {
-  final FirebaseFirestore _firestore;
-  final String _collection = 'expenses';
+  final FirebaseFirestore firestore;
+  final uuid = const Uuid();
+  final String collection = 'expenses';
 
   ExpenseRepositoryImpl({FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance;
+    : firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
-  Stream<List<ExpenseModel>> getExpensesStream(String userId) {
-    return _firestore
-        .collection(_collection)
-        .where('userId', isEqualTo: userId)
-        .orderBy('createdAt', descending: true)
+  Stream<List<ExpenseModel>> getExpensesStream(String userId, {DateTime? month}) {
+    Query query = firestore
+        .collection(collection)
+        .where('userId', isEqualTo: userId);
+
+    if (month != null) {
+      final startOfMonth = DateTime(month.year, month.month, 1);
+      final endOfMonth = DateTime(month.year, month.month + 1, 0, 23, 59, 59);
+      query = query
+          .where('createdAt', isGreaterThanOrEqualTo: startOfMonth.millisecondsSinceEpoch)
+          .where('createdAt', isLessThanOrEqualTo: endOfMonth.millisecondsSinceEpoch);
+    }
+
+    return query.orderBy('createdAt', descending: true)
         .snapshots()
         .map(_convertSnapshotToExpenses);
   }
@@ -25,8 +36,8 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   Future<List<ExpenseModel>> getExpenses(String userId) async {
     try {
       final querySnapshot =
-          await _firestore
-              .collection(_collection)
+          await firestore
+              .collection(collection)
               .where('userId', isEqualTo: userId)
               .orderBy('createdAt', descending: true)
               .get();
@@ -40,17 +51,18 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   @override
   Future<void> addExpense(ExpenseModel expense) async {
     try {
-      await _firestore.collection(_collection).add(expense.toJson());
+      expense = expense.copyWith(id: uuid.v4());
+      await firestore.collection(collection).doc(expense.id).set(expense.toJson());
     } catch (e) {
-      throw Exception('Failed to add expense: $e');
+      throw Exception('Failed to details expense: $e');
     }
   }
 
   @override
   Future<void> updateExpense(ExpenseModel expense) async {
     try {
-      await _firestore
-          .collection(_collection)
+      await firestore
+          .collection(collection)
           .doc(expense.id)
           .update(expense.toJson());
     } catch (e) {
@@ -61,7 +73,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   @override
   Future<void> deleteExpense(String expenseId) async {
     try {
-      await _firestore.collection(_collection).doc(expenseId).delete();
+      await firestore.collection(collection).doc(expenseId).delete();
     } catch (e) {
       throw Exception('Failed to delete expense: $e');
     }

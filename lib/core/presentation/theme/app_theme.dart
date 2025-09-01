@@ -21,7 +21,7 @@ import 'package:google_fonts/google_fonts.dart';
 /// );
 abstract final class AppTheme {
   static ThemeData light = FlexThemeData.light(
-    scheme: FlexScheme.blackWhite,
+    scheme: FlexScheme.yellowM3,
     textTheme: appTextTheme,
     subThemesData: const FlexSubThemesData(
       inputDecoratorIsFilled: true,
@@ -39,7 +39,7 @@ abstract final class AppTheme {
   );
 
   static ThemeData dark = FlexThemeData.dark(
-    scheme: FlexScheme.blackWhite,
+    scheme: FlexScheme.yellowM3,
     textTheme: appTextTheme,
     subThemesData: const FlexSubThemesData(
       blendOnColors: true,

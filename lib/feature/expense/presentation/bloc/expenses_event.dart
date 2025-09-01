@@ -21,7 +21,10 @@ class AddExpenseEvent extends ExpensesEvent {
     this.imageUrl,
   });
 }
-
+class ChangeMonthEvent extends ExpensesEvent {
+  final DateTime month;
+  ChangeMonthEvent(this.month);
+}
 class UpdateExpenseEvent extends ExpensesEvent {
   final ExpenseModel expense;
   final double amount;

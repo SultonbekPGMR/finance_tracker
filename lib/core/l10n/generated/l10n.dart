@@ -299,6 +299,11 @@ class AppLocalizations {
     return Intl.message('Adding...', name: 'adding', desc: '', args: []);
   }
 
+  /// `Saving...`
+  String get saving {
+    return Intl.message('Saving...', name: 'saving', desc: '', args: []);
+  }
+
   /// `Expense added successfully`
   String get expenseAddedSuccessfully {
     return Intl.message(
@@ -324,6 +329,236 @@ class AppLocalizations {
     return Intl.message(
       'Failed to add expense',
       name: 'failedToAddExpense',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No expenses found`
+  String get noExpensesFound {
+    return Intl.message(
+      'No expenses found',
+      name: 'noExpensesFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search expenses...`
+  String get searchExpenses {
+    return Intl.message(
+      'Search expenses...',
+      name: 'searchExpenses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All Categories`
+  String get allCategories {
+    return Intl.message(
+      'All Categories',
+      name: 'allCategories',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Loading expenses...`
+  String get loadingExpenses {
+    return Intl.message(
+      'Loading expenses...',
+      name: 'loadingExpenses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error loading expenses`
+  String get errorLoadingExpenses {
+    return Intl.message(
+      'Error loading expenses',
+      name: 'errorLoadingExpenses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Spent: {amount}`
+  String totalSpent(Object amount) {
+    return Intl.message(
+      'Total Spent: $amount',
+      name: 'totalSpent',
+      desc: '',
+      args: [amount],
+    );
+  }
+
+  /// `Select Month`
+  String get selectMonth {
+    return Intl.message(
+      'Select Month',
+      name: 'selectMonth',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Today`
+  String get today {
+    return Intl.message('Today', name: 'today', desc: '', args: []);
+  }
+
+  /// `Yesterday`
+  String get yesterday {
+    return Intl.message('Yesterday', name: 'yesterday', desc: '', args: []);
+  }
+
+  /// `Total: {amount}`
+  String dayTotal(Object amount) {
+    return Intl.message(
+      'Total: $amount',
+      name: 'dayTotal',
+      desc: '',
+      args: [amount],
+    );
+  }
+
+  /// `No description`
+  String get noDescription {
+    return Intl.message(
+      'No description',
+      name: 'noDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Money Tracker`
+  String get moneyTracker {
+    return Intl.message(
+      'Money Tracker',
+      name: 'moneyTracker',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Expenses`
+  String get expenses {
+    return Intl.message('Expenses', name: 'expenses', desc: '', args: []);
+  }
+
+  /// `Income`
+  String get income {
+    return Intl.message('Income', name: 'income', desc: '', args: []);
+  }
+
+  /// `Retry`
+  String get retry {
+    return Intl.message('Retry', name: 'retry', desc: '', args: []);
+  }
+
+  /// `Start by adding your first expense`
+  String get startAddingExpenses {
+    return Intl.message(
+      'Start by adding your first expense',
+      name: 'startAddingExpenses',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit`
+  String get edit {
+    return Intl.message('Edit', name: 'edit', desc: '', args: []);
+  }
+
+  /// `Delete`
+  String get delete {
+    return Intl.message('Delete', name: 'delete', desc: '', args: []);
+  }
+
+  /// `Delete Expense`
+  String get deleteExpense {
+    return Intl.message(
+      'Delete Expense',
+      name: 'deleteExpense',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete this expense?`
+  String get deleteConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete this expense?',
+      name: 'deleteConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel`
+  String get cancel {
+    return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
+  }
+
+  /// `Expense deleted successfully`
+  String get deleteSuccess {
+    return Intl.message(
+      'Expense deleted successfully',
+      name: 'deleteSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error deleting expense`
+  String get deleteError {
+    return Intl.message(
+      'Error deleting expense',
+      name: 'deleteError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Expense added successfully`
+  String get addedSuccessfully {
+    return Intl.message(
+      'Expense added successfully',
+      name: 'addedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Expense updated successfully`
+  String get updateSuccess {
+    return Intl.message(
+      'Expense updated successfully',
+      name: 'updateSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error updating expense`
+  String get updateError {
+    return Intl.message(
+      'Error updating expense',
+      name: 'updateError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update Expense`
+  String get updateExpense {
+    return Intl.message(
+      'Update Expense',
+      name: 'updateExpense',
       desc: '',
       args: [],
     );

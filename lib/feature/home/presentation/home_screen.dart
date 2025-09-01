@@ -6,16 +6,24 @@ import 'package:go_router/go_router.dart';
 class HomeScreen extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
-  const HomeScreen({
-    super.key,
-    required this.navigationShell,
-  });
+  const HomeScreen({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.pushNamed('add-expense'),
+        backgroundColor: const Color(0xFFFFD700),
+        foregroundColor: Colors.black,
+        elevation: 2,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add_rounded, size: 28),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
+        notchMargin: 7,
+        shape: const CircularNotchedRectangle(),
         height: 86,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -34,28 +42,7 @@ class HomeScreen extends StatelessWidget {
               label: context.l10n.charts,
               index: 1,
             ),
-            Expanded(
-              flex: 5,
-              child: GestureDetector(
-                onTap: () => context.pushNamed('add-expense'),
-                child: Transform.translate(
-                  offset: const Offset(0, -20),
-                  child:  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFFD700),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.add,
-                      color: Colors.black,
-                      size: 28,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            Expanded(flex: 3, child: const SizedBox()), // Space for the FAB
             _buildNavItem(
               context: context,
               icon: Icons.bar_chart_outlined,
@@ -75,7 +62,6 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _buildNavItem({
     required BuildContext context,
@@ -98,18 +84,20 @@ class HomeScreen extends StatelessWidget {
             children: [
               Icon(
                 isSelected ? selectedIcon : icon,
-                color: isSelected
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
+                color:
+                    isSelected
+                        ? context.colorScheme.primary
+                        : context.colorScheme.onSurfaceVariant,
                 size: 24,
               ),
               const SizedBox(height: 4),
               Text(
                 label,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                style: context.textTheme.labelSmall?.copyWith(
+                  color:
+                      isSelected
+                          ? context.colorScheme.primary
+                          : context.colorScheme.onSurfaceVariant,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
@@ -119,7 +107,4 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
 }
-
- 

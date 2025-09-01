@@ -3,12 +3,17 @@ import 'package:finance_tracker/feature/auth/presentation/screen/register_screen
 import 'package:finance_tracker/feature/home/presentation/home_screen.dart';
 import 'package:finance_tracker/feature/profile/presentation/screen/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../feature/auth/presentation/screen/login_screen.dart';
 import '../../../feature/auth/presentation/screen/splash_screen.dart';
-import '../../../feature/expense/presentation/screen/add_expense_screen.dart';
-import '../../../feature/expense/presentation/screen/expense_screen.dart';
+import '../../../feature/expense/data/model/expense_model.dart';
+import '../../../feature/expense/presentation/bloc/details/expense_details_cubit.dart';
+import '../../../feature/expense/presentation/bloc/expenses_bloc.dart';
+import '../../../feature/expense/presentation/screen/expense_details_screen.dart';
+import '../../../feature/expense/presentation/screen/expenses_screen.dart';
+import '../../di/app_di.dart';
 
 class AppRouter {
   static final navigatorKey = GlobalKey<NavigatorState>();
@@ -64,7 +69,22 @@ class AppRouter {
     GoRoute(
       path: '/home/add-expense',
       name: 'add-expense',
-      builder: (context, state) => const AddExpenseScreen(),
+      builder:
+          (context, state) => BlocProvider.value(
+            value: get<ExpenseDetailsCubit>()..loadCategories(),
+            child: const ExpenseDetailsScreen(),
+          ),
+    ),
+    GoRoute(
+      path: '/home/update-expense',
+      name: 'update-expense',
+      builder: (context, state) {
+        final expense = state.extra as ExpenseModel;
+        return BlocProvider(
+          create: (context) => get<ExpenseDetailsCubit>()..loadCategories(),
+          child: ExpenseDetailsScreen(expense: expense),
+        );
+      },
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
@@ -77,7 +97,11 @@ class AppRouter {
             GoRoute(
               path: '/home/records',
               name: 'records',
-              builder: (context, state) => ExpensesScreen(),
+              builder:
+                  (context, state) => BlocProvider.value(
+                    value: get<ExpensesBloc>()..add(LoadExpensesEvent()),
+                    child: ExpensesScreen(),
+                  ),
             ),
           ],
         ),
