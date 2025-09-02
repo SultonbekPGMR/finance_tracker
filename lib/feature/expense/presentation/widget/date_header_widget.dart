@@ -72,8 +72,7 @@ class DateHeaderWidget extends StatelessWidget {
     } else if (dateOnly == yesterday) {
       return context.l10n.yesterday;
     } else {
-      // Format as "Mon, Aug 30"
-      return DateFormat('EEE, MMM dd').format(date);
+      return DateFormat('MMM dd EEEE').format(date);
     }
   }
 }

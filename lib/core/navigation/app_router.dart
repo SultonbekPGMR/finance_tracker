@@ -71,7 +71,7 @@ class AppRouter {
       path: '/home/add-expense',
       name: 'add-expense',
       builder:
-          (context, state) => BlocProvider.value(
+          (context, state) =>BlocProvider.value(
             value: get<ExpenseDetailsCubit>()..loadCategories(),
             child: const ExpenseDetailsScreen(),
           ),
@@ -81,7 +81,7 @@ class AppRouter {
       name: 'update-expense',
       builder: (context, state) {
         final expense = state.extra as ExpenseModel;
-        return BlocProvider(
+        return  BlocProvider(
           create: (context) => get<ExpenseDetailsCubit>()..loadCategories(),
           child: ExpenseDetailsScreen(expense: expense),
         );
@@ -99,7 +99,7 @@ class AppRouter {
               path: '/home/records',
               name: 'records',
               builder:
-                  (context, state) => BlocProvider.value(
+                  (context, state) =>  BlocProvider.value(
                     value: get<ExpensesBloc>()..add(LoadExpensesEvent()),
                     child: ExpensesScreen(),
                   ),
@@ -130,7 +130,7 @@ class AppRouter {
               path: '/home/profile',
               name: 'profile',
               builder:
-                  (context, state) => ProfileScreen(),
+                  (context, state) =>ProfileScreen(),
             ),
           ],
         ),

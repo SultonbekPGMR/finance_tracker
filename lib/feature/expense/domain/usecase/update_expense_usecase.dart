@@ -34,6 +34,7 @@ class UpdateExpenseUseCase
         category: params.category.name,
         description: params.description,
         imageUrl: params.imageUrl,
+        createdAt: params.date,
         updatedAt: DateTime.now(),
       );
 
@@ -58,6 +59,7 @@ class UpdateExpenseParams {
   final double amount;
   final ExpenseCategoryModel category;
   final String description;
+  final DateTime date;
   final String? imageUrl;
 
   UpdateExpenseParams({
@@ -65,6 +67,7 @@ class UpdateExpenseParams {
     required this.amount,
     required this.category,
     required this.description,
+    required this.date,
     this.imageUrl,
   });
 }

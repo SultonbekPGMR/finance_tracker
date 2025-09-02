@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_tracker/core/util/extension/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../../core/config/talker.dart';
 import '../../../../core/util/service/preferences_service.dart';
 import '../../../auth/data/model/user_model.dart';
 import '../../domain/repository/user_repository.dart';
@@ -70,6 +71,7 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   UserPreferences getUserPreferences() {
+    appTalker?.debug('getUserPreferences: ${PreferencesService.preferences}');
     return PreferencesService.preferences;
   }
 

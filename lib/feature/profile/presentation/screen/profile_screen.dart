@@ -1,10 +1,12 @@
 // Created by Sultonbek Tulanov on 31-August 2025
 import 'package:finance_tracker/core/util/extension/build_context.dart';
+import 'package:finance_tracker/core/util/extension/exception.dart';
 import 'package:finance_tracker/core/util/extension/string.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/config/talker.dart';
 import '../../../auth/data/model/user_model.dart';
 import '../../data/model/user_preferences.dart';
 import '../bloc/profile_cubit.dart';
@@ -24,6 +26,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _nameController.dispose();
     super.dispose();
   }
+  @override
+  void initState() {
+    super.initState();
+    if (mounted) context.read<ProfileCubit>().loadProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,17 +48,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: context.colorScheme.surface,
         elevation: 0,
       ),
-      body: BlocBuilder<ProfileCubit, ProfileState>(
+      body: BlocConsumer<ProfileCubit, ProfileState>(
+        listener: (context, state) {
+          if (state is ProfileSignedOut) {
+            context.go('/login');
+          }
+        },
         builder: (context, state) {
-          return switch (state) {
-            ProfileInitial() => const SizedBox(),
-            ProfileLoading() => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            ProfileError error => _buildErrorState(error.message),
-            ProfileLoaded loaded => _buildContent(loaded, false),
-            ProfileUpdating updating => _buildContent(updating, true),
-          };
+          if (state is ProfileLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is ProfileLoaded || state is ProfileUpdating) {
+            return _buildContent(state, state is ProfileUpdating);
+          }
+
+          if (state is ProfileError) {
+            return _buildErrorState(state.exception.localizedMessage);
+          }
+
+          return const SizedBox();
         },
       ),
     );
@@ -81,8 +97,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildContent(dynamic state, bool isLoading) {
-    final user = state.user as UserModel;
+    final user = state.user as UserModel?;
     final preferences = state.preferences as UserPreferences;
+    appTalker?.debug('ProfileLoaded: $preferences');
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -98,7 +115,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildUserCard(UserModel user, bool isLoading) {
+  Widget _buildUserCard(UserModel? user, bool isLoading) {
+    if (user == null) return const SizedBox();
+
     return Card(
       elevation: 0,
       color: context.colorScheme.primaryContainer.withValues(alpha: 0.3),
@@ -143,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 label: Text(
                   user.name.isEmpty
                       ? context.l10n.setName
-                      : context.l10n.editName
+                      : context.l10n.editName,
                 ),
               ),
             ),
@@ -478,7 +497,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               FilledButton(
                 onPressed: () {
                   context.pop();
-                  // TODO: Handle sign out
+                  context.read<ProfileCubit>().signOut();
                 },
                 style: FilledButton.styleFrom(
                   backgroundColor: context.colorScheme.error,

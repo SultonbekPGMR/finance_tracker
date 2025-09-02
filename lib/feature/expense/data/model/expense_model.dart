@@ -1,7 +1,5 @@
 // Created by Sultonbek Tulanov on 31-August 2025
 
-
-
 class ExpenseModel {
   final String id;
   final String userId;
@@ -28,16 +26,17 @@ class ExpenseModel {
     required double amount,
     required String category,
     required String description,
+    required DateTime? date,
     String? imageUrl,
   }) {
     final now = DateTime.now();
     return ExpenseModel(
-      id: '', // Will be set by Firestore
+      id: '',
       userId: userId,
       amount: amount,
       category: category,
       description: description,
-      createdAt: now,
+      createdAt: date ?? now,
       updatedAt: now,
       imageUrl: imageUrl,
     );
@@ -69,7 +68,6 @@ class ExpenseModel {
     };
   }
 
-
   ExpenseModel copyWith({
     String? id,
     String? userId,
@@ -92,4 +90,3 @@ class ExpenseModel {
     );
   }
 }
- 

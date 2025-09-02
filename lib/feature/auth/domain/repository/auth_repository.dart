@@ -7,7 +7,7 @@ import 'package:result_dart/result_dart.dart';
 abstract class AuthRepository {
   bool isSignedIn();
   UserModel? getCurrentUser();
-  Future<ResultDart<bool,String>> signIn(String email, String password);
-  Future<ResultDart<bool,String>> signUp(String email, String password);
-  Future<ResultDart<bool,String>> signOut();
+  Future<Result<bool>> signIn(String email, String password);
+  Future<Result<bool>> signUp(String email, String password);
+  Future<Result<bool>> signOut();
 }

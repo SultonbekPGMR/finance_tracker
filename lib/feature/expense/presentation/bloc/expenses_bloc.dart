@@ -8,12 +8,9 @@ import 'package:intl/intl.dart';
 import '../../../../core/util/no_params.dart';
 import '../../data/model/expense_category_model.dart';
 import '../../data/model/expense_model.dart';
-import '../../domain/usecase/add_expense_usecase.dart';
 import '../../domain/usecase/delete_expense_usecase.dart';
 import '../../domain/usecase/get_categories_usecase.dart';
 import '../../domain/usecase/get_expense_stream_usecase.dart';
-import '../../domain/usecase/get_expenses_usecase.dart';
-import '../../domain/usecase/update_expense_usecase.dart';
 import '../model/expense_list_item.dart';
 
 part 'expenses_event.dart';
@@ -64,15 +61,16 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
 
       await _setupExpensesStream(emit, categories, DateTime.now());
     } catch (e) {
+      appTalker?.error('Failed to load expenses: $e');
       emit(ExpensesError('Failed to load records: $e'));
     }
   }
 
   Future<void> _setupExpensesStream(
-      Emitter<ExpensesState> emit,
-      List<ExpenseCategoryModel> categories,
-      DateTime selectedMonth,
-      ) async {
+    Emitter<ExpensesState> emit,
+    List<ExpenseCategoryModel> categories,
+    DateTime selectedMonth,
+  ) async {
     await _expensesSubscription?.cancel();
 
     appTalker?.debug('Setting up stream for month: $selectedMonth');
@@ -82,7 +80,10 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
       onData: (expenses) {
         appTalker?.debug('Received ${expenses.length} expenses');
         final groupedItems = _groupExpensesByDate(expenses);
-        final totalAmount = expenses.fold(0.0, (sum, expense) => sum + expense.amount);
+        final totalAmount = expenses.fold(
+          0.0,
+          (sum, expense) => sum + expense.amount,
+        );
 
         return ExpensesLoaded(
           expenses: groupedItems,
@@ -93,25 +94,22 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
       },
       onError: (error, _) {
         appTalker?.error('Stream error: $error');
-        GlobalMessageBus.showError(error.toString());
+        GlobalMessageBus.showError(error);
         return ExpensesError('Failed to load expenses: $error');
       },
     );
   }
+
   void _onChangeMonth(
-      ChangeMonthEvent event,
-      Emitter<ExpensesState> emit,
-      ) async {
+    ChangeMonthEvent event,
+    Emitter<ExpensesState> emit,
+  ) async {
     final currentState = state;
     if (currentState is ExpensesLoaded) {
       emit(ExpensesLoading());
 
       try {
-        await _setupExpensesStream(
-          emit,
-          currentState.categories,
-          event.month,
-        );
+        await _setupExpensesStream(emit, currentState.categories, event.month);
       } catch (e) {
         emit(ExpensesError('Failed to load expenses for selected month: $e'));
       }
@@ -125,35 +123,31 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     add(LoadExpensesEvent());
   }
 
-
   void _onDeleteExpense(
     DeleteExpenseEvent event,
     Emitter<ExpensesState> emit,
   ) async {
     final currentState = state;
-appTalker?.debug('eventtttt-> $event');
+    appTalker?.debug('eventtttt-> $event');
     try {
       final result = await _deleteExpenseUseCase(
         DeleteExpenseParams(event.expenseId),
       );
 
       appTalker?.debug('resulttttt-> $result');
-      result.fold(
-        (data) {},
-        (error) {
-          if (currentState is ExpensesLoaded) {
-            emit(
-              ExpenseOperationError(
-                message: error,
-                expenses: currentState.expenses,
-                categories: currentState.categories,
-              ),
-            );
-          } else {
-            emit(ExpensesError(error));
-          }
-        },
-      );
+      result.fold((data) {}, (error) {
+        if (currentState is ExpensesLoaded) {
+          emit(
+            ExpenseOperationError(
+              message: error,
+              expenses: currentState.expenses,
+              categories: currentState.categories,
+            ),
+          );
+        } else {
+          emit(ExpensesError(error));
+        }
+      });
     } catch (e) {
       emit(ExpensesError('Failed to delete expense: $e'));
     }
@@ -194,7 +188,7 @@ appTalker?.debug('eventtttt-> $event');
     for (final entry in groupedMap.entries) {
       final dayTotal = entry.value.fold<double>(
         0,
-            (sum, expense) => sum + expense.amount,
+        (sum, expense) => sum + expense.amount,
       );
 
       // Add header
@@ -208,7 +202,6 @@ appTalker?.debug('eventtttt-> $event');
 
     return items;
   }
-
 
   void _onFilterByCategory(
     FilterExpensesByCategoryEvent event,

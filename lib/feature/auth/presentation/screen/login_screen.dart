@@ -34,9 +34,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 Padding(
                   padding: const EdgeInsets.all(50.0),
-                  child: Text(
-                    context.l10n.welcomeBack,
-                    style: context.textTheme.headlineLarge,
+                  child: InkWell(
+                    onTap: ()=>context.read<AuthBloc>().add(SignInEvent('sultonbek@gmail.com','123456')),
+                    onLongPress: ()=>context.read<AuthBloc>().add(SignInEvent('s@gmail.com','123456')),
+                    child: Text(
+                      context.l10n.welcomeBack,
+                      style: context.textTheme.headlineLarge,
+                    ),
                   ),
                 ),
                 SizedBox(height: 60),

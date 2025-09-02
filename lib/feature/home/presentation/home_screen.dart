@@ -22,9 +22,9 @@ class HomeScreen extends StatelessWidget {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
-        notchMargin: 7,
+        padding: EdgeInsets.zero,
+        notchMargin: 6,
         shape: const CircularNotchedRectangle(),
-        height: 86,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [

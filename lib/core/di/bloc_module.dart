@@ -21,6 +21,6 @@ class BlocModule {
       () => ExpensesBloc(getIt.get(), getIt.get(), getIt.get()),
     );
     getIt.registerFactory(() => ExpenseDetailsCubit(get(), get(), get()));
-    getIt.registerFactory(() => ProfileCubit(get()));
+    getIt.registerFactory(() => ProfileCubit(get(), get()));
   }
 }

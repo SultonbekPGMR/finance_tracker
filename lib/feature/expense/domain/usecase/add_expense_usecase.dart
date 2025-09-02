@@ -29,6 +29,7 @@ class AddExpenseUseCase
         amount: params.amount,
         category: params.category.name,
         description: params.description,
+        date: params.date,
         imageUrl: params.imageUrl,
       );
 
@@ -50,12 +51,14 @@ class AddExpenseParams {
   final double amount;
   final ExpenseCategoryModel category;
   final String description;
+  final DateTime date;
   final String? imageUrl;
 
   AddExpenseParams({
     required this.amount,
     required this.category,
     required this.description,
+    required this.date,
     this.imageUrl,
   });
 }

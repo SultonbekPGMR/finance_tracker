@@ -1,8 +1,9 @@
-// Created by Sultonbek Tulanov on 31-August 2025
+// Created by Sultonbek Tulanov on 02-September 2025
 import 'package:finance_tracker/core/util/extension/build_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../data/model/expense_category_model.dart';
 import '../../data/model/expense_model.dart';
@@ -23,6 +24,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
   final _descriptionController = TextEditingController();
 
   ExpenseCategoryModel? _selectedCategory;
+  DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -32,6 +34,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
       _selectedCategory = ExpenseCategoryModel.fromString(
         widget.expense!.category,
       );
+      _selectedDate = widget.expense!.createdAt;
     }
     super.initState();
   }
@@ -45,7 +48,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
 
   void _submitForm() {
     if (!_isFormValid()) {
-      _showCategoryValidationError();
+      _showValidationErrors();
       return;
     }
 
@@ -64,6 +67,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
       amount: double.parse(_amountController.text),
       category: _selectedCategory!,
       description: _descriptionController.text.trim(),
+      date: _selectedDate,
     );
   }
 
@@ -73,6 +77,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
       amount: data.amount,
       category: data.category,
       description: data.description,
+      date: data.date,
     );
   }
 
@@ -81,18 +86,57 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
       amount: data.amount,
       category: data.category,
       description: data.description,
+      date: data.date,
     );
   }
 
-  void _showCategoryValidationError() {
+  void _showValidationErrors() {
     if (_selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(context.l10n.pleaseSelectCategory),
-          backgroundColor: context.colorScheme.secondary,
+          backgroundColor: context.colorScheme.error,
           behavior: SnackBarBehavior.floating,
         ),
       );
+    }
+  }
+
+  Future<void> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: context.theme.copyWith(
+            colorScheme: context.colorScheme,
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  String _getDisplayDate() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final dateOnly = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+
+    if (dateOnly == today) {
+      return context.l10n.today;
+    } else if (dateOnly == yesterday) {
+      return context.l10n.yesterday;
+    } else {
+      return DateFormat('EEE, MMM dd, yyyy').format(_selectedDate);
     }
   }
 
@@ -133,7 +177,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
           } else if (state is ExpenseDetailsUpdatedSuccessfully) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(context.l10n.updateSuccess),
+                content: Text(context.l10n.expenseUpdatedSuccessfully),
                 backgroundColor: context.colorScheme.primary,
                 behavior: SnackBarBehavior.floating,
               ),
@@ -189,9 +233,11 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildAmountCard(),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
+                  _buildDateCard(),
+                  const SizedBox(height: 16),
                   _buildCategoryCard(categories),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   _buildDescriptionCard(),
                 ],
               ),
@@ -219,14 +265,24 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              context.l10n.amount,
-              style: context.textTheme.titleMedium?.copyWith(
-                color: context.colorScheme.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
+            Row(
+              children: [
+                Icon(
+                  Icons.attach_money,
+                  color: context.colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  context.l10n.amount,
+                  style: context.textTheme.titleMedium?.copyWith(
+                    color: context.colorScheme.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _amountController,
               keyboardType: const TextInputType.numberWithOptions(
@@ -235,22 +291,15 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
               ],
-              style: context.textTheme.headlineMedium?.copyWith(
+              style: context.textTheme.headlineLarge?.copyWith(
                 color: context.colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
               decoration: InputDecoration(
-                prefixIcon: Container(
-                  margin: const EdgeInsets.only(right: 12),
-                  child: Icon(
-                    Icons.attach_money,
-                    color: context.colorScheme.primary,
-                    size: 32,
-                  ),
-                ),
                 hintText: context.l10n.enterAmount,
-                hintStyle: context.textTheme.headlineMedium?.copyWith(
-                  color: context.colorScheme.onSurface.withValues(alpha: 0.4),
+                hintStyle: context.textTheme.headlineLarge?.copyWith(
+                  color: context.colorScheme.onSurface.withValues(alpha: 0.3),
+                  fontWeight: FontWeight.bold,
                 ),
                 filled: true,
                 fillColor: context.colorScheme.surface,
@@ -258,10 +307,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 16,
-                ),
+                contentPadding: const EdgeInsets.all(20),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -275,6 +321,70 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateCard() {
+    return Card(
+      elevation: 0,
+      color: context.colorScheme.surfaceContainerLowest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: context.colorScheme.outline.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: _selectDate,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    color: context.colorScheme.primary,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    context.l10n.selectDate,
+                    style: context.textTheme.titleMedium?.copyWith(
+                      color: context.colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const Spacer(),
+                  Icon(
+                    Icons.keyboard_arrow_down,
+                    color: context.colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: context.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  _getDisplayDate(),
+                  style: context.textTheme.titleLarge?.copyWith(
+                    color: context.colorScheme.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -296,14 +406,24 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              context.l10n.category,
-              style: context.textTheme.titleMedium?.copyWith(
-                color: context.colorScheme.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
+            Row(
+              children: [
+                Icon(
+                  Icons.category,
+                  color: context.colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  context.l10n.category,
+                  style: context.textTheme.titleMedium?.copyWith(
+                    color: context.colorScheme.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             DropdownButtonFormField<ExpenseCategoryModel>(
               value: _selectedCategory,
               decoration: InputDecoration(
@@ -314,7 +434,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
                   borderSide: BorderSide.none,
                 ),
                 contentPadding: const EdgeInsets.symmetric(
-                  vertical: 8,
+                  vertical: 12,
                   horizontal: 16,
                 ),
                 hintText: context.l10n.selectCategory,
@@ -324,38 +444,36 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
               ),
               isDense: false,
               icon: const Icon(Icons.keyboard_arrow_down),
-              items:
-                  categories.map((category) {
-                    return DropdownMenuItem<ExpenseCategoryModel>(
-                      value: category,
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 40,
-                            width: 40,
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: category.color.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Center(
-                              child: Text(
-                                category.icon,
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ),
+              items: categories.map((category) {
+                return DropdownMenuItem<ExpenseCategoryModel>(
+                  value: category,
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 36,
+                        width: 36,
+                        decoration: BoxDecoration(
+                          color: category.color.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Text(
+                            category.icon,
+                            style: const TextStyle(fontSize: 16),
                           ),
-                          const SizedBox(width: 12),
-                          Text(
-                            category.displayName,
-                            style: context.textTheme.bodyLarge?.copyWith(
-                              color: context.colorScheme.onSurface,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    );
-                  }).toList(),
+                      const SizedBox(width: 12),
+                      Text(
+                        category.displayName,
+                        style: context.textTheme.bodyLarge?.copyWith(
+                          color: context.colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
               onChanged: (ExpenseCategoryModel? newValue) {
                 setState(() {
                   _selectedCategory = newValue;
@@ -390,14 +508,24 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              context.l10n.description,
-              style: context.textTheme.titleMedium?.copyWith(
-                color: context.colorScheme.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
+            Row(
+              children: [
+                Icon(
+                  Icons.notes,
+                  color: context.colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  context.l10n.description,
+                  style: context.textTheme.titleMedium?.copyWith(
+                    color: context.colorScheme.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _descriptionController,
               decoration: InputDecoration(
@@ -416,7 +544,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
               style: context.textTheme.bodyLarge?.copyWith(
                 color: context.colorScheme.onSurface,
               ),
-              maxLines: 4,
+              maxLines: 3,
               textInputAction: TextInputAction.done,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
@@ -461,36 +589,35 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
                 elevation: 0,
                 minimumSize: const Size(double.infinity, 56),
               ),
-              child:
-                  isLoading
-                      ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: context.colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            context.l10n.saving,
-                            style: context.textTheme.labelLarge?.copyWith(
-                              color: context.colorScheme.onSurface,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      )
-                      : Text(
-                        context.l10n.save,
-                        style: context.textTheme.labelLarge?.copyWith(
-                          color: context.colorScheme.onPrimary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+              child: isLoading
+                  ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: context.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    context.l10n.saving,
+                    style: context.textTheme.labelLarge?.copyWith(
+                      color: context.colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              )
+                  : Text(
+                context.l10n.save,
+                style: context.textTheme.labelLarge?.copyWith(
+                  color: context.colorScheme.onPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
         );
@@ -503,10 +630,12 @@ class ExpenseFormData {
   final double amount;
   final ExpenseCategoryModel category;
   final String description;
+  final DateTime date;
 
   ExpenseFormData({
     required this.amount,
     required this.category,
     required this.description,
+    required this.date,
   });
 }

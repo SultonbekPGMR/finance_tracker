@@ -26,7 +26,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           authStatusCubit.login();
         },
         (error) {
-          emit(AuthFailure(message: error));
+          emit(AuthFailure(exception: error));
           GlobalMessageBus.showError(error);
         },
       );
@@ -48,7 +48,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           authStatusCubit.login();
         },
         (error) {
-          emit(AuthFailure(message: error));
+          emit(AuthFailure(exception: error));
           GlobalMessageBus.showError(error);
         },
       );

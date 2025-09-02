@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 
 import '../../../feature/profile/data/model/user_preferences.dart';
+import '../../config/talker.dart';
 
 class PreferencesService {
   static const String _boxName = 'preferences';
@@ -42,6 +43,7 @@ class PreferencesService {
   }
 
   static Future<void> updateNotifications(bool enabled) async {
+    appTalker?.debug('updateNotifications hive: $enabled');
     final current = preferences;
     current.notificationsEnabled = enabled;
     await updatePreferences(current);

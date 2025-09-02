@@ -163,11 +163,13 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         child: Row(
           children: [
             // Month picker - hide when collapsed (moves to leading)
-            if (!isCollapsed) _buildMonthPickerInline(state),
+            if (!isCollapsed) Opacity(
+                opacity: (1 - scrolled ).clamp(0.0, 1.0),
+                child: _buildMonthPickerInline(state)),
             const Spacer(),
             // Expense stats - fade out as we scroll
             Opacity(
-              opacity: (1 - scrolled * 2).clamp(0.0, 1.0),
+              opacity: (1 - scrolled ).clamp(0.0, 1.0),
               child: _buildExpenseStats(state),
             ),
           ],
@@ -194,7 +196,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             const SizedBox(width: 4),
             Text(
               DateFormat('MMMM').format(state.selectedDate),
-              style: context.textTheme.titleLarge?.copyWith(
+              style: context.textTheme.headlineMedium?.copyWith(
                 color: context.colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
@@ -229,7 +231,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         const SizedBox(height: 2),
         Text(
           currencyFormatter.format(state.totalAmount),
-          style: context.textTheme.titleMedium?.copyWith(
+          style: context.textTheme.headlineSmall?.copyWith(
             color: context.colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
@@ -301,9 +303,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             ExpenseDataItem data => ExpenseItemWidget(
               expense: data.expense,
               onTap: () {
-                // Navigate to expense details
-              },
-              onLongPress: () {
                 _showExpenseOptions(data.expense);
               },
             ),

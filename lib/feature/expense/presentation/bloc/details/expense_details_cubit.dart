@@ -35,6 +35,7 @@ class ExpenseDetailsCubit extends Cubit<ExpenseDetailsState> {
     required double amount,
     required ExpenseCategoryModel category,
     required String description,
+    required DateTime date,
     String? imageUrl,
   }) async {
     final currentState = state;
@@ -50,6 +51,7 @@ class ExpenseDetailsCubit extends Cubit<ExpenseDetailsState> {
           category: category,
           description: description,
           imageUrl: imageUrl,
+          date: date,
         ),
       );
 
@@ -79,6 +81,7 @@ class ExpenseDetailsCubit extends Cubit<ExpenseDetailsState> {
     required double amount,
     required ExpenseCategoryModel category,
     required String description,
+    required DateTime date,
     String? imageUrl,
   }) async {
     final currentState = state;
@@ -93,6 +96,7 @@ class ExpenseDetailsCubit extends Cubit<ExpenseDetailsState> {
           category: category,
           description: description,
           imageUrl: imageUrl,
+          date: date,
         ),
       );
 
