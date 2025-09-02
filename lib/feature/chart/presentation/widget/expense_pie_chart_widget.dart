@@ -103,37 +103,21 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget> {
   Widget build(BuildContext context) {
     final currencyFormatter = NumberFormat.currency(symbol: '\$');
 
-    return Card(
-      elevation: 0,
-      color: context.colorScheme.surfaceContainerLowest,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(
-          color: context.colorScheme.outline.withValues(alpha: 0.1),
-          width: 1,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(currencyFormatter),
-            const SizedBox(height: 32),
-            _buildChart(),
-            const SizedBox(height: 24),
-            _buildHighlightedCategory(currencyFormatter),
-            const SizedBox(height: 24),
-            _buildLegend(currencyFormatter),
-          ],
-        ),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHeader(currencyFormatter),
+        const SizedBox(height: 32),
+        _buildChart(),
+        const SizedBox(height: 24),
+        _buildHighlightedCategory(currencyFormatter),
+        const SizedBox(height: 24),
+        _buildLegend(currencyFormatter),
+      ],
     );
   }
 
   Widget _buildHeader(NumberFormat currencyFormatter) {
-    final monthName = DateFormat('MMMM yyyy').format(widget.selectedMonth);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -187,7 +171,7 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget> {
   Widget _buildChart() {
     if (categoryData.isEmpty) {
       return SizedBox(
-        height: 220,
+        height: 400,
         child: Center(
           child: Text(
             context.l10n.noExpensesFound,
@@ -297,121 +281,125 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget> {
   // This creates the prominent category highlight that shows either the top spending
   // category by default, or the currently selected category during interaction
   Widget _buildHighlightedCategory(NumberFormat currencyFormatter) {
+    if (categoryData.isEmpty) return const SizedBox();
     final highlighted = highlightedCategory;
     final percentage = (highlighted.totalAmount / totalAmount) * 100;
 
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 150),
-      transitionBuilder: (Widget child, Animation<double> animation) {
-        return FadeTransition(
-          opacity: animation,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0.0, 0.1),
-              end: Offset.zero,
-            ).animate(
-              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-            ),
-            child: child,
-          ),
-        );
-      },
-      child: Container(
-        key: ValueKey(highlighted.category.name), // Key for AnimatedSwitcher
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              highlighted.category.color.withValues(alpha: 0.15),
-              highlighted.category.color.withValues(alpha: 0.05),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: highlighted.category.color.withValues(alpha: 0.3),
-            width: 2,
-          ),
-        ),
-        child: Row(
-          children: [
-            // Large category icon with themed background
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: highlighted.category.color.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(16),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 150),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0.0, 0.1),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
               ),
-              child: Center(
-                child: Text(
-                  highlighted.category.icon,
-                  style: const TextStyle(fontSize: 28),
+              child: child,
+            ),
+          );
+        },
+        child: Container(
+          key: ValueKey(highlighted.category.name), // Key for AnimatedSwitcher
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                highlighted.category.color.withValues(alpha: 0.15),
+                highlighted.category.color.withValues(alpha: 0.05),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: highlighted.category.color.withValues(alpha: 0.3),
+              width: 2,
+            ),
+          ),
+          child: Row(
+            children: [
+              // Large category icon with themed background
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: highlighted.category.color.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: Text(
+                    highlighted.category.icon,
+                    style: const TextStyle(fontSize: 28),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 20),
-            // Category details with comprehensive information
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        highlighted.category.displayName,
-                        style: context.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: context.colorScheme.onSurface,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: highlighted.category.color,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          '${percentage.toStringAsFixed(1)}%',
-                          style: context.textTheme.labelMedium?.copyWith(
-                            color: Colors.white,
+              const SizedBox(width: 20),
+              // Category details with comprehensive information
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          highlighted.category.displayName,
+                          style: context.textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.w600,
+                            color: context.colorScheme.onSurface,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        currencyFormatter.format(highlighted.totalAmount),
-                        style: context.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: highlighted.category.color,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: highlighted.category.color,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '${percentage.toStringAsFixed(1)}%',
+                            style: context.textTheme.labelMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          currencyFormatter.format(highlighted.totalAmount),
+                          style: context.textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: highlighted.category.color,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      context.l10n.transactionCount(highlighted.transactionCount),
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: context.colorScheme.onSurface.withValues(
+                          alpha: 0.7,
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    context.l10n.transactionCount(highlighted.transactionCount),
-                    style: context.textTheme.bodySmall?.copyWith(
-                      color: context.colorScheme.onSurface.withValues(
-                        alpha: 0.7,
-                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -421,13 +409,14 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          context.l10n.categoryBreakdown,
-          style: context.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: context.colorScheme.onSurface,
+        if (categoryData.isNotEmpty)
+          Text(
+            context.l10n.categoryBreakdown,
+            style: context.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: context.colorScheme.onSurface,
+            ),
           ),
-        ),
         const SizedBox(height: 16),
         ...categoryData.asMap().entries.map((entry) {
           final index = entry.key;

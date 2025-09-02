@@ -2,6 +2,7 @@
 
 import 'package:finance_tracker/core/di/app_di.dart';
 import 'package:finance_tracker/feature/auth/presentation/bloc/auth_state_cubit.dart';
+import 'package:finance_tracker/feature/chart/presentation/bloc/chart_cubit.dart';
 import 'package:finance_tracker/feature/profile/presentation/bloc/profile_cubit.dart';
 import 'package:get_it/get_it.dart';
 
@@ -22,5 +23,6 @@ class BlocModule {
     );
     getIt.registerFactory(() => ExpenseDetailsCubit(get(), get(), get()));
     getIt.registerFactory(() => ProfileCubit(get(), get()));
+    getIt.registerFactory(() => ChartCubit(get()));
   }
 }

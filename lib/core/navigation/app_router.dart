@@ -1,7 +1,7 @@
 // Created by Sultonbek Tulanov on 31-August 2025
 import 'package:finance_tracker/feature/auth/presentation/screen/register_screen.dart';
+import 'package:finance_tracker/feature/chart/presentation/bloc/chart_cubit.dart';
 import 'package:finance_tracker/feature/home/presentation/home_screen.dart';
-import 'package:finance_tracker/feature/profile/presentation/bloc/profile_cubit.dart';
 import 'package:finance_tracker/feature/profile/presentation/screen/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -72,7 +72,7 @@ class AppRouter {
       path: '/home/add-expense',
       name: 'add-expense',
       builder:
-          (context, state) =>BlocProvider.value(
+          (context, state) => BlocProvider.value(
             value: get<ExpenseDetailsCubit>()..loadCategories(),
             child: const ExpenseDetailsScreen(),
           ),
@@ -82,7 +82,7 @@ class AppRouter {
       name: 'update-expense',
       builder: (context, state) {
         final expense = state.extra as ExpenseModel;
-        return  BlocProvider(
+        return BlocProvider(
           create: (context) => get<ExpenseDetailsCubit>()..loadCategories(),
           child: ExpenseDetailsScreen(expense: expense),
         );
@@ -100,7 +100,7 @@ class AppRouter {
               path: '/home/records',
               name: 'records',
               builder:
-                  (context, state) =>  BlocProvider.value(
+                  (context, state) => BlocProvider.value(
                     value: get<ExpensesBloc>()..add(LoadExpensesEvent()),
                     child: ExpensesScreen(),
                   ),
@@ -112,7 +112,11 @@ class AppRouter {
             GoRoute(
               path: '/home/charts',
               name: 'charts',
-              builder: (context, state) => ChartScreen(),
+              builder:
+                  (context, state) => BlocProvider(
+                    create: (context) => get<ChartCubit>(),
+                    child: ChartScreen(),
+                  ),
             ),
           ],
         ),
@@ -130,8 +134,7 @@ class AppRouter {
             GoRoute(
               path: '/home/profile',
               name: 'profile',
-              builder:
-                  (context, state) =>ProfileScreen(),
+              builder: (context, state) => ProfileScreen(),
             ),
           ],
         ),

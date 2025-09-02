@@ -15,16 +15,20 @@ enum ExpenseCategoryModel {
   other('Other');
 
   const ExpenseCategoryModel(this.displayName);
+
   final String displayName;
 
   static ExpenseCategoryModel fromString(String value) {
     return ExpenseCategoryModel.values.firstWhere(
-          (category) => category.name == value,
+      (category) => category.name == value,
       orElse: () => ExpenseCategoryModel.other,
     );
   }
-  static List<ExpenseCategoryModel> get allCategories => ExpenseCategoryModel.values;
+
+  static List<ExpenseCategoryModel> get allCategories =>
+      ExpenseCategoryModel.values;
 }
+
 extension ExpenseCategoryModelExtension on ExpenseCategoryModel {
   String get icon {
     switch (this) {
@@ -56,27 +60,27 @@ extension ExpenseCategoryModelExtension on ExpenseCategoryModel {
   Color get color {
     switch (this) {
       case ExpenseCategoryModel.food:
-        return const Color(0xFFFF6B6B);
+        return const Color(0xFFE74C3C); // Red → appetite, food
       case ExpenseCategoryModel.transport:
-        return const Color(0xFF4ECDC4);
+        return const Color(0xFF2980B9); // Blue → roads, travel
       case ExpenseCategoryModel.entertainment:
-        return const Color(0xFFFFE66D);
+        return const Color(0xFFF1C40F); // Yellow → fun, energy
       case ExpenseCategoryModel.utilities:
-        return const Color(0xFF95E1D3);
+        return const Color(0xFF16A085); // Teal → water/electricity
       case ExpenseCategoryModel.shopping:
-        return const Color(0xFFFF8B94);
+        return const Color(0xFF9B59B6); // Purple → retail, fashion
       case ExpenseCategoryModel.health:
-        return const Color(0xFFA8E6CF);
+        return const Color(0xFF27AE60); // Green → health, wellness
       case ExpenseCategoryModel.education:
-        return const Color(0xFF88D8C0);
+        return const Color(0xFF34495E); // Dark Blue → knowledge
       case ExpenseCategoryModel.travel:
-        return const Color(0xFFFFD93D);
+        return const Color(0xFFD35400); // Orange → adventure
       case ExpenseCategoryModel.home:
-        return const Color(0xFFB4A7D6);
+        return const Color(0xFF8E44AD); // Violet → stability
       case ExpenseCategoryModel.fitness:
-        return const Color(0xFFFFB347);
+        return const Color(0xFFE67E22); // Bright Orange → activity
       case ExpenseCategoryModel.other:
-        return const Color(0xFFD3D3D3);
+        return const Color(0xFF7F8C8D); // Gray → neutral
     }
   }
 }

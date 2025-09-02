@@ -1,12 +1,12 @@
 // Created by Sultonbek Tulanov on 02-September 2025
 import 'package:finance_tracker/core/util/extension/build_context.dart';
-import 'package:finance_tracker/feature/chart/domain/usecase/get_chart_data_usecase.dart';
 import 'package:finance_tracker/feature/chart/presentation/widget/expense_pie_chart_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
-import '../../../../core/di/app_di.dart';
-import '../../data/model/category_expense_data.dart';
+import '../bloc/chart_cubit.dart';
 
 class ChartScreen extends StatefulWidget {
   const ChartScreen({super.key});
@@ -16,150 +16,235 @@ class ChartScreen extends StatefulWidget {
 }
 
 class _ChartScreenState extends State<ChartScreen> {
-  DateTime selectedMonth = DateTime.now();
   final ScrollController _scrollController = ScrollController();
-  final List<CategoryExpenseData> chartData = [];
+  final ScrollController _monthScrollController = ScrollController();
+  bool _hasScrolledToEnd = false;
 
-  // Generate last 12 months for selection
-  List<DateTime> get availableMonths {
-    final months = <DateTime>[];
-    final now = DateTime.now();
-
-    for (int i = 0; i < 12; i++) {
-      final month = DateTime(now.year, now.month - i, 1);
-      months.add(month);
-    }
-
-    return months;
-  }
 
   @override
   void initState() {
-    _getChartData(DateTime.now() );
     super.initState();
-  }
-
-  Future<void> _getChartData(DateTime month) async {
-    final result = await get<GetChartDataUseCase>()(
-      GetChartDataParams(month: month),
-    );
-    final chartData = result.getOrNull();
-    if (chartData != null) {
-      this.chartData.clear();
-      setState(() {
-        this.chartData.addAll(chartData);
-      });
-    }
-  }
-
-  void _selectMonth(DateTime month) {
-    _getChartData(month);
-    setState(() {
-      selectedMonth = month;
-    });
+    context.read<ChartCubit>().loadCurrentMonthData();
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _monthScrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.colorScheme.surface,
-      body: NestedScrollView(
-        controller: _scrollController,
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              toolbarHeight: 140,
-              pinned: true,
-              backgroundColor: context.colorScheme.surface,
-              foregroundColor: context.colorScheme.onSurface,
-              scrolledUnderElevation: 1,
-              surfaceTintColor: context.colorScheme.surfaceTint,
-              flexibleSpace: SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title area
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Center(
-                        child: Text(
-                          context.l10n.charts,
-                          style: context.textTheme.titleLarge?.copyWith(
-                            color: context.colorScheme.onSurface,
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Month selector area
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: context.colorScheme.outline.withValues(
-                                alpha: 0.1,
-                              ),
-                              width: 1,
+    return BlocConsumer<ChartCubit, ChartState>(
+      listenWhen: (prev, curr) => curr is ChartLoaded,
+      listener: (context, state) {
+        if (state is ChartLoaded && !_hasScrolledToEnd) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_monthScrollController.hasClients) {
+              _monthScrollController.animateTo(
+                _monthScrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+              _hasScrolledToEnd = true;
+            }
+          });
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: context.colorScheme.surface,
+          body: NestedScrollView(
+            controller: _scrollController,
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                BlocBuilder<ChartCubit, ChartState>(
+                  buildWhen: (prev, curr) =>
+                  curr is ChartLoaded || curr is ChartError,
+                  builder: (context, state) {
+                    DateTime selectedMonth = DateTime.now();
+                    List<DateTime> availableMonths = const <DateTime>[];
+
+                    if (state is ChartLoaded) {
+                      selectedMonth = state.selectedMonth;
+                      availableMonths = state.availableMonths;
+                    } else if (state is ChartError) {
+                      selectedMonth = state.selectedMonth;
+                      availableMonths = state.availableMonths;
+                    }
+
+                    return SliverAppBar(
+                      toolbarHeight: 120,
+                      pinned: true,
+                      backgroundColor: context.colorScheme.surface,
+                      foregroundColor: context.colorScheme.onSurface,
+                      scrolledUnderElevation: 1,
+                      surfaceTintColor: context.colorScheme.surfaceTint,
+                      actions: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 80.0),
+                          child: TextButton(
+                            onPressed: () => _showYearPicker(selectedMonth),
+                            child: Row(
+                              children: [
+                                Text(
+                                  selectedMonth.year.toString(),
+                                  style: context.textTheme.titleMedium?.copyWith(
+                                    color: context.colorScheme.onSurface,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.keyboard_arrow_down,
+                                  color: context.colorScheme.onSurface,
+                                  size: 16,
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          itemCount: availableMonths.length,
-                          itemBuilder: (context, index) {
-                            final month = availableMonths[index];
-                            final isSelected =
-                                month.month == selectedMonth.month &&
-                                month.year == selectedMonth.year;
-
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 12),
-                              child: _MonthChip(
-                                month: month,
-                                isSelected: isSelected,
-                                onTap: () => _selectMonth(month),
-                                colorScheme: context.colorScheme,
-                                textTheme: context.textTheme,
+                      ],
+                      flexibleSpace: SafeArea(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Center(
+                                child: Text(
+                                  context.l10n.charts,
+                                  style: context.textTheme.titleLarge?.copyWith(
+                                    color: context.colorScheme.onSurface,
+                                  ),
+                                ),
                               ),
-                            );
-                          },
+                            ),
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: context.colorScheme.outline
+                                          .withValues(alpha: 0.1),
+                                      width: 1,
+                                    ),
+                                  ),
+                                ),
+                                child: ListView.builder(
+                                  controller: _monthScrollController,
+                                  scrollDirection: Axis.horizontal,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  itemCount: availableMonths.length,
+                                  itemBuilder: (context, index) {
+                                    final month = availableMonths[index];
+                                    final isSelected =
+                                        month.month == selectedMonth.month &&
+                                            month.year == selectedMonth.year;
+
+                                    return Padding(
+                                      padding:
+                                      const EdgeInsets.only(right: 12),
+                                      child: _MonthChip(
+                                        month: month,
+                                        isSelected: isSelected,
+                                        onTap: () => context
+                                            .read<ChartCubit>()
+                                            .changeMonth(month),
+                                        colorScheme: context.colorScheme,
+                                        textTheme: context.textTheme,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              ),
+              ];
+            },
+            body: BlocBuilder<ChartCubit, ChartState>(
+              builder: (context, state) {
+                if (state is ChartLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is ChartError) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: context.colorScheme.error,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          context.l10n.errorLoadingExpenses,
+                          style: context.textTheme.titleMedium?.copyWith(
+                            color: context.colorScheme.error,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        FilledButton(
+                          onPressed: () =>
+                              context.read<ChartCubit>().refreshData(),
+                          child: Text(context.l10n.retry),
+                        ),
+                      ],
+                    ),
+                  );
+                } else if (state is ChartLoaded) {
+                  return CustomScrollView(
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.all(16),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate.fixed([
+                            ExpensePieChartWidget(
+                              selectedMonth: state.selectedMonth,
+                              categoryExpenseDataList: state.chartData,
+                            ),
+                            const SizedBox(height: 16),
+                          ]),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                return const SizedBox();
+              },
             ),
-          ];
-        },
-        body: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.all(16),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  ExpensePieChartWidget(
-                    selectedMonth: selectedMonth,
-                    categoryExpenseDataList: chartData,
-                  ),
-                  const SizedBox(height: 16),
-                ]),
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
+  }
+
+
+
+
+
+  Future<void> _showYearPicker(DateTime currentYear) async {
+
+    final selected = await showYearPicker(
+      context: context,
+      initialDate: currentYear,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+
+
+    if (selected != null && mounted) {
+      final onlyYear = DateTime(selected);
+      context.read<ChartCubit>().changeYear(onlyYear);
+    }
   }
 }
 
@@ -191,47 +276,27 @@ class _MonthChip extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color:
-                isSelected
-                    ? colorScheme.primaryContainer
-                    : colorScheme.surfaceContainerHighest.withValues(
-                      alpha: 0.3,
-                    ),
+            color: isSelected
+                ? colorScheme.primaryContainer
+                : colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(16),
-            border:
-                isCurrentMonth && !isSelected
-                    ? Border.all(
-                      color: colorScheme.primary.withValues(alpha: 0.5),
-                      width: 1.5,
-                    )
-                    : null,
+            border: isCurrentMonth && !isSelected
+                ? Border.all(
+              color: colorScheme.primary.withValues(alpha: 0.5),
+              width: 1.5,
+            )
+                : null,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                DateFormat('MMM').format(month),
-                style: textTheme.labelLarge?.copyWith(
-                  color:
-                      isSelected
-                          ? colorScheme.onPrimaryContainer
-                          : colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
+          child: Center(
+            child: Text(
+              DateFormat('MMM').format(month),
+              style: textTheme.labelLarge?.copyWith(
+                color: isSelected
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurface,
+                fontWeight: FontWeight.w600,
               ),
-              const SizedBox(height: 2),
-              Text(
-                DateFormat('yyyy').format(month),
-                style: textTheme.labelSmall?.copyWith(
-                  color:
-                      isSelected
-                          ? colorScheme.onPrimaryContainer.withValues(
-                            alpha: 0.8,
-                          )
-                          : colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

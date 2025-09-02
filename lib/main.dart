@@ -17,9 +17,9 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  FlutterError.onError = (details) {
-    // appTalker?.handle(details.exception, details.stack);
-  };
+  // FlutterError.onError = (details) {
+  // appTalker?.handle(details.exception, details.stack);
+  // };
   await Firebase.initializeApp(options: AppFirebaseOptions.currentPlatform);
   await AppDi.initialize();
   initializeDateFormatting();
