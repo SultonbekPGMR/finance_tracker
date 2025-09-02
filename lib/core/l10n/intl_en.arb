@@ -112,5 +112,12 @@
   "categoryNotFound": "Category not found",
   "storageError": "Storage error occurred",
   "permissionDenied": "Permission denied",
-  "unknownErrorWithDetails": "Unknown error: {details}"
+  "unknownErrorWithDetails": "Unknown error: {details}",
+  "expensesByCategory": "Expenses by Category",
+  "categoryBreakdown": "Category Breakdown",
+  "transactionCount": "{count} transactions",
+  "selectMonthToView": "Select a month to view statistics",
+  "selectedCategory": "Currently selected",
+  "topSpendingCategory": "Highest spending category"
+
 }

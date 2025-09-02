@@ -179,14 +179,38 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   }
 
   @override
-  Future<List<ExpenseModel>> getExpenses(String userId) async {
+  Future<List<ExpenseModel>> getExpenses(String userId, {DateTime? month}) async {
     try {
-      final querySnapshot =
-          await firestore
-              .collection(collection)
-              .where('userId', isEqualTo: userId)
-              .orderBy('createdAt', descending: true)
-              .get();
+      // Start with the base query filtering by user
+      Query query = firestore
+          .collection(collection)
+          .where('userId', isEqualTo: userId);
+
+      // Apply month filtering if a specific month is requested
+      if (month != null) {
+        // Calculate the exact start of the month (first day, midnight)
+        final startOfMonth = DateTime(month.year, month.month, 1);
+
+        // Calculate the exact end of the month (last day, 23:59:59)
+        // Adding 1 to month and subtracting 1 day gives us the last day
+        final endOfMonth = DateTime(month.year, month.month + 1, 0, 23, 59, 59);
+
+        // Apply the date range filters using millisecond timestamps
+        query = query
+            .where(
+          'createdAt',
+          isGreaterThanOrEqualTo: startOfMonth.millisecondsSinceEpoch,
+        )
+            .where(
+          'createdAt',
+          isLessThanOrEqualTo: endOfMonth.millisecondsSinceEpoch,
+        );
+      }
+
+      // Execute the query with proper ordering
+      final querySnapshot = await query
+          .orderBy('createdAt', descending: true)
+          .get();
 
       return _convertSnapshotToExpenses(querySnapshot);
     } catch (e) {

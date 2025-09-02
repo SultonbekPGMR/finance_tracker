@@ -113,6 +113,13 @@
   "categoryNotFound": "Turkum topilmadi",
   "storageError": "Saqlash xatosi yuz berdi",
   "permissionDenied": "Ruxsat rad etildi",
-  "unknownErrorWithDetails": "Noma'lum xatolik: {details}"
+  "unknownErrorWithDetails": "Noma'lum xatolik: {details}",
+  "expensesByCategory": "Turkumlarga bo'lingan xarajatlar",
+  "categoryBreakdown": "Turkumlar taqsimoti",
+  "transactionCount": "{count} ta tranzaksiya",
+  "selectMonthToView": "Statistikani ko'rish uchun oyni tanlang",
+  "selectedCategory": "Hozir tanlangan" ,
+  "topSpendingCategory": "Eng ko'p xarajat qilingan turkum"
+
 
 }

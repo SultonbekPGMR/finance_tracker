@@ -3,6 +3,7 @@
 import 'package:finance_tracker/feature/auth/domain/usecase/get_current_user_usecase.dart';
 import 'package:finance_tracker/feature/auth/domain/usecase/sign_in_usecase.dart';
 import 'package:finance_tracker/feature/auth/domain/usecase/sign_up_usecase.dart';
+import 'package:finance_tracker/feature/chart/domain/usecase/get_chart_data_usecase.dart';
 import 'package:finance_tracker/feature/expense/domain/usecase/get_expenses_usecase.dart';
 import 'package:get_it/get_it.dart';
 
@@ -30,6 +31,7 @@ class UseCaseModule {
     getIt.registerSingleton(DeleteExpenseUseCase(getIt.get(),getIt.get()));
     getIt.registerSingleton(UpdateExpenseUseCase(getIt.get(),getIt.get()));
     getIt.registerSingleton(GetCategoriesUseCase());
+    getIt.registerSingleton(GetChartDataUseCase(getIt(), getIt()));
   }
 }
 

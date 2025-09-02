@@ -14,6 +14,7 @@ import '../../../feature/expense/presentation/bloc/details/expense_details_cubit
 import '../../../feature/expense/presentation/bloc/expenses_bloc.dart';
 import '../../../feature/expense/presentation/screen/expense_details_screen.dart';
 import '../../../feature/expense/presentation/screen/expenses_screen.dart';
+import '../../feature/chart/presentation/screen/chart_screen.dart';
 import '../di/app_di.dart';
 
 class AppRouter {
@@ -111,7 +112,7 @@ class AppRouter {
             GoRoute(
               path: '/home/charts',
               name: 'charts',
-              builder: (context, state) => Container(),
+              builder: (context, state) => ChartScreen(),
             ),
           ],
         ),

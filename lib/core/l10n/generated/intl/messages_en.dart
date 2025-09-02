@@ -26,7 +26,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m2(amount) => "Total Spent: ${amount}";
 
-  static String m3(details) => "Unknown error: ${details}";
+  static String m3(count) => "${count} transactions";
+
+  static String m4(details) => "Unknown error: ${details}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -40,6 +42,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "badRequest": MessageLookupByLibrary.simpleMessage("Invalid request"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "category": MessageLookupByLibrary.simpleMessage("Category"),
+        "categoryBreakdown":
+            MessageLookupByLibrary.simpleMessage("Category Breakdown"),
         "categoryNotFound":
             MessageLookupByLibrary.simpleMessage("Category not found"),
         "charts": MessageLookupByLibrary.simpleMessage("Charts"),
@@ -86,6 +90,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "expenseUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
             "Expense updated successfully"),
         "expenses": MessageLookupByLibrary.simpleMessage("Expenses"),
+        "expensesByCategory":
+            MessageLookupByLibrary.simpleMessage("Expenses by Category"),
         "exportData": MessageLookupByLibrary.simpleMessage("Export Data"),
         "failedToAddExpense":
             MessageLookupByLibrary.simpleMessage("Failed to add expense"),
@@ -156,7 +162,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "selectLanguage":
             MessageLookupByLibrary.simpleMessage("Select Language"),
         "selectMonth": MessageLookupByLibrary.simpleMessage("Select Month"),
+        "selectMonthToView": MessageLookupByLibrary.simpleMessage(
+            "Select a month to view statistics"),
         "selectTheme": MessageLookupByLibrary.simpleMessage("Select Theme"),
+        "selectedCategory":
+            MessageLookupByLibrary.simpleMessage("Currently selected"),
         "serverError":
             MessageLookupByLibrary.simpleMessage("Server error occurred"),
         "setName": MessageLookupByLibrary.simpleMessage("Set Name"),
@@ -175,12 +185,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "today": MessageLookupByLibrary.simpleMessage("Today"),
         "tooManyRequests": MessageLookupByLibrary.simpleMessage(
             "Too many requests. Please try again later"),
+        "topSpendingCategory":
+            MessageLookupByLibrary.simpleMessage("Highest spending category"),
         "totalSpent": m2,
+        "transactionCount": m3,
         "unauthorized":
             MessageLookupByLibrary.simpleMessage("Unauthorized access"),
         "unknownError":
             MessageLookupByLibrary.simpleMessage("An unknown error occurred"),
-        "unknownErrorWithDetails": m3,
+        "unknownErrorWithDetails": m4,
         "updateError":
             MessageLookupByLibrary.simpleMessage("Error updating expense"),
         "updateExpense": MessageLookupByLibrary.simpleMessage("Update Expense"),
