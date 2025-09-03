@@ -4,8 +4,9 @@ import 'package:finance_tracker/core/config/talker.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:finance_tracker/core/util/extension/build_context.dart';
-import '../../navigation/app_router.dart';
-import '../exception/localized_exception.dart';
+
+import '../navigation/app_router.dart';
+import '../util/exception/localized_exception.dart';
 
 class ExceptionLocalizationService {
   /// Get localized message for any exception using global navigator key

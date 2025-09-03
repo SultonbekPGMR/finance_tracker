@@ -2,9 +2,13 @@
 
 import 'package:finance_tracker/core/di/repository_module.dart';
 import 'package:finance_tracker/core/di/usecase_module.dart';
-import 'package:finance_tracker/core/util/service/preferences_service.dart';
+import 'package:finance_tracker/core/service/notificaion/notification_service.dart';
+import 'package:finance_tracker/core/service/notificaion/notification_service_impl.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
 
+import '../config/firebase_options.dart';
+import '../service/preferences_service.dart';
 import 'bloc_module.dart';
 
 final get = GetIt.instance;
@@ -13,9 +17,15 @@ class AppDi {
   AppDi._();
 
   static Future<void> initialize() async {
-   await PreferencesService.init();
+    await Firebase.initializeApp(options: AppFirebaseOptions.currentPlatform);
+    await FirebaseNotificationService().initialize();
+    get.registerSingleton<NotificationService>(FirebaseNotificationService());
+
+    await PreferencesService.init();
     RepositoryModule.initialize(get);
     UseCaseModule.initialize(get);
     BlocModule.initialize(get);
+
+    get<NotificationService>().getToken();
   }
 }

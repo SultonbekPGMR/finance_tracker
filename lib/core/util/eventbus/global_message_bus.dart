@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import '../../config/talker.dart';
-import '../service/exception_localization_service.dart';
+import '../../service/exception_localization_service.dart';
 
 enum MessageType { error, success, warning, info }
 

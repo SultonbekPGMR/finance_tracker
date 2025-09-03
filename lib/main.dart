@@ -1,7 +1,5 @@
 import 'package:finance_tracker/app.dart';
-import 'package:finance_tracker/core/config/firebase_options.dart';
-import 'package:finance_tracker/core/config/talker.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:finance_tracker/core/service/notificaion/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -10,6 +8,12 @@ import 'core/di/app_di.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeUi();
+  await AppDi.initialize();
+  runApp(const App());
+}
+
+Future<void> initializeUi() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
@@ -17,12 +21,5 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  // FlutterError.onError = (expense_details) {
-  // appTalker?.handle(expense_details.exception, expense_details.stack);
-  // };
-  await Firebase.initializeApp(options: AppFirebaseOptions.currentPlatform);
-  await AppDi.initialize();
-  initializeDateFormatting();
-
-  runApp(const App());
+  await initializeDateFormatting();
 }

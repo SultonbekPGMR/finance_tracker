@@ -1,6 +1,8 @@
-import 'package:finance_tracker/core/config/talker.dart';
+import 'package:finance_tracker/core/service/notificaion/notification_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/config/talker.dart';
+import '../../../../core/di/app_di.dart';
 import '../../../auth/data/model/user_model.dart';
 import '../../../auth/domain/repository/auth_repository.dart';
 import '../../data/model/user_preferences.dart';
@@ -69,11 +71,26 @@ class ProfileCubit extends Cubit<ProfileState> {
   void updateNotifications(bool enabled) async {
     final currentState = state;
     if (currentState is! ProfileLoaded) return;
-    appTalker?.debug('updateNotifications: $enabled');
+
+    if (enabled) {
+      final result = await _requestNotificationPermission();
+      appTalker?.debug('Notification permission result: $result');
+      if (result != PermissionResult.granted) {
+        return;
+      }
+    }
+
     await _repository.updateNotificationPreference(enabled);
     final preferences = _repository.getUserPreferences();
     emit(ProfileLoaded(user: currentState.user, preferences: preferences));
   }
+
+  Future<PermissionResult> _requestNotificationPermission() async {
+    return await get<NotificationService>().requestPermission(true);
+  }
+
+  Future<bool> isNotificationEnabled() async =>
+      await get<NotificationService>().areNotificationsEnabled();
 
   Future<void> signOut() async {
     final result = await _authRepository.signOut();

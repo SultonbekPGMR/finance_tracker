@@ -32,6 +32,11 @@ dependencies:
   fl_chart: 1.0.0
   vector_math: 2.1.4
   flutter_multi_formatter: ^2.13.10
+  firebase_messaging: ^16.0.1
+  flutter_local_notifications: ^19.4.1
+  timezone: ^0.10.1
+  flutter_timezone: ^4.1.1
+  app_settings: ^6.1.1
 
 
 dev_dependencies:

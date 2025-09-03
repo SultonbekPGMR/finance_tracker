@@ -1,9 +1,11 @@
 // Created by Sultonbek Tulanov on 31-August 2025
+
 import 'package:finance_tracker/core/util/extension/build_context.dart';
 import 'package:flutter/material.dart';
 
-import '../../config/talker.dart';
-import '../../navigation/app_router.dart';
+import '../config/talker.dart';
+import '../navigation/app_router.dart';
+
 
 class MessageService {
   static final GlobalKey<NavigatorState> navigatorKey = AppRouter.navigatorKey;
