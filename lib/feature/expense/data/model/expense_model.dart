@@ -46,7 +46,7 @@ class ExpenseModel {
     return ExpenseModel(
       id: json['id'] ?? '',
       userId: json['userId'] ?? '',
-      amount: (json['amount'] ?? 0).toDouble(),
+      amount: (json['amount'] ?? 0).toDouble() /100,
       category: json['category'] ?? '',
       description: json['description'] ?? '',
       createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt'] ?? 0),

@@ -18,8 +18,7 @@ class ChartScreen extends StatefulWidget {
 class _ChartScreenState extends State<ChartScreen> {
   final ScrollController _scrollController = ScrollController();
   final ScrollController _monthScrollController = ScrollController();
-  bool _hasScrolledToEnd = false;
-
+  final Map<String, GlobalKey> _monthKeys = {};
 
   @override
   void initState() {
@@ -34,20 +33,33 @@ class _ChartScreenState extends State<ChartScreen> {
     super.dispose();
   }
 
+  String _getMonthKey(DateTime month) {
+    return '${month.year}-${month.month}';
+  }
+
+  GlobalKey _getKeyForMonth(DateTime month) {
+    final monthKey = _getMonthKey(month);
+    if (!_monthKeys.containsKey(monthKey)) {
+      _monthKeys[monthKey] = GlobalKey();
+    }
+    return _monthKeys[monthKey]!;
+  }
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ChartCubit, ChartState>(
       listenWhen: (prev, curr) => curr is ChartLoaded,
       listener: (context, state) {
-        if (state is ChartLoaded && !_hasScrolledToEnd) {
+        if (state is ChartLoaded) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_monthScrollController.hasClients) {
-              _monthScrollController.animateTo(
-                _monthScrollController.position.maxScrollExtent,
+            final globalKey = _getKeyForMonth(state.selectedMonth);
+
+            if (globalKey.currentContext != null) {
+              Scrollable.ensureVisible(
+                globalKey.currentContext!,
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
+                alignment: 0.5,
               );
-              _hasScrolledToEnd = true;
             }
           });
         }
@@ -60,8 +72,8 @@ class _ChartScreenState extends State<ChartScreen> {
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [
                 BlocBuilder<ChartCubit, ChartState>(
-                  buildWhen: (prev, curr) =>
-                  curr is ChartLoaded || curr is ChartError,
+                  buildWhen:
+                      (prev, curr) => curr is ChartLoaded || curr is ChartError,
                   builder: (context, state) {
                     DateTime selectedMonth = DateTime.now();
                     List<DateTime> availableMonths = const <DateTime>[];
@@ -90,9 +102,10 @@ class _ChartScreenState extends State<ChartScreen> {
                               children: [
                                 Text(
                                   selectedMonth.year.toString(),
-                                  style: context.textTheme.titleMedium?.copyWith(
-                                    color: context.colorScheme.onSurface,
-                                  ),
+                                  style: context.textTheme.titleMedium
+                                      ?.copyWith(
+                                        color: context.colorScheme.onSurface,
+                                      ),
                                 ),
                                 Icon(
                                   Icons.keyboard_arrow_down,
@@ -142,17 +155,17 @@ class _ChartScreenState extends State<ChartScreen> {
                                     final month = availableMonths[index];
                                     final isSelected =
                                         month.month == selectedMonth.month &&
-                                            month.year == selectedMonth.year;
-
+                                        month.year == selectedMonth.year;
                                     return Padding(
-                                      padding:
-                                      const EdgeInsets.only(right: 12),
+                                      key: _getKeyForMonth(month),
+                                      padding: const EdgeInsets.only(right: 12),
                                       child: _MonthChip(
                                         month: month,
                                         isSelected: isSelected,
-                                        onTap: () => context
-                                            .read<ChartCubit>()
-                                            .changeMonth(month),
+                                        onTap:
+                                            () => context
+                                                .read<ChartCubit>()
+                                                .changeMonth(month),
                                         colorScheme: context.colorScheme,
                                         textTheme: context.textTheme,
                                       ),
@@ -192,8 +205,8 @@ class _ChartScreenState extends State<ChartScreen> {
                         ),
                         const SizedBox(height: 16),
                         FilledButton(
-                          onPressed: () =>
-                              context.read<ChartCubit>().refreshData(),
+                          onPressed:
+                              () => context.read<ChartCubit>().refreshData(),
                           child: Text(context.l10n.retry),
                         ),
                       ],
@@ -227,19 +240,13 @@ class _ChartScreenState extends State<ChartScreen> {
     );
   }
 
-
-
-
-
   Future<void> _showYearPicker(DateTime currentYear) async {
-
     final selected = await showYearPicker(
       context: context,
       initialDate: currentYear,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
     );
-
 
     if (selected != null && mounted) {
       final onlyYear = DateTime(selected);
@@ -276,24 +283,29 @@ class _MonthChip extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected
-                ? colorScheme.primaryContainer
-                : colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            color:
+                isSelected
+                    ? colorScheme.primaryContainer
+                    : colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.3,
+                    ),
             borderRadius: BorderRadius.circular(16),
-            border: isCurrentMonth && !isSelected
-                ? Border.all(
-              color: colorScheme.primary.withValues(alpha: 0.5),
-              width: 1.5,
-            )
-                : null,
+            border:
+                isCurrentMonth && !isSelected
+                    ? Border.all(
+                      color: colorScheme.primary.withValues(alpha: 0.5),
+                      width: 1.5,
+                    )
+                    : null,
           ),
           child: Center(
             child: Text(
               DateFormat('MMM').format(month),
               style: textTheme.labelLarge?.copyWith(
-                color: isSelected
-                    ? colorScheme.onPrimaryContainer
-                    : colorScheme.onSurface,
+                color:
+                    isSelected
+                        ? colorScheme.onPrimaryContainer
+                        : colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),

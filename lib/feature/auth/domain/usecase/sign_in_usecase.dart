@@ -8,13 +8,13 @@ import '../repository/auth_repository.dart';
 
 class SignInUseCase
     implements UseCase<Future<Result<bool>>, SignInParams> {
-  final AuthRepository authRepository;
+  final AuthRepository _authRepository;
 
-  SignInUseCase(this.authRepository);
+  SignInUseCase(this._authRepository);
 
   @override
   Future<Result<bool>> call(SignInParams params) async {
-    return await authRepository.signIn(params.email, params.password);
+    return await _authRepository.signIn(params.email, params.password);
   }
 
 

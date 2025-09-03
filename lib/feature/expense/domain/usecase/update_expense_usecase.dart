@@ -10,10 +10,10 @@ import '../repository/expense_repository.dart';
 
 class UpdateExpenseUseCase
     implements FutureUseCase<ResultDart<bool, String>, UpdateExpenseParams> {
-  final ExpenseRepository repository;
-  final GetCurrentUserUseCase getCurrentUserUseCase;
+  final ExpenseRepository _repository;
+  final GetCurrentUserUseCase _getCurrentUserUseCase;
 
-  UpdateExpenseUseCase(this.repository, this.getCurrentUserUseCase);
+  UpdateExpenseUseCase(this._repository, this._getCurrentUserUseCase);
 
   @override
   Future<ResultDart<bool, String>> call(UpdateExpenseParams params) async {
@@ -21,7 +21,7 @@ class UpdateExpenseUseCase
       final validationError = _validateParams(params);
       if (validationError != null) return Failure(validationError);
 
-      final currentUser = getCurrentUserUseCase(Nothing());
+      final currentUser = _getCurrentUserUseCase(Nothing());
       if (currentUser == null) return Failure('User not authenticated');
 
       // Verify the expense belongs to the current user
@@ -38,7 +38,7 @@ class UpdateExpenseUseCase
         updatedAt: DateTime.now(),
       );
 
-      await repository.updateExpense(updatedExpense);
+      await _repository.updateExpense(updatedExpense);
       return const Success(true);
     } catch (e) {
       return Failure('Failed to update expense: $e');

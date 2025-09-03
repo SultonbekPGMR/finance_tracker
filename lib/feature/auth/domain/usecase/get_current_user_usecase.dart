@@ -7,13 +7,13 @@ import 'package:finance_tracker/feature/auth/domain/repository/auth_repository.d
 import 'package:firebase_auth/firebase_auth.dart';
 
 class GetCurrentUserUseCase implements UseCase<UserModel?, Nothing> {
-  final AuthRepository authRepository;
+  final AuthRepository _authRepository;
 
-  GetCurrentUserUseCase(this.authRepository);
+  GetCurrentUserUseCase(this._authRepository);
 
   @override
   UserModel? call(Nothing params) {
-    return authRepository.getCurrentUser();
+    return _authRepository.getCurrentUser();
   }
 
 }

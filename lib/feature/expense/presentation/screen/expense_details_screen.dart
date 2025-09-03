@@ -3,11 +3,15 @@ import 'package:finance_tracker/core/util/extension/build_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_multi_formatter/formatters/currency_input_formatter.dart';
+import 'package:flutter_multi_formatter/formatters/formatter_utils.dart';
+import 'package:flutter_multi_formatter/formatters/money_input_enums.dart';
+import 'package:flutter_multi_formatter/formatters/money_input_formatter.dart';
 import 'package:intl/intl.dart';
 
 import '../../data/model/expense_category_model.dart';
 import '../../data/model/expense_model.dart';
-import '../bloc/details/expense_details_cubit.dart';
+import '../bloc/expense_details/expense_details_cubit.dart';
 
 class ExpenseDetailsScreen extends StatefulWidget {
   final ExpenseModel? expense;
@@ -29,8 +33,13 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
   @override
   void initState() {
     if (widget.expense != null) {
-      _amountController.text = widget.expense!.amount.toString();
-      _descriptionController.text = widget.expense!.description;
+      _amountController.text = toCurrencyString(
+        widget.expense!.amount.toString(),
+        thousandSeparator: ThousandSeparator.Comma,
+        mantissaLength: 2,
+        leadingSymbol: '',
+        useSymbolPadding: false,
+      );      _descriptionController.text = widget.expense!.description;
       _selectedCategory = ExpenseCategoryModel.fromString(
         widget.expense!.category,
       );
@@ -64,7 +73,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
 
   ExpenseFormData _extractExpenseData() {
     return ExpenseFormData(
-      amount: double.parse(_amountController.text),
+      amount: double.parse(toNumericString(_amountController.text)),
       category: _selectedCategory!,
       description: _descriptionController.text.trim(),
       date: _selectedDate,
@@ -285,11 +294,15 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                BillionLimitInputFormatter(), // Apply limit first
+                CurrencyInputFormatter(
+                  leadingSymbol: '',
+                  useSymbolPadding: false,
+                  thousandSeparator: ThousandSeparator.Comma,
+                  mantissaLength: 2,
+                ),
               ],
               style: context.textTheme.headlineLarge?.copyWith(
                 color: context.colorScheme.primary,
@@ -313,14 +326,13 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
                 if (value == null || value.isEmpty) {
                   return context.l10n.pleaseEnterAmount;
                 }
-                final amount = double.tryParse(value);
+                final amount = double.tryParse(toNumericString(value));
                 if (amount == null || amount <= 0) {
                   return context.l10n.pleaseEnterValidAmount;
                 }
                 return null;
               },
-            ),
-          ],
+            )         ],
         ),
       ),
     );
@@ -638,4 +650,38 @@ class ExpenseFormData {
     required this.description,
     required this.date,
   });
+}
+
+class BillionLimitInputFormatter extends TextInputFormatter {
+  final double maxValue = 999999999999.99; // 999 billion
+
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    // Allow empty input
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+
+    // Remove all non-numeric characters except decimal point
+    String numericString = newValue.text.replaceAll(RegExp(r'[^\d.]'), '');
+
+    // Check if there are multiple decimal points
+    if (numericString.split('.').length > 2) {
+      return oldValue; // Reject if more than one decimal point
+    }
+
+    // Try to parse the numeric value
+    double? parsedValue = double.tryParse(numericString);
+
+    // If parsing fails or value exceeds limit, reject the input
+    if (parsedValue == null || parsedValue > maxValue) {
+      return oldValue;
+    }
+
+    // If value is valid, allow the change
+    return newValue;
+  }
 }

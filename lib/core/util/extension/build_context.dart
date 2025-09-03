@@ -16,4 +16,12 @@ extension ThemeExtensions on BuildContext {
   double get screenWidth => MediaQuery.of(this).size.width;
 
   double get screenHeight => MediaQuery.of(this).size.height;
+
+  EdgeInsets get padding => MediaQuery.of(this).padding;
+
+  double get statusBarHeight => MediaQuery.of(this).padding.top;
+
+  double get bottomInset => MediaQuery.of(this).padding.bottom;
+
+  double get appBarHeight => kToolbarHeight;
 }

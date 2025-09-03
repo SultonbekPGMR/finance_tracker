@@ -49,7 +49,7 @@ class DateHeaderWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              context.l10n.dayTotal(currencyFormatter.format(121121)),
+              context.l10n.dayTotal(currencyFormatter.format(header.totalAmount)),
               style: context.textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w500,
                 color: context.colorScheme.onSecondaryContainer,

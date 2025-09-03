@@ -3,6 +3,10 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../domain/repository/expense_repository.dart';
@@ -16,136 +20,344 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   ExpenseRepositoryImpl({FirebaseFirestore? firestore})
     : firestore = firestore ?? FirebaseFirestore.instance {
     // Call this method once to update all existing expenses
-    // updateExpensesWithRandomAugustDates();
+    // generateAmericanAverageSpendingLast3Months();
   }
 
   // only for testing
-  Future<void> updateExpensesWithRandomAugustDates() async {
+  Future<void> generateAmericanAverageSpendingLast3Months() async {
     try {
-      final snapshot = await firestore.collection(collection).get();
-      final random = Random();
       final batch = firestore.batch();
+      final random = Random();
 
-      final augustStart = DateTime(2025, 8, 1);
-      final augustEnd = DateTime(2025, 8, 31, 23, 59, 59);
-      final totalDays = augustEnd.difference(augustStart).inDays;
+      // Get last 3 months
+      final now = DateTime.now();
+      final months = [
+        DateTime(now.year, now.month - 2, 1), // 2 months ago
+        DateTime(now.year, now.month - 1, 1), // 1 month ago
+        DateTime(now.year, now.month, 1),     // current month
+      ];
 
-      // Category data with descriptions and amount ranges
-      final categoryData = {
+      // Average American monthly spending by category (in cents for consistency)
+      // Based on Bureau of Labor Statistics Consumer Expenditure Survey
+      final categorySpendingData = {
         'food': {
+          'monthlyAverage': 80000, // $800/month
           'descriptions': [
-            'Dinner at Italian restaurant',
-            'Lunch with colleagues',
-            'Coffee and pastry',
-            'Weekly groceries',
-            'Pizza delivery night',
-            'Breakfast at local cafe',
-            'Sushi dinner date',
-            'Fast food quick meal',
+            'Grocery shopping at Walmart',
+            'Dinner at Olive Garden',
+            'McDonald\'s lunch break',
+            'Starbucks coffee',
+            'Pizza Hut family dinner',
+            'Subway sandwich',
+            'Local deli lunch',
+            'Chipotle burrito bowl',
+            'Kroger weekly groceries',
+            'Panera breakfast',
+            'Taco Bell late night',
+            'Whole Foods organic groceries',
+            'Chick-fil-A drive through',
+            'Restaurant week dinner',
+            'Food truck lunch',
           ],
-          'amounts': [1500, 2500, 800, 12000, 3500, 1200, 4500, 900]
+          'frequency': 45, // transactions per month
         },
         'transport': {
+          'monthlyAverage': 95000, // $950/month
           'descriptions': [
-            'Gas station fill-up',
-            'Uber ride to airport',
-            'Monthly bus pass',
-            'Downtown parking fee',
-            'Taxi ride home',
-            'Car oil change',
-            'Metro card refill',
+            'Shell gas station fill-up',
+            'Uber ride downtown',
+            'Car insurance payment',
+            'Oil change at Jiffy Lube',
+            'Monthly metro card',
+            'Parking meter downtown',
+            'Lyft to airport',
+            'Car wash service',
+            'Toll road fee',
+            'Vehicle registration',
+            'AAA membership renewal',
+            'Tire rotation service',
           ],
-          'amounts': [8000, 4500, 3200, 800, 1500, 7500, 2000]
-        },
-        'entertainment': {
-          'descriptions': [
-            'Movie tickets',
-            'Concert at venue',
-            'Netflix subscription',
-            'Gaming purchase',
-            'Theatre show',
-            'Bowling night',
-            'Museum entry',
-          ],
-          'amounts': [2400, 15000, 1200, 6000, 8500, 3500, 1500]
-        },
-        'shopping': {
-          'descriptions': [
-            'New clothing items',
-            'Electronics purchase',
-            'Home decoration',
-            'Books and magazines',
-            'Gift for friend',
-            'Phone accessories',
-            'Shoes shopping',
-          ],
-          'amounts': [25000, 45000, 18000, 3500, 8000, 4500, 22000]
+          'frequency': 25,
         },
         'utilities': {
+          'monthlyAverage': 32000, // $320/month
           'descriptions': [
-            'Monthly electricity bill',
-            'Internet subscription',
-            'Water bill payment',
-            'Phone plan monthly',
-            'Gas bill for heating',
+            'Electric bill - ConEd',
+            'Verizon phone bill',
+            'Internet - Xfinity',
+            'Gas bill - National Grid',
+            'Water & sewer bill',
             'Trash collection fee',
+            'Cable TV subscription',
+            'Home security system',
           ],
-          'amounts': [15000, 5500, 8500, 4200, 12000, 2500]
+          'frequency': 8,
+        },
+        'entertainment': {
+          'monthlyAverage': 35000, // $350/month
+          'descriptions': [
+            'Netflix subscription',
+            'AMC movie tickets',
+            'Spotify premium',
+            'Concert at local venue',
+            'PlayStation game',
+            'Disney+ subscription',
+            'Bowling night out',
+            'Mini golf weekend',
+            'Museum admission',
+            'Streaming service bundle',
+            'Sports game tickets',
+            'Comedy show tickets',
+          ],
+          'frequency': 18,
+        },
+        'shopping': {
+          'monthlyAverage': 45000, // $450/month
+          'descriptions': [
+            'Amazon online purchase',
+            'Target household items',
+            'Best Buy electronics',
+            'Macy\'s clothing sale',
+            'Home Depot supplies',
+            'Walmart essentials',
+            'Nike shoe purchase',
+            'Apple Store accessories',
+            'CVS pharmacy items',
+            'Barnes & Noble books',
+            'Bed Bath & Beyond',
+            'Old Navy clothing',
+          ],
+          'frequency': 22,
         },
         'health': {
+          'monthlyAverage': 42000, // $420/month
           'descriptions': [
-            'Doctor consultation',
-            'Pharmacy prescription',
-            'Dental checkup',
-            'Gym membership',
-            'Vitamins purchase',
-            'Eye exam',
+            'Health insurance premium',
+            'Doctor copay visit',
+            'Prescription at CVS',
+            'Dental cleaning',
+            'Eye exam appointment',
+            'Gym membership - LA Fitness',
+            'Urgent care visit',
+            'Physical therapy session',
+            'Vitamins at GNC',
+            'Blood test lab work',
           ],
-          'amounts': [12000, 3500, 18000, 8500, 4000, 15000]
+          'frequency': 12,
         },
       };
 
-      final categories = categoryData.keys.toList();
+      int totalTransactions = 0;
 
-      for (final doc in snapshot.docs) {
-        // Random date in August 2025
-        final randomDays = random.nextInt(totalDays + 1);
-        final randomHour = random.nextInt(24);
-        final randomMinute = random.nextInt(60);
+      for (final month in months) {
+        final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
 
-        final randomDate = augustStart.add(
-          Duration(days: randomDays, hours: randomHour, minutes: randomMinute),
-        );
+        for (final categoryEntry in categorySpendingData.entries) {
+          final category = categoryEntry.key;
+          final data = categoryEntry.value;
 
-        // Random category
-        final category = categories[random.nextInt(categories.length)];
-        final data = categoryData[category]!;
+          final monthlyAverage = data['monthlyAverage'] as int;
+          final descriptions = data['descriptions'] as List<String>;
+          final frequency = data['frequency'] as int;
 
-        // Random description and amount from the category
-        final descriptions = data['descriptions'] as List<String>;
-        final amounts = data['amounts'] as List<int>;
-        final randomIndex = random.nextInt(descriptions.length);
+          // Generate realistic spending distribution
+          for (int i = 0; i < frequency; i++) {
+            // Random day in the month
+            final randomDay = random.nextInt(daysInMonth) + 1;
+            final randomHour = random.nextInt(24);
+            final randomMinute = random.nextInt(60);
 
-        final description = descriptions[randomIndex];
-        final amount = amounts[randomIndex];
+            final transactionDate = DateTime(
+                month.year,
+                month.month,
+                randomDay,
+                randomHour,
+                randomMinute
+            );
 
-        batch.update(doc.reference, {
-          'createdAt': randomDate.millisecondsSinceEpoch,
-          'updatedAt': DateTime.now().millisecondsSinceEpoch,
-          'category': category,
-          'description': description,
-          'amount': amount,
-        });
+            // Calculate realistic amount with variation
+            final baseAmount = monthlyAverage / frequency;
+            final variation = baseAmount * 0.4; // 40% variation
+            final minAmount = (baseAmount - variation).round();
+            final maxAmount = (baseAmount + variation).round();
+            final amount = minAmount + random.nextInt(maxAmount - minAmount + 1);
+
+            // Random description from category
+            final description = descriptions[random.nextInt(descriptions.length)];
+
+            // Create expense document
+            final docRef = firestore.collection(collection).doc();
+            batch.set(docRef, {
+              'id': docRef.id,
+              'amount': amount,
+              'category': category,
+              'description': description,
+              'createdAt': transactionDate.millisecondsSinceEpoch,
+              'updatedAt': DateTime.now().millisecondsSinceEpoch,
+              'userId': FirebaseAuth.instance.currentUser?.uid??'demo_user', // Replace with actual user ID
+            });
+
+            totalTransactions++;
+          }
+        }
       }
 
       await batch.commit();
-      print('Updated ${snapshot.docs.length} expenses with realistic August 2025 data');
+
+      print('Generated $totalTransactions realistic American spending transactions for last 3 months');
+      print('Monthly averages:');
+      categorySpendingData.forEach((category, data) {
+        final average = (data['monthlyAverage'] as int) / 100;
+        print('  $category: \$${average.toStringAsFixed(2)}');
+      });
 
     } catch (e) {
-      throw Exception('Failed to update expenses: $e');
+      throw Exception('Failed to generate American spending data: $e');
     }
   }
 
+// Helper method to generate data for specific month if needed
+  Future<void> generateDataForSpecificMonth(DateTime targetMonth) async {
+    try {
+      final batch = firestore.batch();
+      final random = Random();
+
+      // Same category data as above but for single month
+      final categorySpendingData = {
+        'food': {
+          'monthlyAverage': 80000,
+          'descriptions': [
+            'Grocery shopping at Walmart',
+            'Dinner at Olive Garden',
+            'McDonald\'s lunch break',
+            'Starbucks coffee',
+            'Pizza Hut family dinner',
+            'Subway sandwich',
+            'Local deli lunch',
+            'Chipotle burrito bowl',
+            'Kroger weekly groceries',
+            'Panera breakfast',
+          ],
+          'frequency': 45
+        },
+        'transport': {
+          'monthlyAverage': 95000,
+          'descriptions': [
+            'Shell gas station fill-up',
+            'Uber ride downtown',
+            'Car insurance payment',
+            'Oil change at Jiffy Lube',
+            'Monthly metro card',
+            'Parking meter downtown',
+            'Lyft to airport',
+            'Car wash service',
+          ],
+          'frequency': 25
+        },
+        'utilities': {
+          'monthlyAverage': 32000,
+          'descriptions': [
+            'Electric bill - ConEd',
+            'Verizon phone bill',
+            'Internet - Xfinity',
+            'Gas bill - National Grid',
+            'Water & sewer bill',
+            'Trash collection fee',
+          ],
+          'frequency': 8
+        },
+        'entertainment': {
+          'monthlyAverage': 35000,
+          'descriptions': [
+            'Netflix subscription',
+            'AMC movie tickets',
+            'Spotify premium',
+            'Concert at local venue',
+            'PlayStation game',
+            'Disney+ subscription',
+          ],
+          'frequency': 18
+        },
+        'shopping': {
+          'monthlyAverage': 45000,
+          'descriptions': [
+            'Amazon online purchase',
+            'Target household items',
+            'Best Buy electronics',
+            'Macy\'s clothing sale',
+            'Home Depot supplies',
+            'Walmart essentials',
+          ],
+          'frequency': 22
+        },
+        'health': {
+          'monthlyAverage': 42000,
+          'descriptions': [
+            'Health insurance premium',
+            'Doctor copay visit',
+            'Prescription at CVS',
+            'Dental cleaning',
+            'Eye exam appointment',
+            'Gym membership - LA Fitness',
+          ],
+          'frequency': 12
+        },
+      };
+
+      final daysInMonth = DateTime(targetMonth.year, targetMonth.month + 1, 0).day;
+      int monthTransactions = 0;
+
+      for (final categoryEntry in categorySpendingData.entries) {
+        final category = categoryEntry.key;
+        final data = categoryEntry.value;
+
+        final monthlyAverage = data['monthlyAverage'] as int;
+        final descriptions = data['descriptions'] as List<String>;
+        final frequency = data['frequency'] as int;
+
+        for (int i = 0; i < frequency; i++) {
+          final randomDay = random.nextInt(daysInMonth) + 1;
+          final randomHour = random.nextInt(24);
+          final randomMinute = random.nextInt(60);
+
+          final transactionDate = DateTime(
+              targetMonth.year,
+              targetMonth.month,
+              randomDay,
+              randomHour,
+              randomMinute
+          );
+
+          final baseAmount = monthlyAverage / frequency;
+          final variation = baseAmount * 0.4;
+          final minAmount = (baseAmount - variation).round();
+          final maxAmount = (baseAmount + variation).round();
+          final amount = minAmount + random.nextInt(maxAmount - minAmount + 1);
+
+          final description = descriptions[random.nextInt(descriptions.length)];
+
+          final docRef = firestore.collection(collection).doc();
+          batch.set(docRef, {
+            'id': docRef.id,
+            'amount': amount,
+            'category': category,
+            'description': description,
+            'createdAt': transactionDate.millisecondsSinceEpoch,
+            'updatedAt': DateTime.now().millisecondsSinceEpoch,
+            'userId': FirebaseAuth.instance.currentUser?.uid??'demo_user',
+          });
+
+          monthTransactions++;
+        }
+      }
+
+      await batch.commit();
+      print('Generated $monthTransactions transactions for ${targetMonth.month}/${targetMonth.year}');
+
+    } catch (e) {
+      throw Exception('Failed to generate month data: $e');
+    }
+  }
   @override
   Stream<List<ExpenseModel>> getExpensesStream(
     String userId, {
@@ -229,7 +441,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     }on TimeoutException {
       // Safe to ignore: Firestore wrote locally and will sync later.
     } catch (e) {
-      throw Exception('Failed to details expense: $e');
+      throw Exception('Failed to expense_details expense: $e');
     }
   }
 

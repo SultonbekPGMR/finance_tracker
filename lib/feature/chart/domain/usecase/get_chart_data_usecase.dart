@@ -14,41 +14,139 @@ import '../../../expense/domain/repository/expense_repository.dart';
 
 class GetChartDataUseCase
     implements
-        FutureUseCase<Result<List<CategoryExpenseData>>, GetChartDataParams> {
+        StreamUseCase<Result<List<CategoryExpenseData>>, GetChartDataParams> {
   final ExpenseRepository repository;
   final GetCurrentUserUseCase getCurrentUserUseCase;
+
+  // Threshold for grouping small percentages into "Other" category
+  static const double _smallPercentageThreshold =
+      2.0; // Categories below 2% go to "Other"
 
   GetChartDataUseCase(this.repository, this.getCurrentUserUseCase);
 
   @override
-  Future<Result<List<CategoryExpenseData>>> call(
-    GetChartDataParams params,
-  ) async {
+  Stream<Result<List<CategoryExpenseData>>> call(GetChartDataParams params) {
     final currentUser = getCurrentUserUseCase(Nothing());
-    if (currentUser == null) return Failure(UserNotFoundException());
+    if (currentUser == null) {
+      return Stream.value(Failure(UserNotFoundException()));
+    }
 
-    final List<CategoryExpenseData> result = [];
-    final expenses = await repository.getExpenses(
-      currentUser.id,
-      month: params.month,
-    );
-    final grouped = groupBy(expenses, (expense) => expense.category);
-    grouped.forEach((category, items) {
-      appTalker?.debug('msg $category ${items.length}');
-      final totalAmount = items.fold<double>(
+    return repository
+        .getExpensesStream(currentUser.id, month: params.month)
+        .map((expenses) => _processExpenses(expenses))
+        .handleError((error) {
+          appTalker?.error('Error in GetChartDataUseCase: $error');
+          return Failure(Exception('Failed to load chart data'));
+        });
+  }
+
+  Result<List<CategoryExpenseData>> _processExpenses(List<dynamic> expenses) {
+    try {
+      if (expenses.isEmpty) return Success([]);
+
+      final List<CategoryExpenseData> initialResult = [];
+      final grouped = groupBy(expenses, (expense) => expense.category);
+
+      // Calculate total amount for percentage calculation
+      final totalExpenseAmount = expenses.fold<double>(
         0,
-        (previousValue, element) => previousValue + element.amount,
+        (sum, expense) => sum + expense.amount,
       );
-      result.add(
-        CategoryExpenseData(
-          category: ExpenseCategoryModel.fromString(category),
-          totalAmount: totalAmount,
-          transactionCount: items.length,
-        ),
+
+      // Process each category
+      grouped.forEach((category, items) {
+        appTalker?.debug(
+          'Processing category: $category with ${items.length} items',
+        );
+        final totalAmount = items.fold<double>(
+          0,
+          (previousValue, element) => previousValue + element.amount,
+        );
+
+        initialResult.add(
+          CategoryExpenseData(
+            category: ExpenseCategoryModel.fromString(category),
+            totalAmount: totalAmount,
+            transactionCount: items.length,
+          ),
+        );
+      });
+
+      // Group small percentages into "Other" category
+      // final processedResult = _groupSmallCategories(initialResult, totalExpenseAmount); // Uncomment this line if you want to group small percentages
+
+
+      initialResult.sort(
+            (a, b) => b.totalAmount.compareTo(a.totalAmount),
       );
-    });
-    appTalker?.debug(result.toString());
-    return Success(result);
+
+      final processedResult = initialResult;
+
+      appTalker?.debug(
+        'Final chart data: ${processedResult.length} categories',
+      );
+      return Success(processedResult);
+    } catch (error) {
+      appTalker?.error('Error processing expenses: $error');
+      return Failure(Exception('Failed to process expense data'));
+    }
+  }
+
+  List<CategoryExpenseData> _groupSmallCategories(
+    List<CategoryExpenseData> categories,
+    double totalAmount,
+  ) {
+    if (totalAmount == 0) return categories;
+
+    final List<CategoryExpenseData> significantCategories = [];
+    final List<CategoryExpenseData> smallCategories = [];
+
+    // Separate categories based on percentage threshold
+    for (final category in categories) {
+      final percentage = (category.totalAmount / totalAmount) * 100;
+
+      if (percentage >= _smallPercentageThreshold) {
+        significantCategories.add(category);
+      } else {
+        smallCategories.add(category);
+        appTalker?.debug(
+          'Small category: ${category.category.name} - ${percentage.toStringAsFixed(1)}%',
+        );
+      }
+    }
+
+    // If there are small categories, group them into "Other"
+    if (smallCategories.isNotEmpty) {
+      final otherTotalAmount = smallCategories.fold<double>(
+        0,
+        (sum, category) => sum + category.totalAmount,
+      );
+
+      final otherTransactionCount = smallCategories.fold<int>(
+        0,
+        (sum, category) => sum + category.transactionCount,
+      );
+
+      final otherCategory = CategoryExpenseData(
+        category: ExpenseCategoryModel.fromString('Other'),
+        totalAmount: otherTotalAmount,
+        transactionCount: otherTransactionCount,
+      );
+
+      significantCategories.add(otherCategory);
+
+      appTalker?.debug(
+        'Created Other category with ${smallCategories.length} merged categories: '
+        '${(otherTotalAmount / totalAmount * 100).toStringAsFixed(1)}%',
+      );
+    }
+
+    // Sort by amount descending for better chart appearance
+    significantCategories.sort(
+      (a, b) => b.totalAmount.compareTo(a.totalAmount),
+    );
+
+    return significantCategories;
   }
 }
 

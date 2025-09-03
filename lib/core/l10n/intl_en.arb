@@ -118,6 +118,15 @@
   "transactionCount": "{count} transactions",
   "selectMonthToView": "Select a month to view statistics",
   "selectedCategory": "Currently selected",
-  "topSpendingCategory": "Highest spending category"
+  "topSpendingCategory": "Highest spending category",
+  "dailyExpensesTrend": "Daily Expenses Trend",
+  "categoryComparison": "Category Comparison",
+  "swipeToViewCharts": "Swipe to view different charts",
+  "spendingProgress": "Spending Progress",
+  "monthlyHeatmap": "Monthly Spending Pattern",
+  "dailyAverage": "Daily Avg",
+  "highestDay": "Highest Day",
+  "lightSpending": "Light",
+  "heavySpending": "Heavy"
 
 }

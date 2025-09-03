@@ -7,17 +7,17 @@ import '../../data/model/expense_model.dart';
 import '../repository/expense_repository.dart';
 
 class GetExpensesStreamUseCase implements StreamUseCase<List<ExpenseModel>, GetExpensesParams> {
-  final ExpenseRepository repository;
-  final GetCurrentUserUseCase getCurrentUserUseCase;
+  final ExpenseRepository _repository;
+  final GetCurrentUserUseCase _getCurrentUserUseCase;
 
-  GetExpensesStreamUseCase(this.repository, this.getCurrentUserUseCase);
+  GetExpensesStreamUseCase(this._repository, this._getCurrentUserUseCase);
 
   @override
   Stream<List<ExpenseModel>> call(GetExpensesParams params) {
-    final currentUser = getCurrentUserUseCase(Nothing());
+    final currentUser = _getCurrentUserUseCase(Nothing());
     if (currentUser == null) return Stream.error('User not authenticated');
 
-    return repository.getExpensesStream(currentUser.id,month: params.month);
+    return _repository.getExpensesStream(currentUser.id,month: params.month);
   }
 }
 

@@ -9,16 +9,16 @@ import '../repository/expense_repository.dart';
 
 class GetExpensesUseCase
     implements FutureUseCase<ResultDart<List<ExpenseModel>, String>, Nothing> {
-  final ExpenseRepository repository;
+  final ExpenseRepository _repository;
   final GetCurrentUserUseCase getCurrentUserUseCase;
 
-  GetExpensesUseCase(this.repository, this.getCurrentUserUseCase);
+  GetExpensesUseCase(this._repository, this.getCurrentUserUseCase);
 
   @override
   Future<ResultDart<List<ExpenseModel>, String>> call(Nothing params) async {
     final currentUser = getCurrentUserUseCase(Nothing());
     if (currentUser == null) return Failure('User not authenticated');
-    final expenses = await repository.getExpenses(currentUser.id);
+    final expenses = await _repository.getExpenses(currentUser.id);
     return Success(expenses);
   }
 }

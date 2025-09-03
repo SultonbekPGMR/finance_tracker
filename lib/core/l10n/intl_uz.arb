@@ -119,7 +119,14 @@
   "transactionCount": "{count} ta tranzaksiya",
   "selectMonthToView": "Statistikani ko'rish uchun oyni tanlang",
   "selectedCategory": "Hozir tanlangan" ,
-  "topSpendingCategory": "Eng ko'p xarajat qilingan turkum"
-
-
+  "topSpendingCategory": "Eng ko'p sarflangan turkum",
+  "dailyExpensesTrend": "Kunlik xarajatlar tendentsiyasi",
+  "categoryComparison": "Turkumlarni taqqoslash",
+  "swipeToViewCharts": "Turli diagrammalarni ko'rish uchun suring",
+  "spendingProgress": "Xarajatlar grafigi",
+  "monthlyHeatmap": "Oylik xarajatlar xaritasi",
+  "dailyAverage": "Kunlik O'rtacha",
+  "highestDay": "Eng Yuqori Kun",
+  "lightSpending": "Kam",
+  "heavySpending": "Ko'p"
 }

@@ -1,6 +1,8 @@
 // Created by Sultonbek Tulanov on 31-August 2025
 import 'package:finance_tracker/feature/auth/presentation/screen/register_screen.dart';
 import 'package:finance_tracker/feature/chart/presentation/bloc/chart_cubit.dart';
+import 'package:finance_tracker/feature/expense/presentation/bloc/filtered_expenses/filtered_expenses_cubit.dart';
+import 'package:finance_tracker/feature/expense/presentation/screen/expenses_by_filter_screen.dart';
 import 'package:finance_tracker/feature/home/presentation/home_screen.dart';
 import 'package:finance_tracker/feature/profile/presentation/screen/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +12,12 @@ import 'package:go_router/go_router.dart';
 import '../../../feature/auth/presentation/screen/login_screen.dart';
 import '../../../feature/auth/presentation/screen/splash_screen.dart';
 import '../../../feature/expense/data/model/expense_model.dart';
-import '../../../feature/expense/presentation/bloc/details/expense_details_cubit.dart';
 import '../../../feature/expense/presentation/bloc/expenses_bloc.dart';
 import '../../../feature/expense/presentation/screen/expense_details_screen.dart';
 import '../../../feature/expense/presentation/screen/expenses_screen.dart';
 import '../../feature/chart/presentation/screen/chart_screen.dart';
+import '../../feature/expense/data/model/expense_category_model.dart';
+import '../../feature/expense/presentation/bloc/expense_details/expense_details_cubit.dart';
 import '../di/app_di.dart';
 
 class AppRouter {
@@ -69,7 +72,7 @@ class AppRouter {
       ],
     ),
     GoRoute(
-      path: '/home/add-expense',
+      path: '/add-expense',
       name: 'add-expense',
       builder:
           (context, state) => BlocProvider.value(
@@ -78,7 +81,30 @@ class AppRouter {
           ),
     ),
     GoRoute(
-      path: '/home/update-expense',
+      path: '/expenses-by-filter',
+      name: 'expenses-by-filter',
+      builder: (context, state) {
+        final data = state.extra as Map<String, dynamic>;
+        final month = data['month'] as DateTime;
+        final category = data['category'] as ExpenseCategoryModel;
+
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider.value(
+              value:
+                  get<FilteredExpensesCubit>()..loadExpenses(month, category),
+            ),
+            BlocProvider(create: (context) => get<ExpensesBloc>()),
+          ],
+          child: ExpensesByFilterScreen(
+            selectedMonth: month,
+            selectedCategory: category,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/update-expense',
       name: 'update-expense',
       builder: (context, state) {
         final expense = state.extra as ExpenseModel;

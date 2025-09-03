@@ -10,10 +10,10 @@ import '../repository/expense_repository.dart';
 
 class AddExpenseUseCase
     implements FutureUseCase<ResultDart<bool, String>, AddExpenseParams> {
-  final ExpenseRepository repository;
-  final GetCurrentUserUseCase getCurrentUserUseCase;
+  final ExpenseRepository _repository;
+  final GetCurrentUserUseCase _getCurrentUserUseCase;
 
-  AddExpenseUseCase(this.repository, this.getCurrentUserUseCase);
+  AddExpenseUseCase(this._repository, this._getCurrentUserUseCase);
 
   @override
   Future<ResultDart<bool, String>> call(AddExpenseParams params) async {
@@ -21,7 +21,7 @@ class AddExpenseUseCase
       final validationError = _validateParams(params);
       if (validationError != null) return Failure(validationError);
 
-      final currentUser = getCurrentUserUseCase(Nothing());
+      final currentUser = _getCurrentUserUseCase(Nothing());
       if (currentUser == null) return Failure('User not authenticated');
 
       final expense = ExpenseModel.create(
@@ -33,10 +33,10 @@ class AddExpenseUseCase
         imageUrl: params.imageUrl,
       );
 
-      await repository.addExpense(expense);
+      await _repository.addExpense(expense);
       return const Success(true);
     } catch (e) {
-      return Failure('Failed to details expense: $e');
+      return Failure('Failed to expense_details expense: $e');
     }
   }
 

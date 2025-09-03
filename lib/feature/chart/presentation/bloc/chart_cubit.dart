@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/model/category_expense_data.dart';
@@ -7,14 +9,17 @@ part 'chart_state.dart';
 
 class ChartCubit extends Cubit<ChartState> {
   final GetChartDataUseCase _getChartDataUseCase;
+  StreamSubscription? _chartDataSubscription;
+  DateTime? _currentMonth;
+  final _now = DateTime.now();
+
 
   ChartCubit(this._getChartDataUseCase) : super(ChartInitial());
 
   List<DateTime> _getMonthsOfYear(DateTime year) {
-    final now = DateTime.now();
     final months = <DateTime>[];
 
-    final maxMonth = (year.year == now.year) ? now.month : 12;
+    final maxMonth = (year.year == _now.year) ? _now.month : 12;
 
     for (int i = 1; i <= maxMonth; i++) {
       months.add(DateTime(year.year, i, 1));
@@ -23,52 +28,80 @@ class ChartCubit extends Cubit<ChartState> {
     return months;
   }
 
-  Future<void> loadChartData(DateTime month) async {
-    
+  void loadChartData(DateTime month) {
+    // Cancel previous subscription to avoid memory leaks
+    _chartDataSubscription?.cancel();
+    _currentMonth = month;
+
     emit(ChartLoading());
 
     try {
-      final result = await _getChartDataUseCase(
+      final chartDataStream = _getChartDataUseCase(
         GetChartDataParams(month: month),
       );
 
-      final months = _getMonthsOfYear(month);
-
-      result.fold(
-            (success) => emit(
-          ChartLoaded(
-            chartData: success,
-            selectedMonth: month,
-            availableMonths: months,
-          ),
-        ),
-            (failure) => emit(
-          ChartError(
-            exception: failure,
-            selectedMonth: month,
-            availableMonths: months,
-          ),
-        ),
+      _chartDataSubscription = chartDataStream.listen(
+        (result) {
+          // Only emit if we're still interested in this month's data
+          if (_currentMonth == month && !isClosed) {
+            final months = _getMonthsOfYear(month);
+            result
+                .onSuccess(
+                  (success) => emit(
+                    ChartLoaded(
+                      chartData: success,
+                      selectedMonth: month,
+                      availableMonths: months,
+                    ),
+                  ),
+                )
+                .onFailure((failure) {
+                  emit(
+                    ChartError(
+                      exception: failure,
+                      selectedMonth: month,
+                      availableMonths: months,
+                    ),
+                  );
+                });
+          }
+        },
+        onError: (error) {
+          // Only emit error if we're still interested in this month's data
+          if (_currentMonth == month && !isClosed) {
+            final exception =
+                error is Exception ? error : Exception(error.toString());
+            final months = _getMonthsOfYear(month);
+            emit(
+              ChartError(
+                exception: exception,
+                selectedMonth: month,
+                availableMonths: months,
+              ),
+            );
+          }
+        },
       );
     } catch (e) {
       final exception = e is Exception ? e : Exception(e.toString());
       final months = _getMonthsOfYear(month);
-      emit(ChartError(
-        exception: exception,
-        selectedMonth: month,
-        availableMonths: months,
-      ));
+      emit(
+        ChartError(
+          exception: exception,
+          selectedMonth: month,
+          availableMonths: months,
+        ),
+      );
     }
   }
 
   void changeYear(DateTime onlyYear) {
     final months = _getMonthsOfYear(onlyYear);
-    final firstMonth = months.first;
+    final firstMonth = _now.year == onlyYear.year ? _now : months.first;
     loadChartData(firstMonth);
   }
 
-
-  Future<void> refreshData() async {
+  void refreshData() {
     final currentState = state;
     DateTime monthToRefresh = DateTime.now();
 
@@ -78,16 +111,21 @@ class ChartCubit extends Cubit<ChartState> {
       monthToRefresh = currentState.selectedMonth;
     }
 
-    await loadChartData(monthToRefresh);
+    loadChartData(monthToRefresh);
   }
 
-  Future<void> changeMonth(DateTime newMonth) async {
-    await loadChartData(newMonth);
+  void changeMonth(DateTime newMonth) {
+    loadChartData(newMonth);
   }
 
-  Future<void> loadCurrentMonthData() async {
-    await loadChartData(DateTime.now());
+  void loadCurrentMonthData() {
+    loadChartData(DateTime.now());
   }
 
-
+  @override
+  Future<void> close() {
+    // Clean up subscription to prevent memory leaks
+    _chartDataSubscription?.cancel();
+    return super.close();
+  }
 }

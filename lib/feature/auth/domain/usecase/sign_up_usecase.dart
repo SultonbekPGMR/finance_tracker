@@ -6,13 +6,13 @@ import 'package:result_dart/result_dart.dart';
 import '../repository/auth_repository.dart';
 
 class SignUpUseCase implements UseCase<Future<Result<bool>>, SignUpParams> {
-  final AuthRepository authRepository;
+  final AuthRepository _authRepository;
 
-  SignUpUseCase(this.authRepository);
+  SignUpUseCase(this._authRepository);
 
   @override
   Future<Result<bool>> call(SignUpParams params) async {
-    return await authRepository.signUp(params.email, params.password);
+    return await _authRepository.signUp(params.email, params.password);
   }
 }
 

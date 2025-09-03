@@ -8,10 +8,10 @@ import '../repository/expense_repository.dart';
 
 class DeleteExpenseUseCase
     implements FutureUseCase<ResultDart<bool, String>, DeleteExpenseParams> {
-  final ExpenseRepository repository;
-  final GetCurrentUserUseCase getCurrentUserUseCase;
+  final ExpenseRepository _repository;
+  final GetCurrentUserUseCase _getCurrentUserUseCase;
 
-  DeleteExpenseUseCase(this.repository, this.getCurrentUserUseCase);
+  DeleteExpenseUseCase(this._repository, this._getCurrentUserUseCase);
 
   @override
   Future<ResultDart<bool, String>> call(DeleteExpenseParams params) async {
@@ -20,12 +20,12 @@ class DeleteExpenseUseCase
         return const Failure('Expense ID is required');
       }
 
-      final currentUser = getCurrentUserUseCase(Nothing());
+      final currentUser = _getCurrentUserUseCase(Nothing());
       if (currentUser == null) return Failure('User not authenticated');
 
       // Verify the expense belongs to the current user before deletion
       // You can skip this if you want faster deletion without extra query
-      final expenses = await repository.getExpenses(currentUser.id);
+      final expenses = await _repository.getExpenses(currentUser.id);
       final expenseToDelete =
           expenses.where((e) => e.id == params.expenseId).firstOrNull;
 
@@ -37,7 +37,7 @@ class DeleteExpenseUseCase
         return const Failure('Unauthorized to delete this expense');
       }
 
-      await repository.deleteExpense(params.expenseId);
+      await _repository.deleteExpense(params.expenseId);
       return const Success(true);
     } catch (e) {
       return Failure('Failed to delete expense: $e');

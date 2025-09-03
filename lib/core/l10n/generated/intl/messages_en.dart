@@ -44,6 +44,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "category": MessageLookupByLibrary.simpleMessage("Category"),
         "categoryBreakdown":
             MessageLookupByLibrary.simpleMessage("Category Breakdown"),
+        "categoryComparison":
+            MessageLookupByLibrary.simpleMessage("Category Comparison"),
         "categoryNotFound":
             MessageLookupByLibrary.simpleMessage("Category not found"),
         "charts": MessageLookupByLibrary.simpleMessage("Charts"),
@@ -53,6 +55,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Connection timeout"),
         "createAccount": MessageLookupByLibrary.simpleMessage("Create Account"),
         "currency": MessageLookupByLibrary.simpleMessage("Currency"),
+        "dailyAverage": MessageLookupByLibrary.simpleMessage("Daily Avg"),
+        "dailyExpensesTrend":
+            MessageLookupByLibrary.simpleMessage("Daily Expenses Trend"),
         "dark": MessageLookupByLibrary.simpleMessage("Dark"),
         "dataFormatError":
             MessageLookupByLibrary.simpleMessage("Data format error"),
@@ -100,6 +105,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "forbidden": MessageLookupByLibrary.simpleMessage("Access forbidden"),
         "haveAccount":
             MessageLookupByLibrary.simpleMessage("Do you have an account?"),
+        "heavySpending": MessageLookupByLibrary.simpleMessage("Heavy"),
+        "highestDay": MessageLookupByLibrary.simpleMessage("Highest Day"),
         "income": MessageLookupByLibrary.simpleMessage("Income"),
         "info": MessageLookupByLibrary.simpleMessage("Info"),
         "invalidAmountWithValue": m1,
@@ -111,10 +118,13 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Wrong password"),
         "language": MessageLookupByLibrary.simpleMessage("Language"),
         "light": MessageLookupByLibrary.simpleMessage("Light"),
+        "lightSpending": MessageLookupByLibrary.simpleMessage("Light"),
         "loadingExpenses":
             MessageLookupByLibrary.simpleMessage("Loading expenses..."),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "moneyTracker": MessageLookupByLibrary.simpleMessage("Money Tracker"),
+        "monthlyHeatmap":
+            MessageLookupByLibrary.simpleMessage("Monthly Spending Pattern"),
         "networkError":
             MessageLookupByLibrary.simpleMessage("Network error occurred"),
         "noDescription": MessageLookupByLibrary.simpleMessage("No description"),
@@ -175,11 +185,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "signOutConfirmation": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to sign out?"),
         "signUp": MessageLookupByLibrary.simpleMessage("Sign Up"),
+        "spendingProgress":
+            MessageLookupByLibrary.simpleMessage("Spending Progress"),
         "startAddingExpenses": MessageLookupByLibrary.simpleMessage(
             "Start by adding your first expense"),
         "storageError":
             MessageLookupByLibrary.simpleMessage("Storage error occurred"),
         "success": MessageLookupByLibrary.simpleMessage("Success"),
+        "swipeToViewCharts": MessageLookupByLibrary.simpleMessage(
+            "Swipe to view different charts"),
         "system": MessageLookupByLibrary.simpleMessage("System"),
         "theme": MessageLookupByLibrary.simpleMessage("Theme"),
         "today": MessageLookupByLibrary.simpleMessage("Today"),
