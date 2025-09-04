@@ -136,5 +136,21 @@
   "forgotPasswordMessage": "Elektron pochta manzilingizni kiriting va biz sizga parolni tiklash havolasini yuboramiz",
   "emailRequired": "Elektron pochta talab qilinadi",
   "invalidEmail": "Iltimos, haqiqiy elektron pochta manzilini kiriting",
-  "sendResetLink": "Tiklash havolasini yuborish"
+  "sendResetLink": "Tiklash havolasini yuborish",
+  "pieChart": "Dumaloq",
+  "barChart": "Ustunli",
+  "lineChart": "Chiziqli Diagramma",
+  "trendChart": "Trend Diagrammasi",
+  "quickStats": "Tezkor Statistikalar",
+  "avgPerTransaction": "Har bir tranzaksiya uchun o'rtacha",
+  "highestCategory": "Eng yuqori turkum",
+  "lowestCategory": "Eng past turkum",
+  "sortBy": "Saralash",
+  "sortByAmount": "Miqdor bo'yicha",
+  "sortByCount": "Soni bo'yicha",
+  "sortByName": "Nom bo'yicha",
+  "filterCategories": "Turkumlarni filtrlash",
+  "showAll": "Hammasini ko'rsatish",
+  "showTop5": "Top 5",
+  "showTop10": "Top 10"
 }

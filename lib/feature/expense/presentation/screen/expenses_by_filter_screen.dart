@@ -23,7 +23,6 @@ class ExpensesByFilterScreen extends StatefulWidget {
   @override
   State<ExpensesByFilterScreen> createState() => _ExpensesByFilterScreenState();
 }
-
 class _ExpensesByFilterScreenState extends State<ExpensesByFilterScreen> {
   late ScrollController _scrollController;
 

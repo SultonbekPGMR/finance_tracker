@@ -104,8 +104,8 @@ class _ChartScreenState extends State<ChartScreen> {
                                   selectedMonth.year.toString(),
                                   style: context.textTheme.titleMedium
                                       ?.copyWith(
-                                        color: context.colorScheme.onSurface,
-                                      ),
+                                    color: context.colorScheme.onSurface,
+                                  ),
                                 ),
                                 Icon(
                                   Icons.keyboard_arrow_down,
@@ -155,7 +155,7 @@ class _ChartScreenState extends State<ChartScreen> {
                                     final month = availableMonths[index];
                                     final isSelected =
                                         month.month == selectedMonth.month &&
-                                        month.year == selectedMonth.year;
+                                            month.year == selectedMonth.year;
                                     return Padding(
                                       key: _getKeyForMonth(month),
                                       padding: const EdgeInsets.only(right: 12),
@@ -164,8 +164,8 @@ class _ChartScreenState extends State<ChartScreen> {
                                         isSelected: isSelected,
                                         onTap:
                                             () => context
-                                                .read<ChartCubit>()
-                                                .changeMonth(month),
+                                            .read<ChartCubit>()
+                                            .changeMonth(month),
                                         colorScheme: context.colorScheme,
                                         textTheme: context.textTheme,
                                       ),
@@ -284,28 +284,28 @@ class _MonthChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color:
-                isSelected
-                    ? colorScheme.primaryContainer
-                    : colorScheme.surfaceContainerHighest.withValues(
-                      alpha: 0.3,
-                    ),
+            isSelected
+                ? colorScheme.primaryContainer
+                : colorScheme.surfaceContainerHighest.withValues(
+              alpha: 0.3,
+            ),
             borderRadius: BorderRadius.circular(16),
             border:
-                isCurrentMonth && !isSelected
-                    ? Border.all(
-                      color: colorScheme.primary.withValues(alpha: 0.5),
-                      width: 1.5,
-                    )
-                    : null,
+            isCurrentMonth && !isSelected
+                ? Border.all(
+              color: colorScheme.primary.withValues(alpha: 0.5),
+              width: 1.5,
+            )
+                : null,
           ),
           child: Center(
             child: Text(
               DateFormat('MMM').format(month),
               style: textTheme.labelLarge?.copyWith(
                 color:
-                    isSelected
-                        ? colorScheme.onPrimaryContainer
-                        : colorScheme.onSurface,
+                isSelected
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),

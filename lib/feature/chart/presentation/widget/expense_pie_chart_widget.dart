@@ -1,4 +1,4 @@
-// Created by Sultonbek Tulanov on 02-September 2025
+// Updated: lib/feature/chart/presentation/widget/expense_pie_chart_widget.dart
 import 'dart:math' as math;
 
 import 'package:finance_tracker/core/util/extension/build_context.dart';
@@ -10,7 +10,10 @@ import 'package:intl/intl.dart';
 import '../../../expense/data/model/expense_category_model.dart';
 import '../../data/model/category_expense_data.dart';
 
+enum ChartDisplayType { pie, bar }
+
 class ExpensePieChartWidget extends StatefulWidget {
+
   final List<CategoryExpenseData>? categoryExpenseDataList;
   final DateTime selectedMonth;
 
@@ -26,14 +29,20 @@ class ExpensePieChartWidget extends StatefulWidget {
 
 class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget>
     with TickerProviderStateMixin {
+  static  ChartDisplayType _persistentChartType = ChartDisplayType.pie;
   int touchedIndex = -1;
   bool _isUserInteracting = false;
+  ChartDisplayType _currentChartType = ChartDisplayType.pie;
+
   late AnimationController _progressController;
   late AnimationController _donutController;
+  late AnimationController _chartSwitchController;
+  late Animation<double> _chartSwitchAnimation;
 
   @override
   void initState() {
     super.initState();
+    _currentChartType = _persistentChartType;
     _progressController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -42,15 +51,26 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
+    _chartSwitchController = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+
+    _chartSwitchAnimation = CurvedAnimation(
+      parent: _chartSwitchController,
+      curve: Curves.easeInOutCubic,
+    );
 
     _donutController.forward();
     _progressController.forward();
+    _chartSwitchController.forward();
   }
 
   @override
   void dispose() {
     _progressController.dispose();
     _donutController.dispose();
+    _chartSwitchController.dispose();
     super.dispose();
   }
 
@@ -102,19 +122,20 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget>
       touchedIndex = index;
       _isUserInteracting = true;
     });
-
-
-    // Auto-clear selection after 3 seconds
-    // Future.delayed(const Duration(milliseconds: 1000), () {
-    //   if (mounted && touchedIndex == index) {
-    //     setState(() {
-    //       touchedIndex = -1;
-    //       _isUserInteracting = false;
-    //     });
-    //   }
-    // });
   }
 
+  void _switchChartType(ChartDisplayType newType) {
+    if (_currentChartType == newType) return;
+
+    _chartSwitchController.reset();
+    setState(() {
+      _currentChartType = newType;
+      _persistentChartType = newType;
+      touchedIndex = -1;
+      _isUserInteracting = false;
+    });
+    _chartSwitchController.forward();
+  }
   @override
   Widget build(BuildContext context) {
     final currencyFormatter = NumberFormat.currency(symbol: '\$');
@@ -123,15 +144,111 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildHeader(currencyFormatter),
+        const SizedBox(height: 24),
+        if (categoryData.isNotEmpty) _buildChartTypeSelector(),
         const SizedBox(height: 32),
         if (categoryData.isEmpty)
           buildEmptyBox(context)
         else ...[
-          _buildDonutChart(),
+          _buildChartContainer(),
           const SizedBox(height: 28),
           _buildProgressRingsList(currencyFormatter),
         ],
       ],
+    );
+  }
+
+  Widget _buildChartTypeSelector() {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: context.colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: context.colorScheme.shadow.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: ChartDisplayType.values.asMap().entries.map((entry) {
+            final index = entry.key;
+            final type = entry.value;
+            final isSelected = _currentChartType == type;
+            final isLast = index == ChartDisplayType.values.length - 1;
+
+            return GestureDetector(
+              onTap: () => _switchChartType(type),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 100),
+                curve: Curves.easeInOutCubic,
+                margin: EdgeInsets.only(right: isLast ? 0 : 4),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? context.colorScheme.primary
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: isSelected
+                      ? [
+                    BoxShadow(
+                      color: context.colorScheme.primary.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                      : null,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      type == ChartDisplayType.pie
+                          ? Icons.donut_large_rounded
+                          : Icons.bar_chart_rounded,
+                      size: 18,
+                      color: isSelected
+                          ? context.colorScheme.onPrimary
+                          : context.colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      type == ChartDisplayType.pie ? context.l10n.pieChart : context.l10n.barChart,
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: isSelected
+                            ? context.colorScheme.onPrimary
+                            : context.colorScheme.onSurface.withValues(alpha: 0.7),
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+  Widget _buildChartContainer() {
+    return AnimatedBuilder(
+      animation: _chartSwitchAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: 0.9 + (0.1 * _chartSwitchAnimation.value),
+          child: Opacity(
+            opacity: _chartSwitchAnimation.value,
+            child:
+                _currentChartType == ChartDisplayType.pie
+                    ? _buildDonutChart()
+                    : _buildBarChart(),
+          ),
+        );
+      },
     );
   }
 
@@ -288,6 +405,175 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget>
     );
   }
 
+  Widget _buildBarChart() {
+    final maxAmount = categoryData
+        .map((e) => e.totalAmount)
+        .fold(0.0, (a, b) => math.max(a, b));
+
+    return Container(
+      height: context.screenWidth / 1.5,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: context.colorScheme.outline.withValues(alpha: 0.1),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: context.colorScheme.shadow.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: BarChart(
+        BarChartData(
+          alignment: BarChartAlignment.spaceEvenly,
+          maxY: maxAmount * 1.1,
+          barTouchData: BarTouchData(
+            enabled: true,
+            touchTooltipData: BarTouchTooltipData(
+              getTooltipColor: (group) => context.colorScheme.primary.withValues(alpha: 0.7),
+              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                final category = categoryData[group.x.toInt()];
+                final currencyFormatter = NumberFormat.currency(symbol: '\$');
+                return BarTooltipItem(
+                  '${category.category.displayName}\n${currencyFormatter.format(rod.toY)}',
+                  TextStyle(
+                    color: context.colorScheme.onInverseSurface,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                );
+              },
+            ),
+            touchCallback: (FlTouchEvent event, barTouchResponse) {
+              if (barTouchResponse?.spot?.touchedBarGroupIndex != null) {
+                setState(() {
+                  touchedIndex = barTouchResponse!.spot!.touchedBarGroupIndex;
+                  _isUserInteracting = true;
+                });
+              }
+            },
+          ),
+          titlesData: FlTitlesData(
+            show: true,
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 70,
+                getTitlesWidget: (value, meta) {
+                  if (value.toInt() < categoryData.length) {
+                    final category = categoryData[value.toInt()];
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            category.category.icon,
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                          const SizedBox(height: 4),
+                          Transform.rotate(
+                            angle: -0.4,
+                            child: Text(
+                              category.category.displayName.split(' ').first,
+                              style: context.textTheme.bodySmall?.copyWith(
+                                color: context.colorScheme.onSurface.withValues(
+                                  alpha: 0.6,
+                                ),
+                                fontSize: 9,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return const SizedBox();
+                },
+              ),
+            ),
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 70,
+                interval: maxAmount / 4, // Add this line
+                getTitlesWidget: (value, meta) {
+                  final currencyFormatter = NumberFormat.currency(
+                    symbol: '\$',
+                    decimalDigits: 0,
+                  );
+                  return Text(
+                    currencyFormatter.format(value),
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.colorScheme.onSurface.withValues(
+                        alpha: 0.6,
+                      ),
+                      fontSize: 10,
+                    ),
+                  );
+                },
+              ),
+            ),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+          ),
+          borderData: FlBorderData(show: false),
+          gridData: FlGridData(
+            show: true,
+            drawVerticalLine: false,
+            horizontalInterval: maxAmount / 4,
+            getDrawingHorizontalLine: (value) {
+              return FlLine(
+                color: context.colorScheme.outline.withValues(alpha: 0.1),
+                strokeWidth: 1,
+              );
+            },
+          ),
+          barGroups:
+              categoryData.asMap().entries.map((entry) {
+                final index = entry.key;
+                final data = entry.value;
+                final isTouched = index == touchedIndex;
+
+                return BarChartGroupData(
+                  x: index,
+                  barRods: [
+                    BarChartRodData(
+                      toY: data.totalAmount * _chartSwitchAnimation.value,
+                      color: data.category.color,
+                      width: isTouched ? 28 : 24,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(4),
+                        topRight: Radius.circular(4),
+                      ),
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [
+                          data.category.color,
+                          data.category.color.withValues(alpha: 0.7),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
+        ),
+      ),
+    );
+  }
+
   Widget _buildDonutCenter() {
     final highlighted = highlightedCategory;
     final percentage =
@@ -387,12 +673,23 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget>
       final isTouched = index == touchedIndex;
       final baseRadius = 45.0;
       final touchRadius = 52.0;
-      final animatedRadius = _donutController.value * (isTouched ? touchRadius : baseRadius);
+      final animatedRadius =
+          _donutController.value * (isTouched ? touchRadius : baseRadius);
 
       return PieChartSectionData(
-        color: data.category.color,
+        gradient: LinearGradient(
+          colors: [
+            data.category.color,
+            data.category.color.withValues(alpha: 0.7),
+            data.category.color,
+          ],
+          stops: const [0.0, 0.5, 1.0],
+        ),
         value: data.totalAmount * _donutController.value,
-        title: _donutController.value > 0.8  ? '${percentage.toStringAsFixed(0)}%' : '',
+        title:
+            _donutController.value > 0.8
+                ? '${percentage.toStringAsFixed(0)}%'
+                : '',
         radius: animatedRadius,
         titleStyle: TextStyle(
           fontSize: 11,
@@ -409,6 +706,7 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget>
       );
     }).toList();
   }
+
   Widget _buildProgressRingsList(NumberFormat currencyFormatter) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

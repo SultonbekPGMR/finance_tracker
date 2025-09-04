@@ -135,6 +135,21 @@
   "forgotPasswordMessage": "Enter your email address and we'll send you a link to reset your password",
   "emailRequired": "Email is required",
   "invalidEmail": "Please enter a valid email",
-  "sendResetLink": "Send Reset Link"
-
+  "sendResetLink": "Send Reset Link",
+  "pieChart": "Pie Chart",
+  "barChart": "Bar Chart",
+  "lineChart": "Line Chart",
+  "trendChart": "Trend Chart",
+  "quickStats": "Quick Stats",
+  "avgPerTransaction": "Avg per Transaction",
+  "highestCategory": "Highest Category",
+  "lowestCategory": "Lowest Category",
+  "sortBy": "Sort by",
+  "sortByAmount": "Amount",
+  "sortByCount": "Count",
+  "sortByName": "Name",
+  "filterCategories": "Filter Categories",
+  "showAll": "Show All",
+  "showTop5": "Top 5",
+  "showTop10": "Top 10"
 }
