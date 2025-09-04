@@ -1,5 +1,6 @@
 // Created by Sultonbek Tulanov on 03-September 2025
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 enum PermissionResult {
   granted,
@@ -19,6 +20,7 @@ abstract class NotificationService {
 
   Future<bool> canScheduleExactAlarms();
 
+
   Future<void> openNotificationSettings();
 
   Future<void> openExactAlarmSettings();
@@ -30,7 +32,10 @@ abstract class NotificationService {
   Future<void> scheduleDailyExpenseReminder({
     required int hour,
     required int minute,
+    required String title,
+    required String body,
   });
+
 
   Future<void> cancelDailyExpenseReminder();
 
@@ -41,6 +46,5 @@ abstract class NotificationService {
   });
 
   Future<void> cancelAllScheduledNotifications();
-}
 
- 
+}

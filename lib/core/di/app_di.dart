@@ -18,8 +18,9 @@ class AppDi {
 
   static Future<void> initialize() async {
     await Firebase.initializeApp(options: AppFirebaseOptions.currentPlatform);
-    await FirebaseNotificationService().initialize();
-    get.registerSingleton<NotificationService>(FirebaseNotificationService());
+    await get
+        .registerSingleton<NotificationService>(FirebaseNotificationService())
+        .initialize();
 
     await PreferencesService.init();
     RepositoryModule.initialize(get);

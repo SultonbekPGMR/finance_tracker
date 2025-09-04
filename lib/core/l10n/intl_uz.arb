@@ -128,5 +128,8 @@
   "dailyAverage": "Kunlik O'rtacha",
   "highestDay": "Eng Yuqori Kun",
   "lightSpending": "Kam",
-  "heavySpending": "Ko'p"
+  "heavySpending": "Ko'p",
+  "dailyExpenseReminderTitle": "💰 Bugungi xarajatni yozishni unutmang!",
+  "dailyExpenseReminderBody": "Xarajatlaringizni qo‘shing 🪙 va byudjetingizni nazoratda saqlang 📊"
+
 }

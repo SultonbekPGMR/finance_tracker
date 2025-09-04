@@ -1,25 +1,22 @@
 // Created by Sultonbek Tulanov on 03-September 2025
-import 'package:flutter/cupertino.dart';
-
+import 'package:flutter/material.dart';
 import 'app_router.dart';
 
 class NotificationActionHandler {
-  static final GlobalKey<NavigatorState> navigatorKey = AppRouter.navigatorKey;
 
   static void navigateToAddExpense() {
-    navigatorKey.currentState?.pushNamed('/add-expense');
+    AppRouter.router.push('/add-expense');
   }
 
   static void navigateToExpenses() {
-    navigatorKey.currentState?.pushNamed('/expenses');
+    AppRouter.router.push('/expenses');
   }
 
   static void navigateToCharts() {
-    navigatorKey.currentState?.pushNamed('/charts');
+    AppRouter.router.push('/charts');
   }
 
   static void navigateToHome() {
-    navigatorKey.currentState?.pushNamedAndRemoveUntil('/', (route) => false);
+    AppRouter.router.go('/');
   }
 }
- 

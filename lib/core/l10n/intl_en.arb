@@ -127,6 +127,9 @@
   "dailyAverage": "Daily Avg",
   "highestDay": "Highest Day",
   "lightSpending": "Light",
-  "heavySpending": "Heavy"
+  "heavySpending": "Heavy",
+  "dailyExpenseReminderTitle": "💰 Don’t forget today’s spend!",
+  "dailyExpenseReminderBody": "Add your expenses 🪙 and keep your budget on track 📊"
+
 
 }

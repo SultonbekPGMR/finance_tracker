@@ -17,14 +17,14 @@ class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit(this._repository, this._authRepository)
     : super(ProfileInitial());
 
-  void loadProfile() async {
+  Future<void> loadProfile() async {
     emit(ProfileLoading());
     final preferences = _repository.getUserPreferences();
     final user = await _repository.getCurrentUser();
     emit(ProfileLoaded(user: user, preferences: preferences));
   }
 
-  void updateDisplayName(String name) async {
+  Future<void> updateDisplayName(String name) async {
     final currentState = state;
     if (currentState is! ProfileLoaded) return;
 
@@ -44,53 +44,103 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  void updateTheme(String theme) async {
+  Future<void> updateTheme(String theme) async {
     final currentState = state;
     if (currentState is! ProfileLoaded) return;
+
     await _repository.updateThemePreference(theme);
-    final preferences = _repository.getUserPreferences();
-    emit(ProfileLoaded(user: currentState.user, preferences: preferences));
+    await _emitUpdatedPreferences(currentState);
   }
 
-  void updateLanguage(String language) async {
+  Future<void> updateLanguage(String language) async {
     final currentState = state;
     if (currentState is! ProfileLoaded) return;
+
     await _repository.updateLanguagePreference(language);
-    final preferences = _repository.getUserPreferences();
-    emit(ProfileLoaded(user: currentState.user, preferences: preferences));
+    await _emitUpdatedPreferences(currentState);
   }
 
-  void updateCurrency(String currency) async {
+  Future<void> updateCurrency(String currency) async {
     final currentState = state;
     if (currentState is! ProfileLoaded) return;
+
     await _repository.updateCurrencyPreference(currency);
-    final preferences = _repository.getUserPreferences();
-    emit(ProfileLoaded(user: currentState.user, preferences: preferences));
+    await _emitUpdatedPreferences(currentState);
   }
 
-  void updateNotifications(bool enabled) async {
+  Future<void> updateNotifications(
+    bool enabled,
+    String title,
+    String body,
+  ) async {
     final currentState = state;
     if (currentState is! ProfileLoaded) return;
 
-    if (enabled) {
-      final result = await _requestNotificationPermission();
-      appTalker?.debug('Notification permission result: $result');
-      if (result != PermissionResult.granted) {
-        return;
-      }
+    if (!enabled) {
+      await _updateNotificationPreferenceAndEmit(currentState, enabled);
+      return;
     }
 
-    await _repository.updateNotificationPreference(enabled);
-    final preferences = _repository.getUserPreferences();
-    emit(ProfileLoaded(user: currentState.user, preferences: preferences));
+    // Only request permission when enabling notifications
+    final hasPermission = await _requestNotificationPermission();
+    appTalker?.debug('Notification permission result: $hasPermission');
+
+    if (!hasPermission) return;
+
+    await _updateNotificationPreferenceAndEmit(
+      currentState,
+      enabled,
+      title: title,
+      body: body,
+    );
   }
 
-  Future<PermissionResult> _requestNotificationPermission() async {
-    return await get<NotificationService>().requestPermission(true);
+  Future<bool> _requestNotificationPermission() async {
+    final notificationService = get<NotificationService>();
+
+    final permissionResult = await notificationService.requestPermission(true);
+    if (permissionResult != PermissionResult.granted) {
+      return false;
+    }
+
+    final canScheduleExactAlarms =
+        await notificationService.canScheduleExactAlarms();
+    appTalker?.debug('Exact alarm permission result: $canScheduleExactAlarms');
+    if (!canScheduleExactAlarms) {
+      await notificationService.openExactAlarmSettings();
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<void> _updateNotificationPreferenceAndEmit(
+    ProfileLoaded currentState,
+    bool enabled, {
+    String? title,
+    String? body,
+  }) async {
+    if (enabled && title != null && body != null) {
+      await get<NotificationService>().scheduleDailyExpenseReminder(
+        hour: 20,
+        minute: 05,
+        title: title,
+        body: body,
+      );
+    } else {
+      await get<NotificationService>().cancelAllScheduledNotifications();
+    }
+    await _repository.updateNotificationPreference(enabled);
+    await _emitUpdatedPreferences(currentState);
+  }
+
+  Future<void> _emitUpdatedPreferences(ProfileLoaded currentState) async {
+    final preferences = _repository.getUserPreferences();
+    emit(ProfileLoaded(user: currentState.user, preferences: preferences));
   }
 
   Future<bool> isNotificationEnabled() async =>
-      await get<NotificationService>().areNotificationsEnabled();
+      get<NotificationService>().areNotificationsEnabled();
 
   Future<void> signOut() async {
     final result = await _authRepository.signOut();

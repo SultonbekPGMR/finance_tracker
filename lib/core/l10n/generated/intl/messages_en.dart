@@ -56,6 +56,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "createAccount": MessageLookupByLibrary.simpleMessage("Create Account"),
         "currency": MessageLookupByLibrary.simpleMessage("Currency"),
         "dailyAverage": MessageLookupByLibrary.simpleMessage("Daily Avg"),
+        "dailyExpenseReminderBody": MessageLookupByLibrary.simpleMessage(
+            "Add your expenses 🪙 and keep your budget on track 📊"),
+        "dailyExpenseReminderTitle": MessageLookupByLibrary.simpleMessage(
+            "💰 Don’t forget today’s spend!"),
         "dailyExpensesTrend":
             MessageLookupByLibrary.simpleMessage("Daily Expenses Trend"),
         "dark": MessageLookupByLibrary.simpleMessage("Dark"),

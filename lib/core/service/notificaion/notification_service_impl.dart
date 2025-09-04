@@ -13,13 +13,15 @@ import 'package:timezone/timezone.dart' as tz;
 import '../../navigation/notificaion_action_handler.dart';
 import 'notification_service.dart';
 
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  if (kDebugMode) {
+    print('Received background message: ${message.notification?.title}');
+  }
+}
+
 class FirebaseNotificationService implements NotificationService {
-  static final FirebaseNotificationService _instance =
-      FirebaseNotificationService._internal();
-
-  factory FirebaseNotificationService() => _instance;
-
-  FirebaseNotificationService._internal();
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
@@ -34,6 +36,68 @@ class FirebaseNotificationService implements NotificationService {
     presentSound: true,
     badgeNumber: 1,
   );
+
+  @override
+  Stream<RemoteMessage> get onMessageReceived => FirebaseMessaging.onMessage;
+
+  @override
+  Stream<RemoteMessage> get onMessageOpenedApp =>
+      FirebaseMessaging.onMessageOpenedApp;
+
+  Future<Map<String, bool>> checkAllPermissions() async {
+    return {
+      'notifications': await areNotificationsEnabled(),
+      'exactAlarms': await canScheduleExactAlarms(),
+    };
+  }
+
+  @override
+  Future<PermissionResult> requestPermission(bool autoOpenSettings) async {
+    try {
+      final settings = await _firebaseMessaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
+
+      appTalker?.debug(
+        'FCM Permission status: ${settings.authorizationStatus}',
+      );
+
+      switch (settings.authorizationStatus) {
+        case AuthorizationStatus.authorized:
+        case AuthorizationStatus.provisional:
+          appTalker?.info('Notification permissions granted');
+          if (Platform.isIOS) {
+            await _requestIOSPermissions();
+          }
+          return PermissionResult.granted;
+
+        case AuthorizationStatus.denied:
+        // Check if we should open settings automatically
+          if (await _shouldAutoOpenSettings()) {
+            appTalker?.info(
+              'Opening notification settings due to permanent denial',
+            );
+            if (autoOpenSettings) await openNotificationSettings();
+            return PermissionResult.permanentlyDenied;
+          }
+          appTalker?.warning('Notification permissions denied by user');
+          return PermissionResult.denied;
+
+        case AuthorizationStatus.notDetermined:
+          appTalker?.debug('Notification permissions not determined');
+          return PermissionResult.denied;
+      }
+    } catch (e) {
+      appTalker?.error('Error requesting notification permission: $e');
+      return PermissionResult.error;
+    }
+  }
 
   @override
   Future<void> initialize() async {
@@ -107,22 +171,22 @@ class FirebaseNotificationService implements NotificationService {
   Future<bool> canScheduleExactAlarms() async {
     try {
       if (Platform.isAndroid) {
-        final androidImplementation =
-            _localNotifications
-                .resolvePlatformSpecificImplementation<
-                  AndroidFlutterLocalNotificationsPlugin
-                >();
+        final androidImplementation = _localNotifications
+            .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
 
-        // For Android 12+ (API 31+)
-        if (Platform.version.contains('31') ||
-            Platform.version.contains('32') ||
-            Platform.version.contains('33')) {
-          return await androidImplementation?.canScheduleExactNotifications() ??
-              false;
+        if (androidImplementation == null) {
+          appTalker?.error('Android implementation not found');
+          return false;
         }
-        // For older Android versions, exact alarms are allowed by default
-        return true;
+
+        // Always check the actual permission status on Android
+        // The canScheduleExactNotifications() method handles API level differences internally
+        appTalker?.error('Android found');
+
+        return await androidImplementation.canScheduleExactNotifications() ?? false;
       }
+
       // iOS doesn't have exact alarm restrictions
       return true;
     } catch (e) {
@@ -164,94 +228,130 @@ class FirebaseNotificationService implements NotificationService {
     }
   }
 
-  // Helper method to check all permissions at once
-  Future<Map<String, bool>> checkAllPermissions() async {
-    return {
-      'notifications': await areNotificationsEnabled(),
-      'exactAlarms': await canScheduleExactAlarms(),
-    };
-  }
-
   @override
-  Future<PermissionResult> requestPermission(bool autoOpenSettings) async {
+  Future<void> scheduleDailyExpenseReminder({
+    required int hour,
+    required int minute,
+    required String title,
+    required String body,
+  }) async {
     try {
-      final settings = await _firebaseMessaging.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
+      await cancelDailyExpenseReminder();
+
+      const androidDetails = AndroidNotificationDetails(
+        'daily_reminders',
+        'Daily Expense Reminders',
+        channelDescription: 'Daily reminders to add expenses',
+        importance: Importance.high,
+        priority: Priority.high,
+        icon: '@mipmap/ic_launcher',
+      );
+
+      const details = NotificationDetails(
+        android: androidDetails,
+        iOS: iosDetails,
+      );
+
+      var scheduledDate = _nextInstanceOfTime(hour, minute);
+
+      await _localNotifications.zonedSchedule(
+        _dailyReminderNotificationId,
+        title,
+        body,
+        scheduledDate,
+        details,
+        payload: 'add_expense',
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.time,
       );
 
       appTalker?.debug(
-        'FCM Permission status: ${settings.authorizationStatus}',
+        'Daily expense reminder scheduled for ${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}',
+      );
+    } catch (e) {
+      appTalker?.error('Error scheduling daily reminder: $e');
+    }
+  }
+
+  @override
+  Future<void> cancelDailyExpenseReminder() async {
+    try {
+      await _localNotifications.cancel(_dailyReminderNotificationId);
+      appTalker?.debug('Daily expense reminder cancelled');
+    } catch (e) {
+      appTalker?.error('Error cancelling daily reminder: $e');
+    }
+  }
+
+  @override
+  Future<void> scheduleOneTimeReminder({
+    required DateTime dateTime,
+    required String title,
+    required String body,
+  }) async {
+    try {
+      final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(timeZoneName));
+
+      const androidDetails = AndroidNotificationDetails(
+        'one_time_reminders',
+        'One-time Reminders',
+        channelDescription: 'Custom scheduled reminders',
+        importance: Importance.high,
+        priority: Priority.high,
+        icon: '@mipmap/ic_launcher',
       );
 
-      switch (settings.authorizationStatus) {
-        case AuthorizationStatus.authorized:
-        case AuthorizationStatus.provisional:
-          appTalker?.info('Notification permissions granted');
-          if (Platform.isIOS) {
-            await _requestIOSPermissions();
-          }
-          return PermissionResult.granted;
+      const details = NotificationDetails(
+        android: androidDetails,
+        iOS: iosDetails,
+      );
 
-        case AuthorizationStatus.denied:
-          // Check if we should open settings automatically
-          if (await _shouldAutoOpenSettings()) {
-            appTalker?.info(
-              'Opening notification settings due to permanent denial',
-            );
-            if (autoOpenSettings) await openNotificationSettings();
-            return PermissionResult.permanentlyDenied;
-          }
-          appTalker?.warning('Notification permissions denied by user');
-          return PermissionResult.denied;
+      final scheduledDate = tz.TZDateTime.from(dateTime, tz.local);
+      final notificationId = dateTime.millisecondsSinceEpoch ~/ 1000;
 
-        case AuthorizationStatus.notDetermined:
-          appTalker?.debug('Notification permissions not determined');
-          return PermissionResult.denied;
-      }
+      await _localNotifications.zonedSchedule(
+        notificationId,
+        title,
+        body,
+        scheduledDate,
+        details,
+        payload: 'add_expense',
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      );
+      appTalker?.debug('Scheduled TZDateTime: $scheduledDate');
     } catch (e) {
-      appTalker?.error('Error requesting notification permission: $e');
-      return PermissionResult.error;
-    }
-  }
-
-  // Private helper method
-  Future<bool> _shouldAutoOpenSettings() async {
-    try {
-      final settings = await _firebaseMessaging.getNotificationSettings();
-
-      // If denied and we've likely asked before, auto-open settings
-      return settings.authorizationStatus == AuthorizationStatus.denied;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<void> _requestIOSPermissions() async {
-    try {
-      final bool? result = await _localNotifications
-          .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin
-          >()
-          ?.requestPermissions(alert: true, badge: true, sound: true);
-
-      appTalker?.debug('iOS notification permissions granted: $result');
-    } catch (e) {
-      appTalker?.error('Error requesting iOS permissions: $e');
+      appTalker?.error('Error scheduling one-time reminder: $e');
     }
   }
 
   @override
-  Stream<RemoteMessage> get onMessageReceived => FirebaseMessaging.onMessage;
+  Future<void> cancelAllScheduledNotifications() async {
+    try {
+      await _localNotifications.cancelAll();
+      appTalker?.debug('All scheduled notifications cancelled');
+    } catch (e) {
+      appTalker?.error('Error cancelling all notifications: $e');
+    }
+  }
 
-  @override
-  Stream<RemoteMessage> get onMessageOpenedApp =>
-      FirebaseMessaging.onMessageOpenedApp;
+  tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minute,
+    );
+
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+
+    return scheduledDate;
+  }
 
   Future<void> _initializeLocalNotifications() async {
     const androidSettings = AndroidInitializationSettings(
@@ -292,10 +392,10 @@ class FirebaseNotificationService implements NotificationService {
 
   Future<void> _createNotificationChannels() async {
     final androidImplementation =
-        _localNotifications
-            .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin
-            >();
+    _localNotifications
+        .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin
+    >();
     const expenseChannel = AndroidNotificationChannel(
       'expense_reminders',
       'Expense Reminders',
@@ -391,135 +491,30 @@ class FirebaseNotificationService implements NotificationService {
     }
   }
 
-  @override
-  Future<void> scheduleDailyExpenseReminder({
-    required int hour,
-    required int minute,
-  }) async {
+  Future<bool> _shouldAutoOpenSettings() async {
     try {
-      await cancelDailyExpenseReminder();
+      final settings = await _firebaseMessaging.getNotificationSettings();
 
-      const androidDetails = AndroidNotificationDetails(
-        'daily_reminders',
-        'Daily Expense Reminders',
-        channelDescription: 'Daily reminders to add expenses',
-        importance: Importance.high,
-        priority: Priority.high,
-        icon: '@mipmap/ic_launcher',
-        color: Color(0xFF6366F1),
-      );
-
-      const details = NotificationDetails(
-        android: androidDetails,
-        iOS: iosDetails,
-      );
-
-      var scheduledDate = _nextInstanceOfTime(hour, minute);
-
-      await _localNotifications.zonedSchedule(
-        _dailyReminderNotificationId,
-        'Don\'t forget!',
-        'Add your expenses for today to stay on track with your budget',
-        scheduledDate,
-        details,
-        payload: 'add_expense',
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        matchDateTimeComponents: DateTimeComponents.time,
-      );
-
-      appTalker?.debug(
-        'Daily expense reminder scheduled for ${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}',
-      );
+      // If denied and we've likely asked before, auto-open settings
+      return settings.authorizationStatus == AuthorizationStatus.denied;
     } catch (e) {
-      appTalker?.error('Error scheduling daily reminder: $e');
+      return false;
     }
   }
 
-  @override
-  Future<void> cancelDailyExpenseReminder() async {
+  Future<void> _requestIOSPermissions() async {
     try {
-      await _localNotifications.cancel(_dailyReminderNotificationId);
-      appTalker?.debug('Daily expense reminder cancelled');
+      final bool? result = await _localNotifications
+          .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+      >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+
+      appTalker?.debug('iOS notification permissions granted: $result');
     } catch (e) {
-      appTalker?.error('Error cancelling daily reminder: $e');
+      appTalker?.error('Error requesting iOS permissions: $e');
     }
-  }
-
-  @override
-  Future<void> scheduleOneTimeReminder({
-    required DateTime dateTime,
-    required String title,
-    required String body,
-  }) async {
-    try {
-      final String timeZoneName = await FlutterTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(timeZoneName));
-
-      const androidDetails = AndroidNotificationDetails(
-        'one_time_reminders',
-        'One-time Reminders',
-        channelDescription: 'Custom scheduled reminders',
-        importance: Importance.high,
-        priority: Priority.high,
-        icon: '@mipmap/ic_launcher',
-        color: Color(0xFF6366F1),
-      );
-
-      const details = NotificationDetails(
-        android: androidDetails,
-        iOS: iosDetails,
-      );
-
-      final scheduledDate = tz.TZDateTime.from(dateTime, tz.local);
-      final notificationId = dateTime.millisecondsSinceEpoch ~/ 1000;
-
-      await _localNotifications.zonedSchedule(
-        notificationId,
-        title,
-        body,
-        scheduledDate,
-        details,
-        payload: 'add_expense',
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      );
-      appTalker?.debug('Scheduled TZDateTime: $scheduledDate');
-    } catch (e) {
-      appTalker?.error('Error scheduling one-time reminder: $e');
-    }
-  }
-
-  @override
-  Future<void> cancelAllScheduledNotifications() async {
-    try {
-      await _localNotifications.cancelAll();
-      appTalker?.debug('All scheduled notifications cancelled');
-    } catch (e) {
-      appTalker?.error('Error cancelling all notifications: $e');
-    }
-  }
-
-  tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduledDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      hour,
-      minute,
-    );
-
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
-    }
-
-    return scheduledDate;
   }
 }
 
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  if (kDebugMode) {
-    print('Received background message: ${message.notification?.title}');
-  }
-}
+

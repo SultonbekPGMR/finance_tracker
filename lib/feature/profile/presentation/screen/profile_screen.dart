@@ -217,7 +217,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               isLoading
                   ? null
                   : (value) =>
-                      context.read<ProfileCubit>().updateNotifications(value),
+                      context.read<ProfileCubit>().updateNotifications(value, context.l10n.dailyExpenseReminderTitle, context.l10n.dailyExpenseReminderBody),
             ),
           ],
         ),

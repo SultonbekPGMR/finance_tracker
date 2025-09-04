@@ -11,6 +11,7 @@ Future<void> main() async {
   await initializeUi();
   await AppDi.initialize();
   runApp(const App());
+
 }
 
 Future<void> initializeUi() async {
