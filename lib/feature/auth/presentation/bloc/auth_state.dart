@@ -12,3 +12,5 @@ class AuthFailure extends AuthState {
   final Exception exception;
   AuthFailure({required this.exception});
 }
+class AuthPasswordResetEmailSent extends AuthState {}
+class AuthPasswordResetLoading extends AuthState {}

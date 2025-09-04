@@ -1,6 +1,7 @@
 // Created by Sultonbek Tulanov on 30-August 2025
 
 import 'package:finance_tracker/core/util/exception/localized_exception.dart';
+import 'package:finance_tracker/core/util/no_params.dart';
 import 'package:finance_tracker/feature/auth/data/model/user_model.dart';
 import 'package:finance_tracker/feature/auth/domain/repository/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -71,5 +72,16 @@ class AuthRepositoryImpl implements AuthRepository {
       return null;
     }
     return UserModel(user.uid, user.displayName ?? '', user.email ?? '');
+  }
+
+  @override
+  Future<Result<Nothing>> requestPasswordReset(String email) async {
+    if(email.isEmpty) email = 'a';
+    try {
+      await auth.sendPasswordResetEmail(email: email);
+      return Success(Nothing());
+    } on Exception catch (e) {
+      return Failure(e);
+    }
   }
 }

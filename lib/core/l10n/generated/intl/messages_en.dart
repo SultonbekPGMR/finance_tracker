@@ -84,6 +84,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "emailAlreadyInUse":
             MessageLookupByLibrary.simpleMessage("Email is already in use"),
         "emailHint": MessageLookupByLibrary.simpleMessage("Email"),
+        "emailRequired":
+            MessageLookupByLibrary.simpleMessage("Email is required"),
         "enterAmount": MessageLookupByLibrary.simpleMessage("Enter amount"),
         "enterDescription":
             MessageLookupByLibrary.simpleMessage("Enter description"),
@@ -107,6 +109,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "failedToLoadCategories":
             MessageLookupByLibrary.simpleMessage("Failed to load categories"),
         "forbidden": MessageLookupByLibrary.simpleMessage("Access forbidden"),
+        "forgotPassword":
+            MessageLookupByLibrary.simpleMessage("Forgot Password"),
+        "forgotPasswordMessage": MessageLookupByLibrary.simpleMessage(
+            "Enter your email address and we\'ll send you a link to reset your password"),
+        "forgotPasswordTitle":
+            MessageLookupByLibrary.simpleMessage("Reset Password"),
         "haveAccount":
             MessageLookupByLibrary.simpleMessage("Do you have an account?"),
         "heavySpending": MessageLookupByLibrary.simpleMessage("Heavy"),
@@ -117,7 +125,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "invalidCredentials":
             MessageLookupByLibrary.simpleMessage("Invalid email or password"),
         "invalidEmail":
-            MessageLookupByLibrary.simpleMessage("Invalid email address"),
+            MessageLookupByLibrary.simpleMessage("Please enter a valid email"),
         "invalidPassword":
             MessageLookupByLibrary.simpleMessage("Wrong password"),
         "language": MessageLookupByLibrary.simpleMessage("Language"),
@@ -142,6 +150,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "operationNotAllowed": MessageLookupByLibrary.simpleMessage(
             "This operation is not allowed"),
         "passwordHint": MessageLookupByLibrary.simpleMessage("Password"),
+        "passwordResetEmailSent":
+            MessageLookupByLibrary.simpleMessage("Password reset email sent"),
         "passwordsDontMatch":
             MessageLookupByLibrary.simpleMessage("Passwords don\'t match"),
         "permissionDenied":
@@ -181,6 +191,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "selectTheme": MessageLookupByLibrary.simpleMessage("Select Theme"),
         "selectedCategory":
             MessageLookupByLibrary.simpleMessage("Currently selected"),
+        "sendResetLink":
+            MessageLookupByLibrary.simpleMessage("Send Reset Link"),
         "serverError":
             MessageLookupByLibrary.simpleMessage("Server error occurred"),
         "setName": MessageLookupByLibrary.simpleMessage("Set Name"),

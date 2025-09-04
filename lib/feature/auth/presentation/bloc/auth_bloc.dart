@@ -1,8 +1,10 @@
+import 'package:finance_tracker/core/config/talker.dart';
 import 'package:finance_tracker/core/util/eventbus/global_message_bus.dart';
 import 'package:finance_tracker/feature/auth/domain/usecase/sign_in_usecase.dart';
 import 'package:finance_tracker/feature/auth/domain/usecase/sign_up_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../domain/usecase/request_password_reset_usecase.dart';
 import 'auth_state_cubit.dart';
 
 part 'auth_event.dart';
@@ -12,9 +14,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthStatusCubit authStatusCubit;
   final SignInUseCase signInUseCase;
   final SignUpUseCase signUpUseCase;
+  final RequestPasswordResetUseCase requestPasswordResetUseCase;
 
-  AuthBloc(this.signInUseCase, this.signUpUseCase, this.authStatusCubit)
-    : super(AuthInitial()) {
+  AuthBloc(
+    this.signInUseCase,
+    this.signUpUseCase,
+    this.authStatusCubit,
+    this.requestPasswordResetUseCase,
+  ) : super(AuthInitial()) {
     on<SignInEvent>((event, emit) async {
       emit(AuthLoading());
       final SignInParams params = SignInParams(event.email, event.password);
@@ -57,6 +64,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignOutEvent>((event, emit) {
       authStatusCubit.logout();
       emit(AuthInitial());
+    });
+    on<PasswordResetEvent>((event, emit) async {
+      emit(AuthPasswordResetLoading());
+      final result = await requestPasswordResetUseCase(
+        PasswordResetParams(event.email),
+      );
+      result
+          .onSuccess((_) {
+            emit(AuthPasswordResetEmailSent());
+            appTalker?.debug('Password reset email sent');
+          })
+          .onFailure((error) {
+            appTalker?.debug('Error sending password reset email: $error');
+            emit(AuthFailure(exception: error));
+          });
     });
   }
 }

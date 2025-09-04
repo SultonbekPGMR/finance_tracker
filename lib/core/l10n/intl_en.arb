@@ -103,7 +103,6 @@
   "noInternetConnection": "No internet connection",
   "userDisabled": "This account has been disabled",
   "operationNotAllowed": "This operation is not allowed",
-  "invalidEmail": "Invalid email address",
   "invalidPassword": "Wrong password",
   "serverError": "Server error occurred",
   "connectionTimeout": "Connection timeout",
@@ -129,7 +128,13 @@
   "lightSpending": "Light",
   "heavySpending": "Heavy",
   "dailyExpenseReminderTitle": "💰 Don’t forget today’s spend!",
-  "dailyExpenseReminderBody": "Add your expenses 🪙 and keep your budget on track 📊"
-
+  "dailyExpenseReminderBody": "Add your expenses 🪙 and keep your budget on track 📊",
+  "forgotPassword": "Forgot Password",
+  "passwordResetEmailSent": "Password reset email sent",
+  "forgotPasswordTitle": "Reset Password",
+  "forgotPasswordMessage": "Enter your email address and we'll send you a link to reset your password",
+  "emailRequired": "Email is required",
+  "invalidEmail": "Please enter a valid email",
+  "sendResetLink": "Send Reset Link"
 
 }

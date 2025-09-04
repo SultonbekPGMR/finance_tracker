@@ -17,7 +17,7 @@ class BlocModule {
   static void initialize(GetIt getIt) {
     getIt.registerFactory(() => AuthStatusCubit(getIt.get()));
     getIt.registerFactory(
-      () => AuthBloc(getIt.get(), getIt.get(), getIt.get()),
+      () => AuthBloc(getIt.get(), getIt.get(), getIt.get(),getIt.get()),
     );
     getIt.registerFactory(
       () => ExpensesBloc(getIt.get(), getIt.get(), getIt.get()),

@@ -1,6 +1,7 @@
 // Created by Sultonbek Tulanov on 30-August 2025
 
 import 'package:finance_tracker/feature/auth/domain/usecase/get_current_user_usecase.dart';
+import 'package:finance_tracker/feature/auth/domain/usecase/request_password_reset_usecase.dart';
 import 'package:finance_tracker/feature/auth/domain/usecase/sign_in_usecase.dart';
 import 'package:finance_tracker/feature/auth/domain/usecase/sign_up_usecase.dart';
 import 'package:finance_tracker/feature/chart/domain/usecase/get_chart_data_usecase.dart';
@@ -24,6 +25,7 @@ class UseCaseModule {
     getIt.registerSingleton(GetCurrentUserUseCase(getIt.get()));
     getIt.registerSingleton(SignInUseCase(getIt.get()));
     getIt.registerSingleton(SignUpUseCase(getIt.get()));
+    getIt.registerSingleton(RequestPasswordResetUseCase(getIt.get()));
 
     getIt.registerSingleton(AddExpenseUseCase(getIt.get(),getIt.get()));
     getIt.registerSingleton(GetExpenseByIdUseCase(getIt.get(),getIt.get()));

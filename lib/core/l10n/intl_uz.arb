@@ -104,7 +104,6 @@
   "noInternetConnection": "Internet aloqasi yo'q",
   "userDisabled": "Ushbu hisob o'chirib qo'yilgan",
   "operationNotAllowed": "Ushbu operatsiyaga ruxsat berilmagan",
-  "invalidEmail": "Yaroqsiz elektron pochta manzili",
   "invalidPassword": "Parol xato",
   "serverError": "Server xatosi yuz berdi",
   "connectionTimeout": "Ulanish vaqti tugadi",
@@ -129,7 +128,13 @@
   "highestDay": "Eng Yuqori Kun",
   "lightSpending": "Kam",
   "heavySpending": "Ko'p",
-  "dailyExpenseReminderTitle": "💰 Bugungi xarajatni yozishni unutmang!",
-  "dailyExpenseReminderBody": "Xarajatlaringizni qo‘shing 🪙 va byudjetingizni nazoratda saqlang 📊"
-
+  "dailyExpenseReminderTitle": "💰 Bugungi xarajatingizni kiritdingizmi?",
+  "dailyExpenseReminderBody": "Moliyaviy holatingizni kuzatib borish uchun xarajatlaringizni qo'shing 🪙 va byudjetingizni nazorat qiling 📊",
+  "forgotPassword": "Parolni unutdingizmi",
+  "passwordResetEmailSent": "Parolni tiklash havolasi elektron pochtangizga yuborildi.",
+  "forgotPasswordTitle": "Parolni tiklash",
+  "forgotPasswordMessage": "Elektron pochta manzilingizni kiriting va biz sizga parolni tiklash havolasini yuboramiz",
+  "emailRequired": "Elektron pochta talab qilinadi",
+  "invalidEmail": "Iltimos, haqiqiy elektron pochta manzilini kiriting",
+  "sendResetLink": "Tiklash havolasini yuborish"
 }

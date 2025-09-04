@@ -31,6 +31,7 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
 
+
     _messageSubscription = GlobalMessageBus.messageStream.listen((messageData) {
       appTalker?.log(messageData.message);
       switch (messageData.type) {
