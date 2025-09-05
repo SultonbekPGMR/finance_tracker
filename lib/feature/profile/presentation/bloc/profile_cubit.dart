@@ -124,8 +124,8 @@ class ProfileCubit extends Cubit<ProfileState> {
       await get<NotificationService>().scheduleDailyExpenseReminder(
         noonHour: 13,
         noonMinute: 45,
-        eveningHour: 21,
-        eveningMinute: 11,
+        eveningHour: 19,
+        eveningMinute: 45,
         title: title,
         body: body,
       );
