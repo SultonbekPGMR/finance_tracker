@@ -129,7 +129,7 @@ Stream<List<ExpenseModel>> getExpensesStream(String userId, {DateTime? month}) {
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/finance_tracker.git
+   git clone https://github.com/SultonbekPGMR/finance_tracker.git
    cd finance_tracker
    ```
 
