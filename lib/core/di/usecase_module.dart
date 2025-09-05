@@ -9,14 +9,13 @@ import 'package:finance_tracker/feature/expense/domain/usecase/get_expenses_by_f
 import 'package:finance_tracker/feature/expense/domain/usecase/get_expenses_usecase.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../feature/dashboard/domain/usecase/get_dashboard_data_usecase.dart';
 import '../../feature/expense/domain/usecase/add_expense_usecase.dart';
 import '../../feature/expense/domain/usecase/delete_expense_usecase.dart';
 import '../../feature/expense/domain/usecase/get_categories_usecase.dart';
 import '../../feature/expense/domain/usecase/get_expense_by_id_usecase.dart';
 import '../../feature/expense/domain/usecase/get_expense_stream_usecase.dart';
 import '../../feature/expense/domain/usecase/update_expense_usecase.dart';
-
-
 
 class UseCaseModule {
   UseCaseModule._();
@@ -27,16 +26,15 @@ class UseCaseModule {
     getIt.registerSingleton(SignUpUseCase(getIt.get()));
     getIt.registerSingleton(RequestPasswordResetUseCase(getIt.get()));
 
-    getIt.registerSingleton(AddExpenseUseCase(getIt.get(),getIt.get()));
-    getIt.registerSingleton(GetExpenseByIdUseCase(getIt.get(),getIt.get()));
-    getIt.registerSingleton(GetExpensesStreamUseCase(getIt.get(),getIt.get()));
-    getIt.registerSingleton(GetExpensesUseCase(getIt.get(),getIt.get()));
-    getIt.registerSingleton(DeleteExpenseUseCase(getIt.get(),getIt.get()));
-    getIt.registerSingleton(UpdateExpenseUseCase(getIt.get(),getIt.get()));
+    getIt.registerSingleton(AddExpenseUseCase(getIt.get(), getIt.get()));
+    getIt.registerSingleton(GetExpenseByIdUseCase(getIt.get(), getIt.get()));
+    getIt.registerSingleton(GetExpensesStreamUseCase(getIt.get(), getIt.get()));
+    getIt.registerSingleton(GetExpensesUseCase(getIt.get(), getIt.get()));
+    getIt.registerSingleton(DeleteExpenseUseCase(getIt.get(), getIt.get()));
+    getIt.registerSingleton(UpdateExpenseUseCase(getIt.get(), getIt.get()));
     getIt.registerSingleton(GetCategoriesUseCase());
     getIt.registerSingleton(GetChartDataUseCase(getIt(), getIt()));
     getIt.registerSingleton(GetExpensesByFilterUseCase(getIt(), getIt()));
+    getIt.registerSingleton(GetDashboardDataUseCase(getIt(), getIt()));
   }
 }
-
- 

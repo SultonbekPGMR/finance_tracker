@@ -40,12 +40,12 @@ class ExpenseItemWidget extends StatelessWidget {
                   width: 40,
                   height: 40,
                 decoration: BoxDecoration(
-                  color: ExpenseCategoryModel.fromString(expense.category).color.withValues(alpha: 0.1),
+                  color: ExpenseCategoryModel.fromName(expense.category).color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                   child: Center(
                     child: Text(
-                      ExpenseCategoryModel.fromString(expense.category).icon,
+                      ExpenseCategoryModel.fromName(expense.category).icon,
                       style: context.textTheme.headlineMedium,
                     ),
                   ),

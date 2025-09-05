@@ -31,7 +31,7 @@ class AuthScreenWrapper extends StatelessWidget {
           );
         }
         if (state is AuthSuccess) {
-          context.go('/home/records');
+          context.go('dashboard');
         }
       },
       child: child,

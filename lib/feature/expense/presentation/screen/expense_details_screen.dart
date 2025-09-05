@@ -1,4 +1,5 @@
 // Created by Sultonbek Tulanov on 02-September 2025
+import 'package:finance_tracker/core/service/exception_localization_service.dart';
 import 'package:finance_tracker/core/util/extension/build_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_multi_formatter/formatters/currency_input_formatter.dart';
 import 'package:flutter_multi_formatter/formatters/formatter_utils.dart';
 import 'package:flutter_multi_formatter/formatters/money_input_enums.dart';
-import 'package:flutter_multi_formatter/formatters/money_input_formatter.dart';
 import 'package:intl/intl.dart';
 
 import '../../data/model/expense_category_model.dart';
@@ -40,7 +40,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
         leadingSymbol: '',
         useSymbolPadding: false,
       );      _descriptionController.text = widget.expense!.description;
-      _selectedCategory = ExpenseCategoryModel.fromString(
+      _selectedCategory = ExpenseCategoryModel.fromName(
         widget.expense!.category,
       );
       _selectedDate = widget.expense!.createdAt;
@@ -195,7 +195,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
           } else if (state is ExpenseDetailsSubmissionError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.error),
+                content: Text(ExceptionLocalizationService.getLocalizedMessage(state.exception)),
                 backgroundColor: context.colorScheme.error,
                 behavior: SnackBarBehavior.floating,
               ),
@@ -477,7 +477,7 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        category.displayName,
+                        category.getLocalizedName(context),
                         style: context.textTheme.bodyLarge?.copyWith(
                           color: context.colorScheme.onSurface,
                         ),

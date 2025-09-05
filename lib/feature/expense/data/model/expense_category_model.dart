@@ -1,5 +1,8 @@
 // Created by Sultonbek Tulanov on 31-August 2025
-import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
+
+import '../../../../core/l10n/generated/l10n.dart';
 
 enum ExpenseCategoryModel {
   food('Food'),
@@ -18,18 +21,52 @@ enum ExpenseCategoryModel {
 
   final String displayName;
 
-  static ExpenseCategoryModel fromString(String value) {
+  static ExpenseCategoryModel fromName(String value) {
     return ExpenseCategoryModel.values.firstWhere(
       (category) => category.name == value,
       orElse: () => ExpenseCategoryModel.other,
     );
   }
 
+  static ExpenseCategoryModel fromDisplayName(String displayName) {
+    return ExpenseCategoryModel.values.firstWhere(
+          (category) => category.displayName == displayName,
+      orElse: () => ExpenseCategoryModel.other,
+    );
+  }
   static List<ExpenseCategoryModel> get allCategories =>
       ExpenseCategoryModel.values;
 }
 
 extension ExpenseCategoryModelExtension on ExpenseCategoryModel {
+  String getLocalizedName(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    switch (this) {
+      case ExpenseCategoryModel.food:
+        return l10n.categoryFood;
+      case ExpenseCategoryModel.transport:
+        return l10n.categoryTransport;
+      case ExpenseCategoryModel.entertainment:
+        return l10n.categoryEntertainment;
+      case ExpenseCategoryModel.utilities:
+        return l10n.categoryUtilities;
+      case ExpenseCategoryModel.shopping:
+        return l10n.categoryShopping;
+      case ExpenseCategoryModel.health:
+        return l10n.categoryHealth;
+      case ExpenseCategoryModel.education:
+        return l10n.categoryEducation;
+      case ExpenseCategoryModel.travel:
+        return l10n.categoryTravel;
+      case ExpenseCategoryModel.home:
+        return l10n.categoryHome;
+      case ExpenseCategoryModel.fitness:
+        return l10n.categoryFitness;
+      case ExpenseCategoryModel.other:
+        return l10n.categoryOther;
+    }
+  }
+
   String get icon {
     switch (this) {
       case ExpenseCategoryModel.food:

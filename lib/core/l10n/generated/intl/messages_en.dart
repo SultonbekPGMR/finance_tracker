@@ -22,13 +22,23 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(amount) => "Expenses: ${amount}";
 
-  static String m1(amount) => "Invalid amount: ${amount}";
+  static String m1(days) => "${days}d ago";
 
-  static String m2(amount) => "Total Spent: ${amount}";
+  static String m2(count) => "${count} days remaining";
 
-  static String m3(count) => "${count} transactions";
+  static String m3(hours) => "${hours}h ago";
 
-  static String m4(details) => "Unknown error: ${details}";
+  static String m4(amount) => "Invalid amount: ${amount}";
+
+  static String m5(minutes) => "${minutes}m ago";
+
+  static String m6(amount) => "Total Spent: ${amount}";
+
+  static String m7(count) => "${count} transactions";
+
+  static String m8(count) => "${count} transactions";
+
+  static String m9(details) => "Unknown error: ${details}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -49,8 +59,20 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Category Breakdown"),
         "categoryComparison":
             MessageLookupByLibrary.simpleMessage("Category Comparison"),
+        "categoryEducation": MessageLookupByLibrary.simpleMessage("Education"),
+        "categoryEntertainment":
+            MessageLookupByLibrary.simpleMessage("Entertainment"),
+        "categoryFitness": MessageLookupByLibrary.simpleMessage("Fitness"),
+        "categoryFood": MessageLookupByLibrary.simpleMessage("Food"),
+        "categoryHealth": MessageLookupByLibrary.simpleMessage("Health"),
+        "categoryHome": MessageLookupByLibrary.simpleMessage("Home"),
         "categoryNotFound":
             MessageLookupByLibrary.simpleMessage("Category not found"),
+        "categoryOther": MessageLookupByLibrary.simpleMessage("Other"),
+        "categoryShopping": MessageLookupByLibrary.simpleMessage("Shopping"),
+        "categoryTransport": MessageLookupByLibrary.simpleMessage("Transport"),
+        "categoryTravel": MessageLookupByLibrary.simpleMessage("Travel"),
+        "categoryUtilities": MessageLookupByLibrary.simpleMessage("Utilities"),
         "charts": MessageLookupByLibrary.simpleMessage("Charts"),
         "confirmPasswordHint":
             MessageLookupByLibrary.simpleMessage("Confirm Password"),
@@ -59,6 +81,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "createAccount": MessageLookupByLibrary.simpleMessage("Create Account"),
         "currency": MessageLookupByLibrary.simpleMessage("Currency"),
         "dailyAverage": MessageLookupByLibrary.simpleMessage("Daily Avg"),
+        "dailyAvg": MessageLookupByLibrary.simpleMessage("Daily Avg"),
         "dailyExpenseReminderBody": MessageLookupByLibrary.simpleMessage(
             "Add your expenses 🪙 and keep your budget on track 📊"),
         "dailyExpenseReminderTitle": MessageLookupByLibrary.simpleMessage(
@@ -70,6 +93,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Data format error"),
         "dateHint": MessageLookupByLibrary.simpleMessage("Choose expense date"),
         "dayTotal": m0,
+        "daysAgo": m1,
+        "daysRemaining": m2,
         "delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "deleteConfirmation": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to delete this expense?"),
@@ -111,6 +136,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Failed to add expense"),
         "failedToLoadCategories":
             MessageLookupByLibrary.simpleMessage("Failed to load categories"),
+        "failedToLoadDashboard":
+            MessageLookupByLibrary.simpleMessage("Failed to load dashboard"),
         "filterCategories":
             MessageLookupByLibrary.simpleMessage("Filter Categories"),
         "forbidden": MessageLookupByLibrary.simpleMessage("Access forbidden"),
@@ -120,15 +147,21 @@ class MessageLookup extends MessageLookupByLibrary {
             "Enter your email address and we\'ll send you a link to reset your password"),
         "forgotPasswordTitle":
             MessageLookupByLibrary.simpleMessage("Reset Password"),
+        "goodAfternoon": MessageLookupByLibrary.simpleMessage("Good Afternoon"),
+        "goodEvening": MessageLookupByLibrary.simpleMessage("Good Evening"),
+        "goodMorning": MessageLookupByLibrary.simpleMessage("Good Morning"),
         "haveAccount":
             MessageLookupByLibrary.simpleMessage("Do you have an account?"),
         "heavySpending": MessageLookupByLibrary.simpleMessage("Heavy"),
         "highestCategory":
             MessageLookupByLibrary.simpleMessage("Highest Category"),
         "highestDay": MessageLookupByLibrary.simpleMessage("Highest Day"),
+        "hoursAgo": m3,
         "income": MessageLookupByLibrary.simpleMessage("Income"),
         "info": MessageLookupByLibrary.simpleMessage("Info"),
-        "invalidAmountWithValue": m1,
+        "initializingDashboard":
+            MessageLookupByLibrary.simpleMessage("Initializing dashboard..."),
+        "invalidAmountWithValue": m4,
         "invalidCredentials":
             MessageLookupByLibrary.simpleMessage("Invalid email or password"),
         "invalidEmail":
@@ -139,11 +172,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "light": MessageLookupByLibrary.simpleMessage("Light"),
         "lightSpending": MessageLookupByLibrary.simpleMessage("Light"),
         "lineChart": MessageLookupByLibrary.simpleMessage("Line Chart"),
+        "loadingDashboard":
+            MessageLookupByLibrary.simpleMessage("Loading dashboard..."),
         "loadingExpenses":
             MessageLookupByLibrary.simpleMessage("Loading expenses..."),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "lowestCategory":
             MessageLookupByLibrary.simpleMessage("Lowest Category"),
+        "main": MessageLookupByLibrary.simpleMessage("Dashboard"),
+        "minutesAgo": m5,
         "moneyTracker": MessageLookupByLibrary.simpleMessage("Money Tracker"),
         "monthlyHeatmap":
             MessageLookupByLibrary.simpleMessage("Monthly Spending Pattern"),
@@ -180,7 +217,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "preferences": MessageLookupByLibrary.simpleMessage("Preferences"),
         "profile": MessageLookupByLibrary.simpleMessage("Profile"),
         "quickStats": MessageLookupByLibrary.simpleMessage("Quick Stats"),
-        "records": MessageLookupByLibrary.simpleMessage("Records"),
+        "recentExpenses":
+            MessageLookupByLibrary.simpleMessage("Recent Expenses"),
+        "recentExpensesEmptyMessage": MessageLookupByLibrary.simpleMessage(
+            "Start tracking your spending by adding your first expense!"),
+        "recentExpensesEmptyTitle": MessageLookupByLibrary.simpleMessage(
+            "Your recent expenses will appear here"),
+        "records": MessageLookupByLibrary.simpleMessage("Expenses"),
         "register": MessageLookupByLibrary.simpleMessage("Register"),
         "reports": MessageLookupByLibrary.simpleMessage("Reports"),
         "requestCancelled":
@@ -190,6 +233,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "saving": MessageLookupByLibrary.simpleMessage("Saving..."),
         "searchExpenses":
             MessageLookupByLibrary.simpleMessage("Search expenses..."),
+        "seeAll": MessageLookupByLibrary.simpleMessage("See All"),
         "selectCategory":
             MessageLookupByLibrary.simpleMessage("Select a category"),
         "selectCurrency":
@@ -222,6 +266,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "sortByName": MessageLookupByLibrary.simpleMessage("Name"),
         "spendingProgress":
             MessageLookupByLibrary.simpleMessage("Spending Progress"),
+        "spentThisMonth":
+            MessageLookupByLibrary.simpleMessage("spent this month"),
         "startAddingExpenses": MessageLookupByLibrary.simpleMessage(
             "Start by adding your first expense"),
         "storageError":
@@ -231,19 +277,25 @@ class MessageLookup extends MessageLookupByLibrary {
             "Swipe to view different charts"),
         "system": MessageLookupByLibrary.simpleMessage("System"),
         "theme": MessageLookupByLibrary.simpleMessage("Theme"),
+        "thisMonth": MessageLookupByLibrary.simpleMessage("This Month"),
+        "thisMonthLabel": MessageLookupByLibrary.simpleMessage("this month"),
+        "thisWeek": MessageLookupByLibrary.simpleMessage("This Week"),
         "today": MessageLookupByLibrary.simpleMessage("Today"),
+        "todayLabel": MessageLookupByLibrary.simpleMessage("Today"),
         "tooManyRequests": MessageLookupByLibrary.simpleMessage(
             "Too many requests. Please try again later"),
+        "topCategories": MessageLookupByLibrary.simpleMessage("Top Categories"),
         "topSpendingCategory":
             MessageLookupByLibrary.simpleMessage("Highest spending category"),
-        "totalSpent": m2,
-        "transactionCount": m3,
+        "totalSpent": m6,
+        "transactionCount": m7,
+        "transactions": m8,
         "trendChart": MessageLookupByLibrary.simpleMessage("Trend Chart"),
         "unauthorized":
             MessageLookupByLibrary.simpleMessage("Unauthorized access"),
         "unknownError":
             MessageLookupByLibrary.simpleMessage("An unknown error occurred"),
-        "unknownErrorWithDetails": m4,
+        "unknownErrorWithDetails": m9,
         "updateError":
             MessageLookupByLibrary.simpleMessage("Error updating expense"),
         "updateExpense": MessageLookupByLibrary.simpleMessage("Update Expense"),

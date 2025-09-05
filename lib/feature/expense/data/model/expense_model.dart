@@ -89,4 +89,11 @@ class ExpenseModel {
       imageUrl: imageUrl ?? this.imageUrl,
     );
   }
+
+  @override
+  String toString() {
+    return 'ExpenseModel(id: $id, userId: $userId, amount: $amount, category: $category, description: $description, createdAt: $createdAt, updatedAt: $updatedAt, imageUrl: $imageUrl)';
+  }
+
+
 }

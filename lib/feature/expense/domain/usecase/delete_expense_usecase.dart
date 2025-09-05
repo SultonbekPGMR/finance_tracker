@@ -1,4 +1,5 @@
 // Created by Sultonbek Tulanov on 31-August 2025
+import 'package:finance_tracker/core/util/exception/localized_exception.dart';
 import 'package:finance_tracker/core/util/usecase.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -7,21 +8,21 @@ import '../../../auth/domain/usecase/get_current_user_usecase.dart';
 import '../repository/expense_repository.dart';
 
 class DeleteExpenseUseCase
-    implements FutureUseCase<ResultDart<bool, String>, DeleteExpenseParams> {
+    implements FutureUseCase<Result<bool>, DeleteExpenseParams> {
   final ExpenseRepository _repository;
   final GetCurrentUserUseCase _getCurrentUserUseCase;
 
   DeleteExpenseUseCase(this._repository, this._getCurrentUserUseCase);
 
   @override
-  Future<ResultDart<bool, String>> call(DeleteExpenseParams params) async {
+  Future<Result<bool>> call(DeleteExpenseParams params) async {
     try {
       if (params.expenseId.isEmpty) {
-        return const Failure('Expense ID is required');
+        return Failure(InvalidCredentialsException());
       }
 
       final currentUser = _getCurrentUserUseCase(Nothing());
-      if (currentUser == null) return Failure('User not authenticated');
+      if (currentUser == null) return Failure(UserNotFoundException());
 
       // Verify the expense belongs to the current user before deletion
       // You can skip this if you want faster deletion without extra query
@@ -30,17 +31,17 @@ class DeleteExpenseUseCase
           expenses.where((e) => e.id == params.expenseId).firstOrNull;
 
       if (expenseToDelete == null) {
-        return const Failure('Expense not found');
+        return Failure(ExpenseNotFoundException());
       }
 
       if (expenseToDelete.userId != currentUser.id) {
-        return const Failure('Unauthorized to delete this expense');
+        return Failure(InvalidCredentialsException());
       }
 
       await _repository.deleteExpense(params.expenseId);
       return const Success(true);
-    } catch (e) {
-      return Failure('Failed to delete expense: $e');
+    } on Exception catch (e) {
+      return Failure(e);
     }
   }
 }

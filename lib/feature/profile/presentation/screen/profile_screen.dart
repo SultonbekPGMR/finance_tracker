@@ -26,6 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _nameController.dispose();
     super.dispose();
   }
+
   @override
   void initState() {
     super.initState();
@@ -202,22 +203,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ? null
                   : () => _showLanguageDialog(preferences.language),
             ),
-            _buildPreferenceItem(
-              Icons.attach_money_outlined,
-              context.l10n.currency,
-              preferences.currency,
-              isLoading
-                  ? null
-                  : () => _showCurrencyDialog(preferences.currency),
-            ),
+
             _buildSwitchItem(
               Icons.notifications_outlined,
               context.l10n.notifications,
               preferences.notificationsEnabled,
               isLoading
                   ? null
-                  : (value) =>
-                      context.read<ProfileCubit>().updateNotifications(value, context.l10n.dailyExpenseReminderTitle, context.l10n.dailyExpenseReminderBody),
+                  : (value) => context.read<ProfileCubit>().updateNotifications(
+                    value,
+                    context.l10n.dailyExpenseReminderTitle,
+                    context.l10n.dailyExpenseReminderBody,
+                  ),
             ),
           ],
         ),
@@ -296,17 +293,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () {
-                  // TODO: Export data
-                },
-                icon: const Icon(Icons.download_outlined),
-                label: Text(context.l10n.exportData),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
                 onPressed: _showSignOutDialog,
                 icon: Icon(Icons.logout, color: context.colorScheme.error),
                 label: Text(
@@ -372,8 +358,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showLanguageDialog(String current) {
-    final profileCubit =
-        context.read<ProfileCubit>(); // Capture cubit reference
+    final profileCubit = context.read<ProfileCubit>();
 
     showDialog(
       context: context,
@@ -395,35 +380,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   current,
                   (value) => profileCubit.updateLanguage(value!),
                 ),
+                _buildRadioOption(
+                  'ru',
+                  'Русский',
+                  current,
+                  (value) => profileCubit.updateLanguage(value!),
+                ),
               ],
-            ),
-          ),
-    );
-  }
-
-  void _showCurrencyDialog(String current) {
-    final profileCubit =
-        context.read<ProfileCubit>(); // Capture cubit reference
-    final currencies = ['USD', 'EUR', 'UZS', 'RUB'];
-
-    showDialog(
-      context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: Text(context.l10n.selectCurrency),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children:
-                  currencies
-                      .map(
-                        (currency) => _buildRadioOption(
-                          currency,
-                          currency,
-                          current,
-                          (value) => profileCubit.updateCurrency(value!),
-                        ),
-                      )
-                      .toList(),
             ),
           ),
     );
@@ -431,7 +394,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showEditNameDialog(String currentName) {
     final profileCubit =
-        context.read<ProfileCubit>(); // Capture cubit reference
+        context.read<ProfileCubit>();
     _nameController.text = currentName;
 
     showDialog(

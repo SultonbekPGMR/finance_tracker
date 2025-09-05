@@ -8,6 +8,7 @@ import 'package:finance_tracker/feature/profile/presentation/bloc/profile_cubit.
 import 'package:get_it/get_it.dart';
 
 import '../../feature/auth/presentation/bloc/auth_bloc.dart';
+import '../../feature/dashboard/presentation/bloc/dashboard_cubit.dart';
 import '../../feature/expense/presentation/bloc/expense_details/expense_details_cubit.dart';
 import '../../feature/expense/presentation/bloc/expenses_bloc.dart';
 
@@ -26,5 +27,6 @@ class BlocModule {
     getIt.registerFactory(() => ProfileCubit(get(), get()));
     getIt.registerFactory(() => ChartCubit(get()));
     getIt.registerFactory(() => FilteredExpensesCubit(get()));
+    getIt.registerFactory(() => DashboardCubit(get()));
   }
 }

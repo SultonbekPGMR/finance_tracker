@@ -15,22 +15,22 @@ class ExpenseDetailsCubit extends Cubit<ExpenseDetailsState> {
   final GetCategoriesUseCase _getCategoriesUseCase;
 
   ExpenseDetailsCubit(
-    this._addExpenseUseCase,
-    this._getCategoriesUseCase,
-    this._updateExpenseUseCase,
-  ) : super(ExpenseDetailsLoading());
+      this._addExpenseUseCase,
+      this._getCategoriesUseCase,
+      this._updateExpenseUseCase,
+      ) : super(ExpenseDetailsLoading());
 
-  void loadCategories() {
+  Future<void> loadCategories() async {
     emit(ExpenseDetailsLoading());
 
     final result = _getCategoriesUseCase(Nothing());
     result.fold(
-      (categories) => emit(ExpenseDetailsLoaded(categories: categories)),
-      (error) => emit(ExpenseDetailsError('Failed to load categories: $error')),
+          (categories) => emit(ExpenseDetailsLoaded(categories: categories)),
+          (error) => emit(ExpenseDetailsError(error)),
     );
   }
 
-  void updateExpense({
+  Future<void> updateExpense({
     required ExpenseModel expense,
     required double amount,
     required ExpenseCategoryModel category,
@@ -43,39 +43,27 @@ class ExpenseDetailsCubit extends Cubit<ExpenseDetailsState> {
 
     emit(ExpenseDetailsSubmitting(categories: currentState.categories));
 
-    try {
-      final result = await _updateExpenseUseCase(
-        UpdateExpenseParams(
-          expense: expense,
-          amount: amount,
-          category: category,
-          description: description,
-          imageUrl: imageUrl,
-          date: date,
-        ),
-      );
+    final result = await _updateExpenseUseCase(
+      UpdateExpenseParams(
+        expense: expense,
+        amount: amount,
+        category: category,
+        description: description,
+        imageUrl: imageUrl,
+        date: date,
+      ),
+    );
 
-      result.fold(
-            (success) => emit(
-          ExpenseDetailsUpdatedSuccessfully(),
-        ),
-            (error) => emit(
-          ExpenseDetailsSubmissionError(
-            categories: currentState.categories,
-            error: error,
-          ),
-        ),
-      );
-    } catch (e) {
-      emit(
+    result.fold(
+          (success) => emit(ExpenseDetailsUpdatedSuccessfully()),
+          (error) => emit(
         ExpenseDetailsSubmissionError(
           categories: currentState.categories,
-          error: 'Failed to update expense: $e',
+          exception: error,
         ),
-      );
-    }
+      ),
+    );
   }
-
 
   Future<void> addExpense({
     required double amount,
@@ -89,35 +77,24 @@ class ExpenseDetailsCubit extends Cubit<ExpenseDetailsState> {
 
     emit(ExpenseDetailsSubmitting(categories: currentState.categories));
 
-    try {
-      final result = await _addExpenseUseCase(
-        AddExpenseParams(
-          amount: amount,
-          category: category,
-          description: description,
-          imageUrl: imageUrl,
-          date: date,
-        ),
-      );
+    final result = await _addExpenseUseCase(
+      AddExpenseParams(
+        amount: amount,
+        category: category,
+        description: description,
+        imageUrl: imageUrl,
+        date: date,
+      ),
+    );
 
-      result.fold(
-        (success) => emit(
-          ExpenseDetailsAddedSuccessfully(),
-        ),
-        (error) => emit(
-          ExpenseDetailsSubmissionError(
-            categories: currentState.categories,
-            error: error,
-          ),
-        ),
-      );
-    } catch (e) {
-      emit(
+    result.fold(
+          (success) => emit(ExpenseDetailsAddedSuccessfully()),
+          (error) => emit(
         ExpenseDetailsSubmissionError(
           categories: currentState.categories,
-          error: 'Failed to add expense: $e',
+          exception: error,
         ),
-      );
-    }
+      ),
+    );
   }
 }

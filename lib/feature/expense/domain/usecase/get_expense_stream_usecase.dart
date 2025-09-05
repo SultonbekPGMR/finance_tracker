@@ -1,4 +1,5 @@
 // Created by Sultonbek Tulanov on 31-August 2025
+import 'package:finance_tracker/core/config/talker.dart';
 import 'package:finance_tracker/core/util/usecase.dart';
 
 import '../../../../core/util/no_params.dart';
@@ -17,12 +18,28 @@ class GetExpensesStreamUseCase implements StreamUseCase<List<ExpenseModel>, GetE
     final currentUser = _getCurrentUserUseCase(Nothing());
     if (currentUser == null) return Stream.error('User not authenticated');
 
-    return _repository.getExpensesStream(currentUser.id,month: params.month);
+    appTalker?.debug('Getting expenses for month: ${params.month}');
+    return _repository
+        .getExpensesStream(currentUser.id, month: params.month)
+        .map((expenses) => _filterExpenses(expenses, params.query));
+  }
+
+  List<ExpenseModel> _filterExpenses(List<ExpenseModel> expenses, String? query) {
+    if (query == null || query.trim().isEmpty) {
+      return expenses;
+    }
+
+    final searchQuery = query.trim().toLowerCase();
+    return expenses.where((expense) {
+      return expense.description.toLowerCase().contains(searchQuery) ||expense.amount.toString().contains(searchQuery) ||
+          expense.category.toLowerCase().contains(searchQuery);
+    }).toList();
   }
 }
 
-class GetExpensesParams{
+class GetExpensesParams {
   final DateTime month;
+  final String? query;
 
-  GetExpensesParams({required this.month});
+  GetExpensesParams({required this.month, this.query});
 }

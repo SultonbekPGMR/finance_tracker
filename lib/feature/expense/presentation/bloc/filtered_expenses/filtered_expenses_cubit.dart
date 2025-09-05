@@ -20,33 +20,29 @@ class FilteredExpensesCubit extends Cubit<FilteredExpensesState> {
 
     emit(FilteredExpensesLoading());
 
-    try {
-      final params = GetExpensesByFilterParams(
-        month: month,
-        categories: [category],
-      );
+    final params = GetExpensesByFilterParams(
+      month: month,
+      categories: [category],
+    );
 
-      final expensesStream = _getExpensesByFilterUseCase(params);
+    final expensesStream = _getExpensesByFilterUseCase(params);
 
-      _expensesSubscription = expensesStream.listen(
-        (result) {
-          if (!isClosed) {
-            if (result.isSuccess()) {
-              emit(FilteredExpensesLoaded(result.getOrNull()!));
-            } else {
-              emit(FilteredExpensesError(result.exceptionOrNull()!));
-            }
+    _expensesSubscription = expensesStream.listen(
+          (result) {
+        if (!isClosed) {
+          if (result.isSuccess()) {
+            emit(FilteredExpensesLoaded(result.getOrNull()!));
+          } else {
+            emit(FilteredExpensesError(result.exceptionOrNull()!));
           }
-        },
-        onError: (error) {
-          if (!isClosed) {
-            emit(FilteredExpensesError(Exception(error.toString())));
-          }
-        },
-      );
-    } catch (e) {
-      emit(FilteredExpensesError(Exception(e.toString())));
-    }
+        }
+      },
+      onError: (error) {
+        if (!isClosed) {
+          emit(FilteredExpensesError(Exception(error.toString())));
+        }
+      },
+    );
   }
 
   @override

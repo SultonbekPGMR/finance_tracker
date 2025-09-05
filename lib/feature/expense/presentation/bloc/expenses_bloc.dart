@@ -17,215 +17,135 @@ part 'expenses_event.dart';
 part 'expenses_state.dart';
 
 class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
-  final GetExpensesStreamUseCase _getExpensesStreamsUseCase;
+  final GetExpensesStreamUseCase _getExpensesStreamUseCase;
   final DeleteExpenseUseCase _deleteExpenseUseCase;
   final GetCategoriesUseCase _getCategoriesUseCase;
 
-  StreamSubscription<List<ExpenseModel>>? _expensesSubscription;
+  DateTime _selectedMonth = DateTime.now();
+  String _currentQuery = '';
+  List<ExpenseCategoryModel>? _categories;
 
   ExpensesBloc(
     this._deleteExpenseUseCase,
     this._getCategoriesUseCase,
-    this._getExpensesStreamsUseCase,
+    this._getExpensesStreamUseCase,
   ) : super(ExpensesInitial()) {
-    // Load Expenses
     on<LoadExpensesEvent>(_onLoadExpenses);
-    on<RefreshExpensesEvent>(_onRefreshExpenses);
-
     on<ChangeMonthEvent>(_onChangeMonth);
-
-    on<DeleteExpenseEvent>(_onDeleteExpense);
-
-    // Categories
-    on<LoadCategoriesEvent>(_onLoadCategories);
-
-    // Filters
-    on<FilterExpensesByCategoryEvent>(_onFilterByCategory);
     on<SearchExpensesEvent>(_onSearchExpenses);
+    on<DeleteExpenseEvent>(_onDeleteExpense);
   }
 
-  void _onLoadExpenses(
+  Future<void> _onLoadExpenses(
     LoadExpensesEvent event,
     Emitter<ExpensesState> emit,
   ) async {
     emit(ExpensesLoading());
+    final month = event.month ?? DateTime.now();
+    _selectedMonth = month;
 
-    try {
-      final categoriesResult = _getCategoriesUseCase(Nothing());
-      List<ExpenseCategoryModel> categories = [];
-
-      categoriesResult.fold(
-        (data) => categories = data,
-        (error) => emit(ExpensesError('Failed to load categories: $error')),
-      );
-
-      await _setupExpensesStream(emit, categories, DateTime.now());
-    } catch (e) {
-      appTalker?.error('Failed to load expenses: $e');
-      emit(ExpensesError('Failed to load records: $e'));
+    _categories = await _loadCategories();
+    if (_categories == null) {
+      emit(ExpensesError(Exception('Failed to load categories')));
+      return;
     }
+
+    await _setupExpensesStream(emit);
   }
 
-  Future<void> _setupExpensesStream(
-    Emitter<ExpensesState> emit,
-    List<ExpenseCategoryModel> categories,
-    DateTime selectedMonth,
-  ) async {
-    await _expensesSubscription?.cancel();
-
-    appTalker?.debug('Setting up stream for month: $selectedMonth');
-
-    await emit.forEach<List<ExpenseModel>>(
-      _getExpensesStreamsUseCase(GetExpensesParams(month: selectedMonth)),
-      onData: (expenses) {
-        appTalker?.debug('Received ${expenses.length} expenses');
-        final groupedItems = _groupExpensesByDate(expenses);
-        final totalAmount = expenses.fold(
-          0.0,
-          (sum, expense) => sum + expense.amount,
-        );
-
-        return ExpensesLoaded(
-          expenses: groupedItems,
-          categories: categories,
-          totalAmount: totalAmount,
-          selectedDate: selectedMonth,
-        );
-      },
-      onError: (error, _) {
-        appTalker?.error('Stream error: $error');
-        GlobalMessageBus.showError(error);
-        return ExpensesError('Failed to load expenses: $error');
-      },
-    );
-  }
-
-  void _onChangeMonth(
+  Future<void> _onChangeMonth(
     ChangeMonthEvent event,
     Emitter<ExpensesState> emit,
   ) async {
-    final currentState = state;
-    if (currentState is ExpensesLoaded) {
-      emit(ExpensesLoading());
+    if (_categories == null) return;
 
-      try {
-        await _setupExpensesStream(emit, currentState.categories, event.month);
-      } catch (e) {
-        emit(ExpensesError('Failed to load expenses for selected month: $e'));
-      }
-    }
+    _selectedMonth = event.month;
+    emit(ExpensesLoading());
+    await _setupExpensesStream(emit);
   }
 
-  void _onRefreshExpenses(
-    RefreshExpensesEvent event,
+  Future<void> _onSearchExpenses(
+    SearchExpensesEvent event,
     Emitter<ExpensesState> emit,
-  ) {
-    add(LoadExpensesEvent());
+  ) async {
+    if (_categories == null) return;
+
+    _currentQuery = event.query;
+    emit(ExpensesLoading());
+    await _setupExpensesStream(emit);
   }
 
-  void _onDeleteExpense(
+  Future<void> _onDeleteExpense(
     DeleteExpenseEvent event,
     Emitter<ExpensesState> emit,
   ) async {
-    final currentState = state;
-    appTalker?.debug('eventtttt-> $event');
-    try {
-      final result = await _deleteExpenseUseCase(
-        DeleteExpenseParams(event.expenseId),
-      );
-
-      appTalker?.debug('resulttttt-> $result');
-      result.fold((data) {}, (error) {
-        if (currentState is ExpensesLoaded) {
-          emit(
-            ExpenseOperationError(
-              message: error,
-              expenses: currentState.expenses,
-              categories: currentState.categories,
-            ),
-          );
-        } else {
-          emit(ExpensesError(error));
-        }
-      });
-    } catch (e) {
-      emit(ExpensesError('Failed to delete expense: $e'));
-    }
-  }
-
-  void _onLoadCategories(
-    LoadCategoriesEvent event,
-    Emitter<ExpensesState> emit,
-  ) {
-    final categoriesResult = _getCategoriesUseCase(Nothing());
-
-    categoriesResult.fold(
-      (categories) {
-        if (state is ExpensesLoaded) {
-          final currentState = state as ExpensesLoaded;
-          emit(currentState.copyWith(categories: categories));
-        }
-      },
-      (error) {
-        emit(ExpensesError('Failed to load categories: $error'));
-      },
+    final result = await _deleteExpenseUseCase(
+      DeleteExpenseParams(event.expenseId),
+    );
+    result.fold(
+      (_) {}, // Success - stream will automatically update
+      (error) => GlobalMessageBus.showError(error),
     );
   }
 
-  List<ExpenseListItem> _groupExpensesByDate(List<ExpenseModel> expenses) {
-    final DateFormat dateFormatter = DateFormat('yyyy-MM-dd');
+  Future<void> _setupExpensesStream(Emitter<ExpensesState> emit) async {
+    final params = GetExpensesParams(
+      month: _selectedMonth,
+      query: _currentQuery.isEmpty ? null : _currentQuery,
+    );
 
-    // Group expenses by date
-    final Map<String, List<ExpenseModel>> groupedMap = {};
+    await emit.forEach<List<ExpenseModel>>(
+      _getExpensesStreamUseCase(params),
+      onData: (expenses) {
+        appTalker?.debug('Expenses loaded: $expenses');
+        return ExpensesLoaded(
+          expenses: _groupExpensesByDate(expenses),
+          categories: _categories!,
+          totalAmount: _calculateTotal(expenses),
+          selectedDate: _selectedMonth,
+          searchQuery: _currentQuery,
+        );
+      },
+      onError:
+          (error, stackTrace) =>
+              ExpensesError(Exception('Failed to load expenses: $error')),
+    );
+  }
+
+  Future<List<ExpenseCategoryModel>?> _loadCategories() async {
+    final result = await _getCategoriesUseCase(Nothing());
+    return result.fold((categories) => categories, (error) => null);
+  }
+
+  List<ExpenseListItem> _groupExpensesByDate(List<ExpenseModel> expenses) {
+    final grouped = <String, List<ExpenseModel>>{};
+    final dateFormatter = DateFormat('yyyy-MM-dd');
+
     for (final expense in expenses) {
       final dateKey = dateFormatter.format(expense.createdAt);
-      groupedMap.putIfAbsent(dateKey, () => []).add(expense);
+      grouped.putIfAbsent(dateKey, () => []).add(expense);
     }
 
-    final List<ExpenseListItem> items = [];
+    final items = <ExpenseListItem>[];
 
-    // Create items with headers and data
-    for (final entry in groupedMap.entries) {
-      final dayTotal = entry.value.fold<double>(
-        0,
-        (sum, expense) => sum + expense.amount,
-      );
+    // Sort dates in descending order (newest first)
+    final sortedDates = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
 
-      // Add header
-      items.add(
-        ExpenseHeaderItem(entry.key, DateTime.parse(entry.key), dayTotal),
-      );
+    for (final dateKey in sortedDates) {
+      final expensesForDate = grouped[dateKey]!;
+      final dayTotal = _calculateTotal(expensesForDate);
 
-      // Add expenses for that day
-      items.addAll(entry.value.map((expense) => ExpenseDataItem(expense)));
+      items.add(ExpenseHeaderItem(dateKey, DateTime.parse(dateKey), dayTotal));
+
+      // Sort expenses within the day by creation time (newest first)
+      expensesForDate.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      items.addAll(expensesForDate.map(ExpenseDataItem.new));
     }
 
     return items;
   }
 
-  void _onFilterByCategory(
-    FilterExpensesByCategoryEvent event,
-    Emitter<ExpensesState> emit,
-  ) {
-    if (state is ExpensesLoaded) {
-      final currentState = state as ExpensesLoaded;
-      emit(currentState.copyWith(selectedCategory: event.category));
-    }
-  }
-
-  void _onSearchExpenses(
-    SearchExpensesEvent event,
-    Emitter<ExpensesState> emit,
-  ) {
-    if (state is ExpensesLoaded) {
-      final currentState = state as ExpensesLoaded;
-      emit(currentState.copyWith(searchQuery: event.query));
-    }
-  }
-
-  @override
-  Future<void> close() {
-    _expensesSubscription?.cancel();
-    return super.close();
+  double _calculateTotal(List<ExpenseModel> expenses) {
+    return expenses.fold(0.0, (sum, expense) => sum + expense.amount);
   }
 }

@@ -65,7 +65,7 @@ class GetChartDataUseCase
 
         initialResult.add(
           CategoryExpenseData(
-            category: ExpenseCategoryModel.fromString(category),
+            category: ExpenseCategoryModel.fromName(category),
             totalAmount: totalAmount,
             transactionCount: items.length,
           ),
@@ -128,7 +128,7 @@ class GetChartDataUseCase
       );
 
       final otherCategory = CategoryExpenseData(
-        category: ExpenseCategoryModel.fromString('Other'),
+        category: ExpenseCategoryModel.fromName('Other'),
         totalAmount: otherTotalAmount,
         transactionCount: otherTransactionCount,
       );

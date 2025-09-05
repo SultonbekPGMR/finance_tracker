@@ -1,6 +1,7 @@
 // Created by Sultonbek Tulanov on 31-August 2025
 import 'package:finance_tracker/feature/auth/presentation/screen/register_screen.dart';
 import 'package:finance_tracker/feature/chart/presentation/bloc/chart_cubit.dart';
+import 'package:finance_tracker/feature/dashboard/presentation/bloc/dashboard_cubit.dart';
 import 'package:finance_tracker/feature/expense/presentation/bloc/filtered_expenses/filtered_expenses_cubit.dart';
 import 'package:finance_tracker/feature/expense/presentation/screen/expenses_by_filter_screen.dart';
 import 'package:finance_tracker/feature/home/presentation/home_screen.dart';
@@ -16,6 +17,7 @@ import '../../../feature/expense/presentation/bloc/expenses_bloc.dart';
 import '../../../feature/expense/presentation/screen/expense_details_screen.dart';
 import '../../../feature/expense/presentation/screen/expenses_screen.dart';
 import '../../feature/chart/presentation/screen/chart_screen.dart';
+import '../../feature/dashboard/presentation/screen/dashboard_screen.dart';
 import '../../feature/expense/data/model/expense_category_model.dart';
 import '../../feature/expense/presentation/bloc/expense_details/expense_details_cubit.dart';
 import '../di/app_di.dart';
@@ -120,16 +122,31 @@ class AppRouter {
       },
       branches: [
         StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/home/dashboard',
+              name: 'dashboard',
+              builder:
+                  (context, state) => BlocProvider(
+                    create: (context) => get<DashboardCubit>(),
+                    child: DashboardScreen(),
+                  ),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
           navigatorKey: _shellNavigatorKey,
           routes: [
             GoRoute(
-              path: '/home/records',
-              name: 'records',
-              builder:
-                  (context, state) => BlocProvider.value(
-                    value: get<ExpensesBloc>()..add(LoadExpensesEvent()),
-                    child: ExpensesScreen(),
-                  ),
+              path: '/home/expenses',
+              name: 'expenses',
+              builder: (context, state) {
+                final month = state.extra is DateTime ? state.extra as DateTime : null;
+                return BlocProvider.value(
+                  value: get<ExpensesBloc>()..add(LoadExpensesEvent(month: month)),
+                  child: ExpensesScreen(),
+                );
+              },
             ),
           ],
         ),
@@ -146,15 +163,7 @@ class AppRouter {
             ),
           ],
         ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/home/reports',
-              name: 'reports',
-              builder: (context, state) => Container(),
-            ),
-          ],
-        ),
+
         StatefulShellBranch(
           routes: [
             GoRoute(

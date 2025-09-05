@@ -440,7 +440,7 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget>
                 final category = categoryData[group.x.toInt()];
                 final currencyFormatter = NumberFormat.currency(symbol: '\$');
                 return BarTooltipItem(
-                  '${category.category.displayName}\n${currencyFormatter.format(rod.toY)}',
+                  '${category.category.getLocalizedName(context)}\n${currencyFormatter.format(rod.toY)}',
                   TextStyle(
                     color: context.colorScheme.onInverseSurface,
                     fontWeight: FontWeight.w600,
@@ -480,7 +480,7 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget>
                           Transform.rotate(
                             angle: -0.4,
                             child: Text(
-                              category.category.displayName.split(' ').first,
+                              category.category.getLocalizedName(context).split(' ').first,
                               style: context.textTheme.bodySmall?.copyWith(
                                 color: context.colorScheme.onSurface.withValues(
                                   alpha: 0.6,
@@ -619,7 +619,7 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget>
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
-                highlighted.category.displayName,
+                highlighted.category.getLocalizedName(context),
                 style: context.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: context.colorScheme.onSurface,
@@ -856,7 +856,7 @@ class _ExpensePieChartWidgetState extends State<ExpensePieChartWidget>
                         children: [
                           Expanded(
                             child: Text(
-                              data.category.displayName,
+                              data.category.getLocalizedName(context),
                               style: context.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: context.colorScheme.onSurface,

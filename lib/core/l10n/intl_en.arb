@@ -18,7 +18,7 @@
   "haveAccount": "Do you have an account?",
   "login": "Login",
   "passwordsDontMatch": "Passwords don't match",
-  "records": "Records",
+  "records": "Expenses",
   "charts": "Charts",
   "reports": "Reports",
   "profile": "Profile",
@@ -151,5 +151,53 @@
   "filterCategories": "Filter Categories",
   "showAll": "Show All",
   "showTop5": "Top 5",
-  "showTop10": "Top 10"
+  "showTop10": "Top 10",
+  "categoryFood": "Food",
+  "categoryTransport": "Transport",
+  "categoryEntertainment": "Entertainment",
+  "categoryUtilities": "Utilities",
+  "categoryShopping": "Shopping",
+  "categoryHealth": "Health",
+  "categoryEducation": "Education",
+  "categoryTravel": "Travel",
+  "categoryHome": "Home",
+  "categoryFitness": "Fitness",
+  "categoryOther": "Other",
+  "goodMorning": "Good Morning",
+  "goodAfternoon": "Good Afternoon",
+  "goodEvening": "Good Evening",
+  "loadingDashboard": "Loading dashboard...",
+  "failedToLoadDashboard": "Failed to load dashboard",
+  "initializingDashboard": "Initializing dashboard...",
+  "spentThisMonth": "spent this month",
+  "daysRemaining": "{count} days remaining",
+  "@daysRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "todayLabel": "Today",
+  "thisWeek": "This Week",
+  "dailyAvg": "Daily Avg",
+  "thisMonthLabel": "this month",
+  "transactions": "{count} transactions",
+  "@transactions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentExpenses": "Recent Expenses",
+  "seeAll": "See All",
+  "topCategories": "Top Categories",
+  "thisMonth": "This Month",
+  "recentExpensesEmptyTitle": "Your recent expenses will appear here",
+  "recentExpensesEmptyMessage": "Start tracking your spending by adding your first expense!",
+  "main": "Dashboard",
+  "minutesAgo": "{minutes}m ago",
+  "hoursAgo": "{hours}h ago",
+  "daysAgo": "{days}d ago"
 }

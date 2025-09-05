@@ -5,7 +5,7 @@ abstract class LocalizedException implements Exception {
   Map<String, dynamic>? get params => null;
 }
 
-// Authentication exceptions
+
 class InvalidCredentialsException extends LocalizedException {
   @override
   String get localizationKey => 'invalidCredentials';
@@ -24,6 +24,16 @@ class EmailAlreadyInUseException extends LocalizedException {
 class UserNotFoundException extends LocalizedException {
   @override
   String get localizationKey => 'userNotFound';
+}
+
+class UserNotAuthenticatedException extends LocalizedException {
+  @override
+  String get localizationKey => 'userNotAuthenticated';
+}
+
+class UnauthorizedToUpdateExpenseException extends LocalizedException {
+  @override
+  String get localizationKey => 'unauthorizedToUpdateExpense';
 }
 
 // Network exceptions

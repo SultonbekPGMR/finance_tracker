@@ -2,6 +2,7 @@
 import 'package:finance_tracker/core/util/usecase.dart';
 import 'package:result_dart/result_dart.dart';
 
+import '../../../../core/util/exception/localized_exception.dart';
 import '../../../../core/util/no_params.dart';
 import '../../../auth/domain/usecase/get_current_user_usecase.dart';
 import '../../data/model/expense_category_model.dart';
@@ -9,24 +10,22 @@ import '../../data/model/expense_model.dart';
 import '../repository/expense_repository.dart';
 
 class UpdateExpenseUseCase
-    implements FutureUseCase<ResultDart<bool, String>, UpdateExpenseParams> {
+    implements FutureUseCase<Result<bool>, UpdateExpenseParams> {
   final ExpenseRepository _repository;
   final GetCurrentUserUseCase _getCurrentUserUseCase;
 
   UpdateExpenseUseCase(this._repository, this._getCurrentUserUseCase);
 
   @override
-  Future<ResultDart<bool, String>> call(UpdateExpenseParams params) async {
+  Future<Result<bool>> call(UpdateExpenseParams params) async {
     try {
-      final validationError = _validateParams(params);
-      if (validationError != null) return Failure(validationError);
 
       final currentUser = _getCurrentUserUseCase(Nothing());
-      if (currentUser == null) return Failure('User not authenticated');
+      if (currentUser == null) return Failure(UserNotAuthenticatedException());
 
       // Verify the expense belongs to the current user
       if (params.expense.userId != currentUser.id) {
-        return Failure('Unauthorized to update this expense');
+        return Failure(UnauthorizedToUpdateExpenseException());
       }
 
       final updatedExpense = params.expense.copyWith(
@@ -40,17 +39,11 @@ class UpdateExpenseUseCase
 
       await _repository.updateExpense(updatedExpense);
       return const Success(true);
-    } catch (e) {
-      return Failure('Failed to update expense: $e');
+    } on Exception catch (e) {
+      return Failure(e);
     }
   }
 
-  String? _validateParams(UpdateExpenseParams params) {
-    if (params.expense.id.isEmpty) return 'Expense ID is required';
-    if (params.amount <= 0) return 'Amount must be greater than 0';
-    if (params.description.trim().isEmpty) return 'Description is required';
-    return null;
-  }
 
 
 }

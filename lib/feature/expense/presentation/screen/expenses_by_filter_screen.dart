@@ -195,7 +195,7 @@ class _ExpensesByFilterScreenState extends State<ExpensesByFilterScreen> {
               ? GestureDetector(
             onTap: _expandAppBar,
                 child: Text(
-                            widget.selectedCategory.displayName,
+                            widget.selectedCategory.getLocalizedName(context),
                             style: context.textTheme.titleLarge?.copyWith(
                 color: widget.selectedCategory.color,
 
@@ -241,7 +241,7 @@ class _ExpensesByFilterScreenState extends State<ExpensesByFilterScreen> {
                         opacity: (1 - scrolled).clamp(0.0, 1.0),
                         duration: const Duration(milliseconds: 100),
                         child: Text(
-                          widget.selectedCategory.displayName,
+                          widget.selectedCategory.getLocalizedName(context),
                           style: context.textTheme.headlineLarge?.copyWith(
                             fontWeight: FontWeight.w800,
                             color: context.colorScheme.onSurface,
@@ -416,7 +416,7 @@ class _ExpensesByFilterScreenState extends State<ExpensesByFilterScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              '${widget.selectedCategory.displayName} • ${DateFormat.yMMMM().format(widget.selectedMonth)}',
+              '${widget.selectedCategory.getLocalizedName(context)} • ${DateFormat.yMMMM().format(widget.selectedMonth)}',
               style: context.textTheme.bodyLarge?.copyWith(
                 color: context.colorScheme.onSurface.withValues(alpha: 0.5),
               ),

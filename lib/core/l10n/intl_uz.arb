@@ -86,7 +86,6 @@
   "selectDate": "Sanani tanlang",
   "dateHint": "Xarajat sanasini tanlang",
   "pleaseSelectDate": "Iltimos, sanani tanlang",
-
   "badRequest": "Yaroqsiz so'rov",
   "unauthorized": "Ruxsatsiz kirish",
   "forbidden": "Kirish taqiqlangan",
@@ -117,7 +116,7 @@
   "categoryBreakdown": "Turkumlar taqsimoti",
   "transactionCount": "{count} ta tranzaksiya",
   "selectMonthToView": "Statistikani ko'rish uchun oyni tanlang",
-  "selectedCategory": "Hozir tanlangan" ,
+  "selectedCategory": "Hozir tanlangan",
   "topSpendingCategory": "Eng ko'p sarflangan turkum",
   "dailyExpensesTrend": "Kunlik xarajatlar tendentsiyasi",
   "categoryComparison": "Turkumlarni taqqoslash",
@@ -152,5 +151,53 @@
   "filterCategories": "Turkumlarni filtrlash",
   "showAll": "Hammasini ko'rsatish",
   "showTop5": "Top 5",
-  "showTop10": "Top 10"
+  "showTop10": "Top 10",
+  "categoryFood": "Oziq-ovqat",
+  "categoryTransport": "Transport",
+  "categoryEntertainment": "Ko'ngilochar",
+  "categoryUtilities": "Kommunal to'lovlar",
+  "categoryShopping": "Xaridlar",
+  "categoryHealth": "Salomatlik",
+  "categoryEducation": "Ta'lim",
+  "categoryTravel": "Sayohat",
+  "categoryHome": "Uy-ro'zg'or",
+  "categoryFitness": "Fitnes",
+  "categoryOther": "Boshqa",
+  "goodMorning": "Xayrli tong",
+  "goodAfternoon": "Xayrli kun",
+  "goodEvening": "Xayrli kech",
+  "loadingDashboard": "Boshqaruv paneli yuklanmoqda...",
+  "failedToLoadDashboard": "Boshqaruv panelini yuklashda xatolik",
+  "initializingDashboard": "Boshqaruv paneli ishga tushirilmoqda...",
+  "spentThisMonth": "shu oyda sarflandi",
+  "daysRemaining": "{count} kun qoldi",
+  "@daysRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "todayLabel": "Bugun",
+  "thisWeek": "Shu hafta",
+  "dailyAvg": "Kunlik o'rtacha",
+  "thisMonthLabel": "shu oy",
+  "transactions": "{count} ta tranzaksiya",
+  "@transactions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recentExpenses": "So'nggi xarajatlar",
+  "seeAll": "Hammasini ko'rish",
+  "topCategories": "Eng ko'p sarflangan turkumlar",
+  "thisMonth": "Shu oy",
+  "recentExpensesEmptyTitle": "So'nggi xarajatlaringiz shu yerda paydo bo'ladi",
+  "recentExpensesEmptyMessage": "Birinchi xarajatingizni qo'shish orqali xarajatlaringizni kuzatishni boshlang!",
+  "main": "Dashboard",
+  "minutesAgo": "{minutes} daaqiqa avval",
+  "hoursAgo": "{hours} soat aval",
+  "daysAgo": "{days} kun avval"
 }

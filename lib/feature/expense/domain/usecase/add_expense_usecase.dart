@@ -1,4 +1,5 @@
 // Created by Sultonbek Tulanov on 31-August 2025
+import 'package:finance_tracker/core/util/exception/localized_exception.dart';
 import 'package:finance_tracker/core/util/usecase.dart';
 import 'package:result_dart/result_dart.dart';
 
@@ -9,20 +10,17 @@ import '../../data/model/expense_model.dart';
 import '../repository/expense_repository.dart';
 
 class AddExpenseUseCase
-    implements FutureUseCase<ResultDart<bool, String>, AddExpenseParams> {
+    implements FutureUseCase<Result<bool>, AddExpenseParams> {
   final ExpenseRepository _repository;
   final GetCurrentUserUseCase _getCurrentUserUseCase;
 
   AddExpenseUseCase(this._repository, this._getCurrentUserUseCase);
 
   @override
-  Future<ResultDart<bool, String>> call(AddExpenseParams params) async {
+  Future<Result<bool>> call(AddExpenseParams params) async {
     try {
-      final validationError = _validateParams(params);
-      if (validationError != null) return Failure(validationError);
-
       final currentUser = _getCurrentUserUseCase(Nothing());
-      if (currentUser == null) return Failure('User not authenticated');
+      if (currentUser == null) return Failure(UserNotAuthenticatedException());
 
       final expense = ExpenseModel.create(
         userId: currentUser.id,
@@ -35,8 +33,8 @@ class AddExpenseUseCase
 
       await _repository.addExpense(expense);
       return const Success(true);
-    } catch (e) {
-      return Failure('Failed to expense_details expense: $e');
+    } on Exception catch (e) {
+      return Failure(e);
     }
   }
 

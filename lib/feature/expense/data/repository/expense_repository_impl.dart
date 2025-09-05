@@ -4,11 +4,9 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/config/talker.dart';
 import '../../domain/repository/expense_repository.dart';
 import '../model/expense_model.dart';
 
@@ -32,9 +30,9 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       // Get last 3 months
       final now = DateTime.now();
       final months = [
-        DateTime(now.year, now.month - 2, 1), // 2 months ago
+        DateTime(now.year, now.month - 3, 1), // 3 months ago
+        DateTime(now.year, now.month - 2, 1), // 2 month ago
         DateTime(now.year, now.month - 1, 1), // 1 month ago
-        DateTime(now.year, now.month, 1),     // current month
       ];
 
       // Average American monthly spending by category (in cents for consistency)
@@ -168,11 +166,11 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
             final randomMinute = random.nextInt(60);
 
             final transactionDate = DateTime(
-                month.year,
-                month.month,
-                randomDay,
-                randomHour,
-                randomMinute
+              month.year,
+              month.month,
+              randomDay,
+              randomHour,
+              randomMinute,
             );
 
             // Calculate realistic amount with variation
@@ -180,10 +178,12 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
             final variation = baseAmount * 0.4; // 40% variation
             final minAmount = (baseAmount - variation).round();
             final maxAmount = (baseAmount + variation).round();
-            final amount = minAmount + random.nextInt(maxAmount - minAmount + 1);
+            final amount =
+                minAmount + random.nextInt(maxAmount - minAmount + 1);
 
             // Random description from category
-            final description = descriptions[random.nextInt(descriptions.length)];
+            final description =
+                descriptions[random.nextInt(descriptions.length)];
 
             // Create expense document
             final docRef = firestore.collection(collection).doc();
@@ -194,7 +194,8 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
               'description': description,
               'createdAt': transactionDate.millisecondsSinceEpoch,
               'updatedAt': DateTime.now().millisecondsSinceEpoch,
-              'userId': FirebaseAuth.instance.currentUser?.uid??'demo_user', // Replace with actual user ID
+              'userId': FirebaseAuth.instance.currentUser?.uid ?? 'demo_user',
+              // Replace with actual user ID
             });
 
             totalTransactions++;
@@ -204,19 +205,20 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
 
       await batch.commit();
 
-      print('Generated $totalTransactions realistic American spending transactions for last 3 months');
+      print(
+        'Generated $totalTransactions realistic American spending transactions for last 3 months',
+      );
       print('Monthly averages:');
       categorySpendingData.forEach((category, data) {
         final average = (data['monthlyAverage'] as int) / 100;
         print('  $category: \$${average.toStringAsFixed(2)}');
       });
-
     } catch (e) {
       throw Exception('Failed to generate American spending data: $e');
     }
   }
 
-// Helper method to generate data for specific month if needed
+  // Helper method to generate data for specific month if needed
   Future<void> generateDataForSpecificMonth(DateTime targetMonth) async {
     try {
       final batch = firestore.batch();
@@ -238,7 +240,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
             'Kroger weekly groceries',
             'Panera breakfast',
           ],
-          'frequency': 45
+          'frequency': 45,
         },
         'transport': {
           'monthlyAverage': 95000,
@@ -252,7 +254,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
             'Lyft to airport',
             'Car wash service',
           ],
-          'frequency': 25
+          'frequency': 25,
         },
         'utilities': {
           'monthlyAverage': 32000,
@@ -264,7 +266,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
             'Water & sewer bill',
             'Trash collection fee',
           ],
-          'frequency': 8
+          'frequency': 8,
         },
         'entertainment': {
           'monthlyAverage': 35000,
@@ -276,7 +278,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
             'PlayStation game',
             'Disney+ subscription',
           ],
-          'frequency': 18
+          'frequency': 18,
         },
         'shopping': {
           'monthlyAverage': 45000,
@@ -288,7 +290,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
             'Home Depot supplies',
             'Walmart essentials',
           ],
-          'frequency': 22
+          'frequency': 22,
         },
         'health': {
           'monthlyAverage': 42000,
@@ -300,11 +302,12 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
             'Eye exam appointment',
             'Gym membership - LA Fitness',
           ],
-          'frequency': 12
+          'frequency': 12,
         },
       };
 
-      final daysInMonth = DateTime(targetMonth.year, targetMonth.month + 1, 0).day;
+      final daysInMonth =
+          DateTime(targetMonth.year, targetMonth.month + 1, 0).day;
       int monthTransactions = 0;
 
       for (final categoryEntry in categorySpendingData.entries) {
@@ -321,11 +324,11 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
           final randomMinute = random.nextInt(60);
 
           final transactionDate = DateTime(
-              targetMonth.year,
-              targetMonth.month,
-              randomDay,
-              randomHour,
-              randomMinute
+            targetMonth.year,
+            targetMonth.month,
+            randomDay,
+            randomHour,
+            randomMinute,
           );
 
           final baseAmount = monthlyAverage / frequency;
@@ -344,7 +347,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
             'description': description,
             'createdAt': transactionDate.millisecondsSinceEpoch,
             'updatedAt': DateTime.now().millisecondsSinceEpoch,
-            'userId': FirebaseAuth.instance.currentUser?.uid??'demo_user',
+            'userId': FirebaseAuth.instance.currentUser?.uid ?? 'demo_user',
           });
 
           monthTransactions++;
@@ -352,77 +355,68 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       }
 
       await batch.commit();
-      print('Generated $monthTransactions transactions for ${targetMonth.month}/${targetMonth.year}');
-
+      print(
+        'Generated $monthTransactions transactions for ${targetMonth.month}/${targetMonth.year}',
+      );
     } catch (e) {
       throw Exception('Failed to generate month data: $e');
     }
   }
   @override
   Stream<List<ExpenseModel>> getExpensesStream(
-    String userId, {
-    DateTime? month,
-  }) {
-
-    Query query = firestore
+      String userId, {
+        DateTime? month,
+      }) {
+    return firestore
         .collection(collection)
-        .where('userId', isEqualTo: userId);
-
-    if (month != null) {
-      final startOfMonth = DateTime(month.year, month.month, 1);
-      final endOfMonth = DateTime(month.year, month.month + 1, 0, 23, 59, 59);
-      query = query
-          .where(
-            'createdAt',
-            isGreaterThanOrEqualTo: startOfMonth.millisecondsSinceEpoch,
-          )
-          .where(
-            'createdAt',
-            isLessThanOrEqualTo: endOfMonth.millisecondsSinceEpoch,
-          );
-    }
-
-
-
-    return query
+        .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map(_convertSnapshotToExpenses);
-  }
+        .map((snapshot) {
+      var expenses = _convertSnapshotToExpenses(snapshot);
 
+      if (month != null) {
+        final startOfMonth = DateTime(month.year, month.month, 1);
+        final endOfMonth = DateTime(month.year, month.month + 1, 0, 23, 59, 59);
+
+        expenses = expenses.where((expense) {
+          final expenseTime = expense.createdAt.millisecondsSinceEpoch;
+          return expenseTime >= startOfMonth.millisecondsSinceEpoch &&
+              expenseTime <= endOfMonth.millisecondsSinceEpoch;
+        }).toList();
+      }
+
+      return expenses;
+    });
+  }
   @override
-  Future<List<ExpenseModel>> getExpenses(String userId, {DateTime? month}) async {
+  Future<List<ExpenseModel>> getExpenses(
+    String userId, {
+    DateTime? month,
+  }) async {
     try {
-      // Start with the base query filtering by user
       Query query = firestore
           .collection(collection)
           .where('userId', isEqualTo: userId);
 
-      // Apply month filtering if a specific month is requested
       if (month != null) {
-        // Calculate the exact start of the month (first day, midnight)
         final startOfMonth = DateTime(month.year, month.month, 1);
 
-        // Calculate the exact end of the month (last day, 23:59:59)
-        // Adding 1 to month and subtracting 1 day gives us the last day
         final endOfMonth = DateTime(month.year, month.month + 1, 0, 23, 59, 59);
 
-        // Apply the date range filters using millisecond timestamps
         query = query
             .where(
-          'createdAt',
-          isGreaterThanOrEqualTo: startOfMonth.millisecondsSinceEpoch,
-        )
+              'createdAt',
+              isGreaterThanOrEqualTo: startOfMonth.millisecondsSinceEpoch,
+            )
             .where(
-          'createdAt',
-          isLessThanOrEqualTo: endOfMonth.millisecondsSinceEpoch,
-        );
+              'createdAt',
+              isLessThanOrEqualTo: endOfMonth.millisecondsSinceEpoch,
+            );
       }
 
-      // Execute the query with proper ordering
-      final querySnapshot = await query
-          .orderBy('createdAt', descending: true)
-          .get();
+      final querySnapshot =
+          await query.orderBy('createdAt', descending: true).get();
 
       return _convertSnapshotToExpenses(querySnapshot);
     } catch (e) {
@@ -437,8 +431,9 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       await firestore
           .collection(collection)
           .doc(expense.id)
-          .set(expense.toJson()).timeout(Duration(seconds: 3));
-    }on TimeoutException {
+          .set(expense.toJson())
+          .timeout(Duration(seconds: 3));
+    } on TimeoutException {
       // Safe to ignore: Firestore wrote locally and will sync later.
     } catch (e) {
       throw Exception('Failed to expense_details expense: $e');

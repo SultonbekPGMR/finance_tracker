@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 
+import '../../../../core/service/exception_localization_service.dart';
 import '../../data/model/expense_model.dart';
 import '../bloc/expenses_bloc.dart';
 import '../model/expense_list_item.dart';
@@ -13,6 +14,7 @@ import '../widget/date_header_widget.dart';
 import '../widget/expense_item_widget.dart';
 
 class ExpensesScreen extends StatefulWidget {
+
   const ExpensesScreen({super.key});
 
   @override
@@ -21,11 +23,14 @@ class ExpensesScreen extends StatefulWidget {
 
 class _ExpensesScreenState extends State<ExpensesScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+
   bool _isSearchVisible = false;
 
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -48,7 +53,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 ],
                 ExpensesLoaded loaded => _buildExpensesSlivers(loaded),
                 ExpensesError error => [
-                  SliverToBoxAdapter(child: _buildErrorState(error.message)),
+                  SliverToBoxAdapter(child: _buildErrorState(error.exception)),
                 ],
                 ExpensesState() => [
                   const SliverToBoxAdapter(child: SizedBox()),
@@ -97,20 +102,14 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     context.read<ExpensesBloc>().add(SearchExpensesEvent(''));
                   }
                 });
-              },
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.calendar_month,
-                color: context.colorScheme.onSurface,
-              ),
-              onPressed: () {
-                if (state is ExpensesLoaded) {
-                  _showMonthPicker(state.selectedDate);
+
+                if (_isSearchVisible) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _searchFocusNode.requestFocus();
+                  });
                 }
               },
             ),
-            const SizedBox(width: 8),
           ],
           flexibleSpace: FlexibleSpaceBar(
             titlePadding: EdgeInsets.zero,
@@ -163,13 +162,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         child: Row(
           children: [
             // Month picker - hide when collapsed (moves to leading)
-            if (!isCollapsed) Opacity(
-                opacity: (1 - scrolled ).clamp(0.0, 1.0),
-                child: _buildMonthPickerInline(state)),
+            if (!isCollapsed)
+              Opacity(
+                opacity: (1 - scrolled).clamp(0.0, 1.0),
+                child: _buildMonthPickerInline(state),
+              ),
             const Spacer(),
             // Expense stats - fade out as we scroll
             Opacity(
-              opacity: (1 - scrolled ).clamp(0.0, 1.0),
+              opacity: (1 - scrolled).clamp(0.0, 1.0),
               child: _buildExpenseStats(state),
             ),
           ],
@@ -255,6 +256,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         ),
         child: TextField(
           controller: _searchController,
+          focusNode: _searchFocusNode,
+
           decoration: InputDecoration(
             hintText: context.l10n.searchExpenses,
             prefixIcon: Icon(
@@ -360,7 +363,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     );
   }
 
-  Widget _buildErrorState(String message) {
+  Widget _buildErrorState(Exception exception) {
     return SizedBox(
       height: context.screenHeight * 0.5,
       child: Center(
@@ -381,7 +384,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              message,
+              ExceptionLocalizationService.getLocalizedMessage(exception),
               style: context.textTheme.bodyMedium?.copyWith(
                 color: context.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
@@ -465,6 +468,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   ),
                   onTap: () {
                     context.pop();
+                    FocusManager.instance.primaryFocus?.unfocus();
                     context.pushNamed('update-expense', extra: expense);
                   },
                 ),

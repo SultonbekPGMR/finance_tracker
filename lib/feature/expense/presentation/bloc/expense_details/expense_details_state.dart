@@ -22,16 +22,16 @@ class ExpenseDetailsUpdatedSuccessfully extends ExpenseDetailsState {}
 
 class ExpenseDetailsSubmissionError extends ExpenseDetailsState {
   final List<ExpenseCategoryModel> categories;
-  final String error;
+  final Exception exception;
 
   ExpenseDetailsSubmissionError({
     required this.categories,
-    required this.error,
+    required this.exception,
   });
 }
 
 class ExpenseDetailsError extends ExpenseDetailsState {
-  final String message;
+  final Exception exception;
 
-  ExpenseDetailsError(this.message);
+  ExpenseDetailsError(this.exception);
 }
