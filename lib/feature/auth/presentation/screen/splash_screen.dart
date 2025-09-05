@@ -28,8 +28,8 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
 
     final authStatusCubit = context.read<AuthStatusCubit>();
-    final destination = authStatusCubit.state ? '/home/dashboard' : '/login';
-    context.go(destination);
+    final destination = authStatusCubit.state ? 'dashboard' : 'login';
+    context.goNamed(destination);
   }
 
   @override
