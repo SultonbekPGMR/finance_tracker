@@ -182,7 +182,7 @@ Stream<List<ExpenseModel>> getExpensesStream(String userId, {DateTime? month}) {
 
 | English | O'zbek | Русский | Logout |
 |:---:|:---:|:---:|:---:|
-| <img src="screenshots/profile_lang2.png"/> | <img src="screenshots/profile_lang.png"/> | <img src="screenshots/profile_lang3.png"/> | <img src="screenshots/profile_log_out.png"/> |
+| <img src="screenshots/profile_lang2.png"/><br/><img src="screenshots/notification_en.png"/> | <img src="screenshots/profile_lang.png"/><br/><img src="screenshots/notification_uz.png"/> | <img src="screenshots/profile_lang3.png"/><img src="screenshots/notification_ru.png"/> | <img src="screenshots/profile_log_out.png"/> |
 
 
 ## 🎯 Core Functionalities Implemented
