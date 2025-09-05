@@ -227,11 +227,12 @@ class FirebaseNotificationService implements NotificationService {
       appTalker?.error('Error opening exact alarm settings: $e');
     }
   }
-
   @override
   Future<void> scheduleDailyExpenseReminder({
-    required int hour,
-    required int minute,
+    required int noonHour,
+    required int noonMinute,
+    required int eveningHour,
+    required int eveningMinute,
     required String title,
     required String body,
   }) async {
@@ -252,13 +253,24 @@ class FirebaseNotificationService implements NotificationService {
         iOS: iosDetails,
       );
 
-      var scheduledDate = _nextInstanceOfTime(hour, minute);
-
+      var noonScheduledDate = _nextInstanceOfTime(noonHour, noonMinute);
       await _localNotifications.zonedSchedule(
         _dailyReminderNotificationId,
         title,
         body,
-        scheduledDate,
+        noonScheduledDate,
+        details,
+        payload: 'add_expense',
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.time,
+      );
+
+      var eveningScheduledDate = _nextInstanceOfTime(eveningHour, eveningMinute);
+      await _localNotifications.zonedSchedule(
+        _dailyReminderNotificationId + 1,
+        title,
+        body,
+        eveningScheduledDate,
         details,
         payload: 'add_expense',
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -266,10 +278,10 @@ class FirebaseNotificationService implements NotificationService {
       );
 
       appTalker?.debug(
-        'Daily expense reminder scheduled for ${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}',
+        'Daily expense reminders scheduled for ${noonHour.toString().padLeft(2, '0')}:${noonMinute.toString().padLeft(2, '0')} and ${eveningHour.toString().padLeft(2, '0')}:${eveningMinute.toString().padLeft(2, '0')}',
       );
     } catch (e) {
-      appTalker?.error('Error scheduling daily reminder: $e');
+      appTalker?.error('Error scheduling daily reminders: $e');
     }
   }
 
@@ -277,6 +289,8 @@ class FirebaseNotificationService implements NotificationService {
   Future<void> cancelDailyExpenseReminder() async {
     try {
       await _localNotifications.cancel(_dailyReminderNotificationId);
+      await _localNotifications.cancel(_dailyReminderNotificationId + 1);
+
       appTalker?.debug('Daily expense reminder cancelled');
     } catch (e) {
       appTalker?.error('Error cancelling daily reminder: $e');

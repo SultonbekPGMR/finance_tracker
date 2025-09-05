@@ -44,7 +44,7 @@ class UserPreferences extends HiveObject {
     this.themeMode = 'system',
     this.language = 'en',
     this.currency = 'USD',
-    this.notificationsEnabled = true,
+    this.notificationsEnabled = false,
   });
 
   UserPreferences copyWith({

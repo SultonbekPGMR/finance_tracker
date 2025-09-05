@@ -30,8 +30,10 @@ abstract class NotificationService {
   Stream<RemoteMessage> get onMessageOpenedApp;
 
   Future<void> scheduleDailyExpenseReminder({
-    required int hour,
-    required int minute,
+    required int noonHour,
+    required int noonMinute,
+    required int eveningHour,
+    required int eveningMinute,
     required String title,
     required String body,
   });

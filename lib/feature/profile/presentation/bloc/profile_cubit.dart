@@ -122,11 +122,25 @@ class ProfileCubit extends Cubit<ProfileState> {
   }) async {
     if (enabled && title != null && body != null) {
       await get<NotificationService>().scheduleDailyExpenseReminder(
-        hour: 20,
-        minute: 05,
+        noonHour: 13,
+        noonMinute: 45,
+        eveningHour: 21,
+        eveningMinute: 11,
         title: title,
         body: body,
       );
+      // await get<NotificationService>().scheduleDailyExpenseReminder(
+      //   hour: 13,
+      //   minute: 45,
+      //   title: title,
+      //   body: body,
+      // );
+      // await get<NotificationService>().scheduleDailyExpenseReminder(
+      //   hour: 20,
+      //   minute: 05,
+      //   title: title,
+      //   body: body,
+      // );
     } else {
       await get<NotificationService>().cancelAllScheduledNotifications();
     }
