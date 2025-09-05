@@ -150,20 +150,40 @@ Stream<List<ExpenseModel>> getExpensesStream(String userId, {DateTime? month}) {
 
 ## 📱 Screenshots
 
-### Authentication Flow
-| Login Screen | Register Screen | Password Reset |
+### 🔐 Authentication Flow
+| Login | Register | Password Reset |
 |:---:|:---:|:---:|
-| ![Login](screenshots/login.png) | ![Register](screenshots/register.png) | ![Reset](screenshots/reset.png) |
+| <img src="screenshots/login.png"/> | <img src="screenshots/register.png"/> | <img src="screenshots/password_reset.png"/> |
 
-### Main Features
-| Dashboard | Expense List | Add Expense |
-|:---:|:---:|:---:|
-| ![Dashboard](screenshots/dashboard.png) | ![Expenses](screenshots/expenses.png) | ![Add](screenshots/add_expense.png) |
+---
 
-### Analytics & Charts
-| Pie Chart | Category Filter | Profile Settings |
-|:---:|:---:|:---:|
-| ![Charts](screenshots/charts.png) | ![Filter](screenshots/filter.png) | ![Profile](screenshots/profile.png) |
+### 📊 Dashboard & Expenses
+| Dashboard Overview | Dashboard (scrolled) | Expenses | Year Selection | Expense Search |
+|:---:|:---:|:---:|:---:|:---:|
+| <img src="screenshots/dashboard.png"/> | <img src="screenshots/dashboard2.png"/> | <img src="screenshots/expenses.png"/> | <img src="screenshots/expenses_date.png"/> | <img src="screenshots/expenses_search.png"/> |
+
+| Add Expense | Update Expense | Delete Expense | Options |
+|:---:|:---:|:---:|:---:|
+| <img src="screenshots/expense_add.png"/> | <img src="screenshots/expense_update.png"/> | <img src="screenshots/expense_delete.png"/> | <img src="screenshots/expense_option.png"/> |
+
+---
+
+### 📈 Charts & Analytics
+| Chart Overview | Year Selecttion | Bar Chart | Pie Chart | Expenses By Category |
+|:---:|:---:|:---:|:---:|:---:|
+| <img src="screenshots/chart.png"/> | <img src="screenshots/chart_date.png"/> | <img src="screenshots/chart2.png"/> | <img src="screenshots/chart3.png"/> | <img src="screenshots/expense_filtered.png"/> |
+
+---
+
+### ⚙️ Profile & Settings
+| Profile | Edit Name | Theme Light | Theme Dark |
+|:---:|:---:|:---:|:---:|
+| <img src="screenshots/profile.png"/> | <img src="screenshots/profile_edit_name.png"/> | <img src="screenshots/profile_light.png"/> | <img src="screenshots/profile_theme.png"/> |
+
+| English | O'zbek | Русский | Logout |
+|:---:|:---:|:---:|:---:|
+| <img src="screenshots/profile_lang2.png"/> | <img src="screenshots/profile_lang.png"/> | <img src="screenshots/profile_lang3.png"/> | <img src="screenshots/profile_log_out.png"/> |
+
 
 ## 🎯 Core Functionalities Implemented
 
@@ -413,7 +433,7 @@ enum ExpenseCategoryModel {
 ## 👨‍💻 Developer
 
 **Sultonbek Tulanov**
-- Strong Flutter Developer Candidate
+- Flutter Developer Candidate
 - Email: sultonbektolanov60@gmail.com
 - Telegram: https://t.me/pgmr1
 
