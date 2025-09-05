@@ -3,6 +3,7 @@
 [![Flutter](https://img.shields.io/badge/Flutter-3.29.3-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.7.2-0175C2?logo=dart)](https://dart.dev)
 [![Firebase](https://img.shields.io/badge/Firebase-Integrated-FFCA28?logo=firebase)](https://firebase.google.com)
+[![wakatime](https://wakatime.com/badge/github/SultonbekPGMR/finance_tracker.svg)](https://wakatime.com/badge/github/SultonbekPGMR/finance_tracker)
 
 > A comprehensive personal finance tracking application built with Flutter, featuring real-time expense management, interactive charts, and intelligent notifications. Developed as part of the **Ustoz AI Strong Junior Flutter Developer** assessment.
 
