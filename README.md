@@ -236,8 +236,6 @@ Stream<List<ExpenseModel>> getExpensesStream(String userId, {DateTime? month}) {
 
 | Category | Technology | Purpose |
 |----------|------------|---------|
-| **Framework** | Flutter 3.7.2 | Cross-platform mobile development |
-| **Language** | Dart 3.7.2 | Programming language |
 | **State Management** | BLoC Pattern | Predictable state management |
 | **Backend** | Firebase | Authentication, Database, Messaging |
 | **Database** | Firestore | Real-time NoSQL database |
