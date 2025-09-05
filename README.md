@@ -439,6 +439,9 @@ enum ExpenseCategoryModel {
 ## 👨‍💻 Developer
 
 **Sultonbek Tulanov**
+
+[![wakatime](https://wakatime.com/badge/user/6dbafdac-4a2f-434f-9224-eadd95831454.svg)](https://wakatime.com/@6dbafdac-4a2f-434f-9224-eadd95831454)
+
 - Flutter Developer Candidate
 - Email: sultonbektolanov60@gmail.com
 - Telegram: https://t.me/pgmr1
