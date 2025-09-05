@@ -6,6 +6,13 @@
 
 > A comprehensive personal finance tracking application built with Flutter, featuring real-time expense management, interactive charts, and intelligent notifications. Developed as part of the **Ustoz AI Strong Junior Flutter Developer** assessment.
 
+## 📱 Install APK
+
+Click the button below to download the latest release:
+
+[![Download APK](https://img.shields.io/badge/Download-APK-blue?logo=android)](apk/app-release.apk)
+
+
 ## 🌟 Key Features
 
 ### 🔐 Authentication & User Management
@@ -113,7 +120,7 @@ Stream<List<ExpenseModel>> getExpensesStream(String userId, {DateTime? month}) {
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Flutter SDK 3.7.2+
+- Flutter SDK 3.29.3+
 - Dart 3.7.2+
 - Firebase project setup
 - Android Studio / VS Code
