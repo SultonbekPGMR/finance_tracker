@@ -156,6 +156,14 @@ Stream<List<ExpenseModel>> getExpensesStream(String userId, {DateTime? month}) {
    flutter run
    ```
 
+## App Interactions
+
+| Chart animation | Center selected month | Sliver AppBar |
+|:---:|:---:|:---:|
+| <img src="screenshots/chart.gif"/> | <img src="screenshots/month.gif"/> | <img src="screenshots/app_bar.gif"/> |
+
+---
+
 ## 📱 Screenshots
 
 ### 🔐 Authentication Flow
