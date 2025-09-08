@@ -3,8 +3,16 @@
 [![Flutter](https://img.shields.io/badge/Flutter-3.29.3-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.7.2-0175C2?logo=dart)](https://dart.dev)
 [![Firebase](https://img.shields.io/badge/Firebase-Integrated-FFCA28?logo=firebase)](https://firebase.google.com)
+[![wakatime](https://wakatime.com/badge/github/SultonbekPGMR/finance_tracker.svg)](https://wakatime.com/badge/github/SultonbekPGMR/finance_tracker)
 
 > A comprehensive personal finance tracking application built with Flutter, featuring real-time expense management, interactive charts, and intelligent notifications. Developed as part of the **Ustoz AI Strong Junior Flutter Developer** assessment.
+
+## 📱 Install APK
+
+Click the button below to download the latest release:
+
+[![Download APK](https://img.shields.io/badge/Download-APK-blue?logo=android)](apk/app-release.apk)
+
 
 ## 🌟 Key Features
 
@@ -113,7 +121,7 @@ Stream<List<ExpenseModel>> getExpensesStream(String userId, {DateTime? month}) {
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Flutter SDK 3.7.2+
+- Flutter SDK 3.29.3+
 - Dart 3.7.2+
 - Firebase project setup
 - Android Studio / VS Code
@@ -122,7 +130,7 @@ Stream<List<ExpenseModel>> getExpensesStream(String userId, {DateTime? month}) {
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/finance_tracker.git
+   git clone https://github.com/SultonbekPGMR/finance_tracker.git
    cd finance_tracker
    ```
 
@@ -147,6 +155,14 @@ Stream<List<ExpenseModel>> getExpensesStream(String userId, {DateTime? month}) {
    ```bash
    flutter run
    ```
+
+## App Interactions
+
+| Chart animation | Center selected month | Sliver AppBar |
+|:---:|:---:|:---:|
+| <img src="screenshots/chart.gif"/> | <img src="screenshots/month.gif"/> | <img src="screenshots/app_bar.gif"/> |
+
+---
 
 ## 📱 Screenshots
 
@@ -431,6 +447,9 @@ enum ExpenseCategoryModel {
 ## 👨‍💻 Developer
 
 **Sultonbek Tulanov**
+
+[![wakatime](https://wakatime.com/badge/user/6dbafdac-4a2f-434f-9224-eadd95831454.svg)](https://wakatime.com/@6dbafdac-4a2f-434f-9224-eadd95831454)
+
 - Flutter Developer Candidate
 - Email: sultonbektolanov60@gmail.com
 - Telegram: https://t.me/pgmr1
