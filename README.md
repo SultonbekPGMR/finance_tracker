@@ -21,6 +21,9 @@ Click the button below to download the latest release:
 - **Password Reset** functionality via email
 - **Secure user session** management
 - **Profile customization** with display name editing
+- **App Lock** with PIN code protection
+- **Biometric Authentication** (fingerprint/Face ID)
+- **Background app locking** for enhanced security
 
 ### 💸 Expense Management
 - **Add, Edit, Delete** expenses with validation
@@ -209,6 +212,11 @@ Stream<List<ExpenseModel>> getExpensesStream(String userId, {DateTime? month}) {
 - [x] Secure session management
 - [x] User profile management
 - [x] Logout functionality
+- [x] **App Lock with PIN code** (4-digit security)
+- [x] **Biometric authentication** (fingerprint/Face ID)
+- [x] **Background app locking** (automatic security)
+- [x] **Custom PIN screen** with Telegram-like design
+- [x] **Security settings** integration in profile
 
 ### ✅ Expense Management
 - [x] Create new expenses with validation
@@ -262,6 +270,8 @@ Stream<List<ExpenseModel>> getExpensesStream(String userId, {DateTime? month}) {
 | **Localization** | Flutter Intl | Multi-language support |
 | **Theming** | Flex Color Scheme | Advanced Material theming |
 | **Fonts** | Google Fonts | Custom typography |
+| **Biometric Auth** | Local Auth | Fingerprint/Face ID authentication |
+| **Security** | Crypto + Hive | PIN hashing and secure storage |
 
 ## 📊 Performance Optimizations
 
@@ -374,6 +384,31 @@ Future<void> scheduleDailyExpenseReminder({
 }
 ```
 
+### App Lock & Biometric Authentication
+```dart
+// PIN Authentication
+Future<bool> verifyPin(String pin) async {
+  final box = await this.box;
+  final storedHashedPin = box.get(_pinKey);
+  if (storedHashedPin == null) return false;
+  
+  final hashedInputPin = _hashPin(pin);
+  return hashedInputPin == storedHashedPin;
+}
+
+// Biometric Authentication
+Future<bool> authenticateWithBiometric() async {
+  final bool didAuthenticate = await _localAuth.authenticate(
+    localizedReason: 'Please authenticate to access the app',
+    options: const AuthenticationOptions(
+      biometricOnly: true,
+      stickyAuth: true,
+    ),
+  );
+  return didAuthenticate;
+}
+```
+
 ## 🚀 Deployment
 
 ### Android
@@ -431,6 +466,16 @@ enum ExpenseCategoryModel {
 - **Email verification** support
 - **Session timeout** handling
 - **Secure logout** with cleanup
+
+### App Lock Security
+- **4-digit PIN protection** with secure SHA-256 hashing
+- **Biometric authentication** (fingerprint/Face ID) integration
+- **Background app locking** when app becomes inactive
+- **Secure PIN storage** using Hive local database
+- **Multi-language support** for security screens (EN/RU/UZ)
+- **Custom keypad design** with haptic feedback
+- **PIN change functionality** with confirmation
+- **Biometric enable/disable** toggle in settings
 
 ## 🌟 Bonus Features Implemented
 
