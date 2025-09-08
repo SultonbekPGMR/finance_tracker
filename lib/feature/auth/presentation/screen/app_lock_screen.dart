@@ -35,7 +35,7 @@ class _AppLockScreenState extends State<AppLockScreen>
   bool _isConfirmingPin = false;
   bool _showError = false;
   bool _biometricAvailable = false;
-  bool _isBiometricLoading = false;
+  bool _isBiometricActive = false;
   
   late AnimationController _shakeController;
   late AnimationController _fadeController;
@@ -95,10 +95,10 @@ class _AppLockScreenState extends State<AppLockScreen>
   }
 
   Future<void> _authenticateWithBiometrics() async {
-    if (_isBiometricLoading) return;
+    if (_isBiometricActive) return;
     
     setState(() {
-      _isBiometricLoading = true;
+      _isBiometricActive = true;
     });
 
     try {
@@ -108,7 +108,7 @@ class _AppLockScreenState extends State<AppLockScreen>
       appTalker?.error('Authentication error: $e');
     } finally {
       setState(() {
-        _isBiometricLoading = false;
+        _isBiometricActive = false;
       });
     }
   }
@@ -221,9 +221,27 @@ class _AppLockScreenState extends State<AppLockScreen>
                 const Spacer(flex: 2),
                 _buildHeader(),
                 const Spacer(),
-                _buildPinDots(),
+                AnimatedOpacity(
+                  opacity: _isBiometricActive ? 0.0 : 1.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: AnimatedScale(
+                    scale: _isBiometricActive ? 0.8 : 1.0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: _buildPinDots(),
+                  ),
+                ),
                 const SizedBox(height: 40),
-                _buildNumericKeypad(),
+                AnimatedOpacity(
+                  opacity: _isBiometricActive ? 0.0 : 1.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: AnimatedScale(
+                    scale: _isBiometricActive ? 0.8 : 1.0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: _buildNumericKeypad(),
+                  ),
+                ),
                 const Spacer(),
               ],
             ),
@@ -311,7 +329,7 @@ class _AppLockScreenState extends State<AppLockScreen>
     );
   }
 
-  Widget _buildNumericKeypad() {
+    Widget _buildNumericKeypad() {
     return Container(
       constraints: const BoxConstraints(maxWidth: 300),
       child: Column(
@@ -398,7 +416,7 @@ class _AppLockScreenState extends State<AppLockScreen>
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(40),
-          onTap: _authenticateWithBiometrics,
+          onTap: _isBiometricActive ? null : _authenticateWithBiometrics,
           child: Container(
             width: 80,
             height: 80,
@@ -407,20 +425,13 @@ class _AppLockScreenState extends State<AppLockScreen>
               color: context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             ),
             child: Center(
-              child: _isBiometricLoading
-                  ? SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: context.colorScheme.primary,
-                      ),
-                    )
-                  : Icon(
-                      Icons.fingerprint,
-                      size: 28,
-                      color: context.colorScheme.primary,
-                    ),
+              child: Icon(
+                Icons.fingerprint,
+                size: 28,
+                color: _isBiometricActive 
+                    ? context.colorScheme.primary.withOpacity(0.5)
+                    : context.colorScheme.primary,
+              ),
             ),
           ),
         ),
@@ -446,7 +457,7 @@ class _AppLockScreenState extends State<AppLockScreen>
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (_isBiometricLoading)
+              if (_isBiometricActive)
                 SizedBox(
                   width: 20,
                   height: 20,

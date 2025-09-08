@@ -1,5 +1,4 @@
 import 'package:finance_tracker/app.dart';
-import 'package:finance_tracker/core/service/notificaion/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';

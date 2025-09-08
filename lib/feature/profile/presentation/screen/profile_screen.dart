@@ -23,18 +23,30 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final _nameController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
+  final _scrollController = ScrollController();
+  double _scrollOffset = 0.0;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     if (mounted) context.read<ProfileCubit>().loadProfile();
   }
+
+  void _onScroll() {
+    setState(() {
+      _scrollOffset = _scrollController.offset;
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -343,8 +355,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       Icons.fingerprint_outlined,
                                       'Biometric Authentication',
                                       isBiometricEnabled,
-                                      isLoading ? null : (value) {
-                                        context.read<AppLockCubit>().setBiometricEnabled(value);
+                                      isLoading ? null : (value) async {
+                                        if (value) {
+                                          // Verify biometric before enabling
+                                          final success = await get<AppLockService>().authenticateWithBiometric();
+                                          if (success) {
+                                            context.read<AppLockCubit>().setBiometricEnabled(true);
+                                          }
+                                        } else {
+                                          context.read<AppLockCubit>().setBiometricEnabled(false);
+                                        }
                                       },
                                     );
                                   },
@@ -546,11 +566,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showChangePinDialog() {
+    // First verify current PIN
     context.pushNamed('app-lock', extra: {
-      'isSettingPin': true,
+      'isSettingPin': false, // First authenticate with current PIN
       'onAuthenticated': () {
         context.pop();
-        setState(() {});
+        // After successful authentication, show PIN setup
+        Future.delayed(const Duration(milliseconds: 100), () {
+          context.pushNamed('app-lock', extra: {
+            'isSettingPin': true,
+            'onAuthenticated': () {
+              context.pop();
+              setState(() {});
+            },
+          });
+        });
       },
     });
   }
