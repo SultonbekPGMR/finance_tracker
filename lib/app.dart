@@ -13,6 +13,7 @@ import 'core/l10n/generated/l10n.dart';
 import 'core/navigation/app_router.dart';
 import 'core/presentation/theme/app_theme.dart';
 import 'core/service/message_service.dart';
+import 'feature/auth/presentation/bloc/app_lock_cubit.dart';
 import 'feature/auth/presentation/bloc/auth_bloc.dart';
 import 'feature/auth/presentation/bloc/auth_state_cubit.dart';
 import 'feature/profile/presentation/bloc/profile_cubit.dart';
@@ -64,6 +65,7 @@ class _AppState extends State<App> {
       providers: [
         BlocProvider(create: (context) => get<AuthStatusCubit>()),
         BlocProvider(create: (context) => get<AuthBloc>()),
+        BlocProvider(create: (context) => get<AppLockCubit>()),
         BlocProvider(create: (context) => get<ProfileCubit>()..loadProfile()),
       ],
       child: BlocBuilder<ProfileCubit, ProfileState>(

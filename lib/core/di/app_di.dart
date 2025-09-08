@@ -4,6 +4,8 @@ import 'package:finance_tracker/core/di/repository_module.dart';
 import 'package:finance_tracker/core/di/usecase_module.dart';
 import 'package:finance_tracker/core/service/notificaion/notification_service.dart';
 import 'package:finance_tracker/core/service/notificaion/notification_service_impl.dart';
+import 'package:finance_tracker/feature/auth/data/service/app_lock_service.dart';
+import 'package:finance_tracker/feature/auth/data/service/app_lock_service_impl.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
 
@@ -23,6 +25,10 @@ class AppDi {
         .initialize();
 
     await PreferencesService.init();
+    
+    // Register App Lock Service
+    get.registerSingleton<AppLockService>(AppLockServiceImpl());
+    
     RepositoryModule.initialize(get);
     UseCaseModule.initialize(get);
     BlocModule.initialize(get);

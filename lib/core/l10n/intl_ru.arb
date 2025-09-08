@@ -199,5 +199,14 @@
   "main": "Главная",
   "minutesAgo": "{minutes}м назад",
   "hoursAgo": "{hours}ч назад",
-  "daysAgo": "{days}д назад"
+  "daysAgo": "{days}д назад",
+  "setPinCode": "Установить PIN-код",
+  "confirmPin": "Подтвердить PIN",
+  "enterPinCode": "Введите PIN-код",
+  "createPinMessage": "Создайте 4-значный PIN-код для защиты приложения",
+  "enterPinAgain": "Пожалуйста, введите PIN-код еще раз",
+  "enterPinToAccess": "Введите PIN-код для доступа к приложению",
+  "pinsDoNotMatch": "PIN-коды не совпадают",
+  "incorrectPin": "Неправильный PIN-код",
+  "useBiometric": "Использовать биометрию"
 }

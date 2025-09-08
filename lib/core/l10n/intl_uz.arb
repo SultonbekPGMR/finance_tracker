@@ -199,5 +199,14 @@
   "main": "Dashboard",
   "minutesAgo": "{minutes} daaqiqa avval",
   "hoursAgo": "{hours} soat aval",
-  "daysAgo": "{days} kun avval"
+  "daysAgo": "{days} kun avval",
+  "setPinCode": "PIN kod o'rnatish",
+  "confirmPin": "PIN kodni tasdiqlang",
+  "enterPinCode": "PIN kodni kiriting",
+  "createPinMessage": "Ilovani himoyalash uchun 4 raqamli PIN kod yarating",
+  "enterPinAgain": "Iltimos, PIN kodni yana kiriting",
+  "enterPinToAccess": "Ilovaga kirish uchun PIN kodni kiriting",
+  "pinsDoNotMatch": "PIN kodlar mos kelmaydi",
+  "incorrectPin": "Noto'g'ri PIN kod",
+  "useBiometric": "Biometrikdan foydalanish"
 }

@@ -1,5 +1,6 @@
 // Created by Sultonbek Tulanov on 31-August 2025
 import 'package:finance_tracker/feature/auth/presentation/screen/register_screen.dart';
+import 'package:finance_tracker/feature/auth/presentation/screen/app_lock_screen.dart';
 import 'package:finance_tracker/feature/chart/presentation/bloc/chart_cubit.dart';
 import 'package:finance_tracker/feature/dashboard/presentation/bloc/dashboard_cubit.dart';
 import 'package:finance_tracker/feature/expense/presentation/bloc/filtered_expenses/filtered_expenses_cubit.dart';
@@ -59,6 +60,19 @@ class AppRouter {
       path: '/splash',
       name: 'splash',
       builder: (context, state) => const SplashScreen(),
+    ),
+
+    GoRoute(
+      path: '/app-lock',
+      name: 'app-lock',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return AppLockScreen(
+          isSettingPin: extra?['isSettingPin'] ?? false,
+          currentPin: extra?['currentPin'],
+          onAuthenticated: extra?['onAuthenticated'],
+        );
+      },
     ),
 
     GoRoute(

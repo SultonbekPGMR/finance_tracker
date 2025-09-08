@@ -76,9 +76,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "charts": MessageLookupByLibrary.simpleMessage("Charts"),
         "confirmPasswordHint":
             MessageLookupByLibrary.simpleMessage("Confirm Password"),
+        "confirmPin": MessageLookupByLibrary.simpleMessage("Confirm PIN"),
         "connectionTimeout":
             MessageLookupByLibrary.simpleMessage("Connection timeout"),
         "createAccount": MessageLookupByLibrary.simpleMessage("Create Account"),
+        "createPinMessage": MessageLookupByLibrary.simpleMessage(
+            "Create a 4-digit PIN to secure your app"),
         "currency": MessageLookupByLibrary.simpleMessage("Currency"),
         "dailyAverage": MessageLookupByLibrary.simpleMessage("Daily Avg"),
         "dailyAvg": MessageLookupByLibrary.simpleMessage("Daily Avg"),
@@ -117,6 +120,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "enterAmount": MessageLookupByLibrary.simpleMessage("Enter amount"),
         "enterDescription":
             MessageLookupByLibrary.simpleMessage("Enter description"),
+        "enterPinAgain":
+            MessageLookupByLibrary.simpleMessage("Please enter your PIN again"),
+        "enterPinCode": MessageLookupByLibrary.simpleMessage("Enter PIN Code"),
+        "enterPinToAccess": MessageLookupByLibrary.simpleMessage(
+            "Enter your PIN to access the app"),
         "error": MessageLookupByLibrary.simpleMessage("Error"),
         "errorLoadingExpenses":
             MessageLookupByLibrary.simpleMessage("Error loading expenses"),
@@ -158,6 +166,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "highestDay": MessageLookupByLibrary.simpleMessage("Highest Day"),
         "hoursAgo": m3,
         "income": MessageLookupByLibrary.simpleMessage("Income"),
+        "incorrectPin": MessageLookupByLibrary.simpleMessage("Incorrect PIN"),
         "info": MessageLookupByLibrary.simpleMessage("Info"),
         "initializingDashboard":
             MessageLookupByLibrary.simpleMessage("Initializing dashboard..."),
@@ -204,6 +213,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "permissionDenied":
             MessageLookupByLibrary.simpleMessage("Permission denied"),
         "pieChart": MessageLookupByLibrary.simpleMessage("Pie Chart"),
+        "pinsDoNotMatch":
+            MessageLookupByLibrary.simpleMessage("PINs do not match"),
         "pleaseEnterAmount":
             MessageLookupByLibrary.simpleMessage("Please enter an amount"),
         "pleaseEnterDescription":
@@ -252,6 +263,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "serverError":
             MessageLookupByLibrary.simpleMessage("Server error occurred"),
         "setName": MessageLookupByLibrary.simpleMessage("Set Name"),
+        "setPinCode": MessageLookupByLibrary.simpleMessage("Set PIN Code"),
         "showAll": MessageLookupByLibrary.simpleMessage("Show All"),
         "showTop10": MessageLookupByLibrary.simpleMessage("Top 10"),
         "showTop5": MessageLookupByLibrary.simpleMessage("Top 5"),
@@ -299,6 +311,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "updateError":
             MessageLookupByLibrary.simpleMessage("Error updating expense"),
         "updateExpense": MessageLookupByLibrary.simpleMessage("Update Expense"),
+        "useBiometric": MessageLookupByLibrary.simpleMessage("Use Biometric"),
         "userDisabled": MessageLookupByLibrary.simpleMessage(
             "This account has been disabled"),
         "userNotFound": MessageLookupByLibrary.simpleMessage("User not found"),

@@ -2,11 +2,14 @@
 import 'package:finance_tracker/core/util/extension/build_context.dart';
 import 'package:finance_tracker/core/util/extension/exception.dart';
 import 'package:finance_tracker/core/util/extension/string.dart';
+import 'package:finance_tracker/feature/auth/data/service/app_lock_service.dart';
+import 'package:finance_tracker/feature/auth/presentation/bloc/app_lock_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/config/talker.dart';
+import '../../../../core/di/app_di.dart';
 import '../../../auth/data/model/user_model.dart';
 import '../../data/model/user_preferences.dart';
 import '../bloc/profile_cubit.dart';
@@ -109,6 +112,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildUserCard(user, isLoading),
           const SizedBox(height: 24),
           _buildPreferencesCard(preferences, isLoading),
+          const SizedBox(height: 24),
+          _buildSecurityCard(isLoading),
           const SizedBox(height: 24),
           _buildActionsCard(),
         ],
@@ -282,6 +287,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildSecurityCard(bool isLoading) {
+    return BlocProvider(
+      create: (context) => get<AppLockCubit>()..checkAppLockStatus(),
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Security',
+                style: context.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 16),
+              BlocBuilder<AppLockCubit, AppLockState>(
+                builder: (context, state) {
+                  return FutureBuilder<bool>(
+                    future: get<AppLockService>().isAppLockEnabled(),
+                    builder: (context, snapshot) {
+                      final isAppLockEnabled = snapshot.data ?? false;
+                      
+                      return Column(
+                        children: [
+                          _buildSwitchItem(
+                            Icons.lock_outline,
+                            'App Lock',
+                            isAppLockEnabled,
+                            isLoading ? null : (value) async {
+                              if (value) {
+                                _showSetupPinDialog();
+                              } else {
+                                context.read<AppLockCubit>().disableAppLock();
+                              }
+                            },
+                          ),
+                          if (isAppLockEnabled) ...[
+                            FutureBuilder<bool>(
+                              future: get<AppLockService>().isBiometricEnabled(),
+                              builder: (context, bioSnapshot) {
+                                final isBiometricEnabled = bioSnapshot.data ?? false;
+                                
+                                return FutureBuilder<bool>(
+                                  future: get<AppLockService>().isBiometricAvailable(),
+                                  builder: (context, availableSnapshot) {
+                                    final isBiometricAvailable = availableSnapshot.data ?? false;
+                                    
+                                    if (!isBiometricAvailable) return const SizedBox();
+                                    
+                                    return _buildSwitchItem(
+                                      Icons.fingerprint_outlined,
+                                      'Biometric Authentication',
+                                      isBiometricEnabled,
+                                      isLoading ? null : (value) {
+                                        context.read<AppLockCubit>().setBiometricEnabled(value);
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            _buildPreferenceItem(
+                              Icons.pin_outlined,
+                              'Change PIN',
+                              'Update your app lock PIN',
+                              isLoading ? null : _showChangePinDialog,
+                            ),
+                          ],
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildActionsCard() {
     return Card(
       elevation: 0,
@@ -440,9 +529,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
       groupValue: current,
       onChanged: (value) {
         onChanged(value);
-        context.pop(); // Use the screen's context, not dialog context
+        context.pop();
       },
     );
+  }
+
+  void _showSetupPinDialog() {
+    context.pushNamed('app-lock', extra: {
+      'isSettingPin': true,
+      'onAuthenticated': () {
+        if(!mounted) return;
+        context.pop();
+        setState(() {});
+      },
+    });
+  }
+
+  void _showChangePinDialog() {
+    context.pushNamed('app-lock', extra: {
+      'isSettingPin': true,
+      'onAuthenticated': () {
+        context.pop();
+        setState(() {});
+      },
+    });
   }
 
   void _showSignOutDialog() {

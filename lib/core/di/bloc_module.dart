@@ -1,6 +1,7 @@
 // Created by Sultonbek Tulanov on 30-August 2025
 
 import 'package:finance_tracker/core/di/app_di.dart';
+import 'package:finance_tracker/feature/auth/presentation/bloc/app_lock_cubit.dart';
 import 'package:finance_tracker/feature/auth/presentation/bloc/auth_state_cubit.dart';
 import 'package:finance_tracker/feature/chart/presentation/bloc/chart_cubit.dart';
 import 'package:finance_tracker/feature/expense/presentation/bloc/filtered_expenses/filtered_expenses_cubit.dart';
@@ -28,5 +29,6 @@ class BlocModule {
     getIt.registerFactory(() => ChartCubit(get()));
     getIt.registerFactory(() => FilteredExpensesCubit(get()));
     getIt.registerFactory(() => DashboardCubit(get()));
+    getIt.registerFactory(() => AppLockCubit(get()));
   }
 }

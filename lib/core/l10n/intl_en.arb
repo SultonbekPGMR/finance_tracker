@@ -199,5 +199,14 @@
   "main": "Dashboard",
   "minutesAgo": "{minutes}m ago",
   "hoursAgo": "{hours}h ago",
-  "daysAgo": "{days}d ago"
+  "daysAgo": "{days}d ago",
+  "setPinCode": "Set PIN Code",
+  "confirmPin": "Confirm PIN",
+  "enterPinCode": "Enter PIN Code",
+  "createPinMessage": "Create a 4-digit PIN to secure your app",
+  "enterPinAgain": "Please enter your PIN again",
+  "enterPinToAccess": "Enter your PIN to access the app",
+  "pinsDoNotMatch": "PINs do not match",
+  "incorrectPin": "Incorrect PIN",
+  "useBiometric": "Use Biometric"
 }
