@@ -11,7 +11,7 @@
 
 Click the button below to download the latest release:
 
-[![Download APK](https://img.shields.io/badge/Download-APK-blue?logo=android)](apk/app-release.apk)
+[![Download APK](https://img.shields.io/badge/Download-APK-blue?logo=android)](apk/)
 
 
 ## 🌟 Key Features
