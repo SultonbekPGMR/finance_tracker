@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/config/talker.dart';
-import '../../../../core/di/app_di.dart';
+import '../../../../core/di/injection.dart';
 import '../../../auth/data/model/user_model.dart';
 import '../../data/model/user_preferences.dart';
 import '../bloc/profile_cubit.dart';
@@ -301,7 +301,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildSecurityCard(bool isLoading) {
     return BlocProvider(
-      create: (context) => get<AppLockCubit>()..checkAppLockStatus(),
+      create: (context) => getIt<AppLockCubit>()..checkAppLockStatus(),
       child: Card(
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -320,7 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               BlocBuilder<AppLockCubit, AppLockState>(
                 builder: (context, state) {
                   return FutureBuilder<bool>(
-                    future: get<AppLockService>().isAppLockEnabled(),
+                    future: getIt<AppLockService>().isAppLockEnabled(),
                     builder: (context, snapshot) {
                       final isAppLockEnabled = snapshot.data ?? false;
                       
@@ -340,12 +340,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           if (isAppLockEnabled) ...[
                             FutureBuilder<bool>(
-                              future: get<AppLockService>().isBiometricEnabled(),
+                              future: getIt<AppLockService>().isBiometricEnabled(),
                               builder: (context, bioSnapshot) {
                                 final isBiometricEnabled = bioSnapshot.data ?? false;
                                 
                                 return FutureBuilder<bool>(
-                                  future: get<AppLockService>().isBiometricAvailable(),
+                                  future: getIt<AppLockService>().isBiometricAvailable(),
                                   builder: (context, availableSnapshot) {
                                     final isBiometricAvailable = availableSnapshot.data ?? false;
                                     
@@ -358,7 +358,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       isLoading ? null : (value) async {
                                         if (value) {
                                           // Verify biometric before enabling
-                                          final success = await get<AppLockService>().authenticateWithBiometric();
+                                          final success = await getIt<AppLockService>().authenticateWithBiometric();
                                           if (success) {
                                             context.read<AppLockCubit>().setBiometricEnabled(true);
                                           }

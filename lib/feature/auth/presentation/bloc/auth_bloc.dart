@@ -3,6 +3,7 @@ import 'package:finance_tracker/core/util/eventbus/global_message_bus.dart';
 import 'package:finance_tracker/feature/auth/domain/usecase/sign_in_usecase.dart';
 import 'package:finance_tracker/feature/auth/domain/usecase/sign_up_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../domain/usecase/request_password_reset_usecase.dart';
 import 'auth_state_cubit.dart';
@@ -10,6 +11,7 @@ import 'auth_state_cubit.dart';
 part 'auth_event.dart';
 part 'auth_state.dart';
 
+@injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthStatusCubit authStatusCubit;
   final SignInUseCase signInUseCase;

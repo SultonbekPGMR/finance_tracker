@@ -1,38 +1,26 @@
 // Created by Sultonbek Tulanov on 30-August 2025
 
-import 'package:finance_tracker/core/di/repository_module.dart';
-import 'package:finance_tracker/core/di/usecase_module.dart';
 import 'package:finance_tracker/core/service/notificaion/notification_service.dart';
-import 'package:finance_tracker/core/service/notificaion/notification_service_impl.dart';
-import 'package:finance_tracker/feature/auth/data/service/app_lock_service.dart';
-import 'package:finance_tracker/feature/auth/data/service/app_lock_service_impl.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:get_it/get_it.dart';
 
 import '../config/firebase_options.dart';
 import '../service/preferences_service.dart';
-import 'bloc_module.dart';
-
-final get = GetIt.instance;
+import 'injection.dart';
 
 class AppDi {
   AppDi._();
 
   static Future<void> initialize() async {
     await Firebase.initializeApp(options: AppFirebaseOptions.currentPlatform);
-    await get
-        .registerSingleton<NotificationService>(FirebaseNotificationService())
-        .initialize();
+    
+    // Configure injectable dependencies - this now handles ALL DI registration
+    configureDependencies();
+    
+    // Initialize notification service
+    await getIt<NotificationService>().initialize();
 
     await PreferencesService.init();
-    
-    // Register App Lock Service
-    get.registerSingleton<AppLockService>(AppLockServiceImpl());
-    
-    RepositoryModule.initialize(get);
-    UseCaseModule.initialize(get);
-    BlocModule.initialize(get);
 
-    get<NotificationService>().getToken();
+    getIt<NotificationService>().getToken();
   }
 }

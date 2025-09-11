@@ -2,9 +2,11 @@
 
 import 'package:finance_tracker/core/util/usecase.dart';
 import 'package:result_dart/result_dart.dart';
+import 'package:injectable/injectable.dart';
 
 import '../repository/auth_repository.dart';
 
+@injectable
 class SignUpUseCase implements UseCase<Future<Result<bool>>, SignUpParams> {
   final AuthRepository _authRepository;
 

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../../core/util/no_params.dart';
 import '../../../data/model/expense_category_model.dart';
@@ -9,6 +10,7 @@ import '../../../domain/usecase/update_expense_usecase.dart';
 
 part 'expense_details_state.dart';
 
+@injectable
 class ExpenseDetailsCubit extends Cubit<ExpenseDetailsState> {
   final AddExpenseUseCase _addExpenseUseCase;
   final UpdateExpenseUseCase _updateExpenseUseCase;

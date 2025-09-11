@@ -4,12 +4,14 @@ import 'dart:async';
 
 import 'package:finance_tracker/feature/dashboard/domain/usecase/get_dashboard_data_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/util/no_params.dart';
 import '../../data/model/dashboard_data.dart';
 
 part 'dashboard_state.dart';
 
+@injectable
 class DashboardCubit extends Cubit<DashboardState> {
   final GetDashboardDataUseCase _getDashboardDataUseCase;
   StreamSubscription<DashboardData>? _dashboardSubscription;

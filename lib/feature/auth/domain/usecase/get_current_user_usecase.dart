@@ -5,7 +5,9 @@ import 'package:finance_tracker/core/util/usecase.dart';
 import 'package:finance_tracker/feature/auth/data/model/user_model.dart';
 import 'package:finance_tracker/feature/auth/domain/repository/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class GetCurrentUserUseCase implements UseCase<UserModel?, Nothing> {
   final AuthRepository _authRepository;
 

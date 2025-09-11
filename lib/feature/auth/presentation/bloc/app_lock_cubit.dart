@@ -2,9 +2,11 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finance_tracker/feature/auth/data/service/app_lock_service.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/config/talker.dart';
 
+@injectable
 class AppLockCubit extends Cubit<AppLockState> {
   final AppLockService _appLockService;
 

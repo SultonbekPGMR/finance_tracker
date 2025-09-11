@@ -3,11 +3,13 @@ import 'package:collection/collection.dart';
 import 'package:finance_tracker/core/util/no_params.dart';
 import 'package:finance_tracker/core/util/usecase.dart';
 import 'package:finance_tracker/feature/dashboard/data/model/dashboard_data.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../auth/domain/usecase/get_current_user_usecase.dart';
 import '../../../expense/data/model/expense_category_model.dart';
 import '../../../expense/domain/repository/expense_repository.dart';
 
+@injectable
 class GetDashboardDataUseCase implements StreamUseCase<DashboardData, Nothing> {
   final ExpenseRepository _repository;
   final GetCurrentUserUseCase _getCurrentUserUseCase;

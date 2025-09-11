@@ -1,5 +1,6 @@
 // Created by Sultonbek Tulanov on 31-August 2025
 import 'package:finance_tracker/core/util/usecase.dart';
+import 'package:injectable/injectable.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/util/exception/localized_exception.dart';
@@ -9,6 +10,7 @@ import '../../data/model/expense_category_model.dart';
 import '../../data/model/expense_model.dart';
 import '../repository/expense_repository.dart';
 
+@injectable
 class UpdateExpenseUseCase
     implements FutureUseCase<Result<bool>, UpdateExpenseParams> {
   final ExpenseRepository _repository;

@@ -21,7 +21,7 @@ import '../../feature/chart/presentation/screen/chart_screen.dart';
 import '../../feature/dashboard/presentation/screen/dashboard_screen.dart';
 import '../../feature/expense/data/model/expense_category_model.dart';
 import '../../feature/expense/presentation/bloc/expense_details/expense_details_cubit.dart';
-import '../di/app_di.dart';
+import '../di/injection.dart';
 
 class AppRouter {
   static final navigatorKey = GlobalKey<NavigatorState>();
@@ -92,7 +92,7 @@ class AppRouter {
       name: 'add-expense',
       builder:
           (context, state) => BlocProvider.value(
-            value: get<ExpenseDetailsCubit>()..loadCategories(),
+            value: getIt<ExpenseDetailsCubit>()..loadCategories(),
             child: const ExpenseDetailsScreen(),
           ),
     ),
@@ -108,9 +108,9 @@ class AppRouter {
           providers: [
             BlocProvider.value(
               value:
-                  get<FilteredExpensesCubit>()..loadExpenses(month, category),
+                  getIt<FilteredExpensesCubit>()..loadExpenses(month, category),
             ),
-            BlocProvider(create: (context) => get<ExpensesBloc>()),
+            BlocProvider(create: (context) => getIt<ExpensesBloc>()),
           ],
           child: ExpensesByFilterScreen(
             selectedMonth: month,
@@ -125,7 +125,7 @@ class AppRouter {
       builder: (context, state) {
         final expense = state.extra as ExpenseModel;
         return BlocProvider(
-          create: (context) => get<ExpenseDetailsCubit>()..loadCategories(),
+          create: (context) => getIt<ExpenseDetailsCubit>()..loadCategories(),
           child: ExpenseDetailsScreen(expense: expense),
         );
       },
@@ -142,7 +142,7 @@ class AppRouter {
               name: 'dashboard',
               builder:
                   (context, state) => BlocProvider(
-                    create: (context) => get<DashboardCubit>(),
+                    create: (context) => getIt<DashboardCubit>(),
                     child: DashboardScreen(),
                   ),
             ),
@@ -157,7 +157,7 @@ class AppRouter {
               builder: (context, state) {
                 final month = state.extra is DateTime ? state.extra as DateTime : null;
                 return BlocProvider.value(
-                  value: get<ExpensesBloc>()..add(LoadExpensesEvent(month: month)),
+                  value: getIt<ExpensesBloc>()..add(LoadExpensesEvent(month: month)),
                   child: ExpensesScreen(),
                 );
               },
@@ -171,7 +171,7 @@ class AppRouter {
               name: 'charts',
               builder:
                   (context, state) => BlocProvider(
-                    create: (context) => get<ChartCubit>(),
+                    create: (context) => getIt<ChartCubit>(),
                     child: ChartScreen(),
                   ),
             ),

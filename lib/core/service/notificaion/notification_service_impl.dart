@@ -9,6 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:injectable/injectable.dart';
 
 import '../../navigation/notificaion_action_handler.dart';
 import 'notification_service.dart';
@@ -21,6 +22,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
+@LazySingleton(as: NotificationService)
 class FirebaseNotificationService implements NotificationService {
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;

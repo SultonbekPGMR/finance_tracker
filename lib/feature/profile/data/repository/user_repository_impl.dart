@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_tracker/core/util/extension/firebase_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:injectable/injectable.dart';
 import '../../../../core/config/talker.dart';
 import '../../../../core/service/preferences_service.dart';
 import '../../../auth/data/model/user_model.dart';
@@ -9,10 +10,11 @@ import '../../domain/repository/user_repository.dart';
 
 import '../model/user_preferences.dart';
 
+@LazySingleton(as: UserRepository)
 class UserRepositoryImpl implements UserRepository {
   final FirebaseAuth _auth;
 
-  UserRepositoryImpl(this._auth);
+  UserRepositoryImpl(@Named('FirebaseAuth') this._auth);
 
   @override
   Future<UserModel?> getCurrentUser() async {

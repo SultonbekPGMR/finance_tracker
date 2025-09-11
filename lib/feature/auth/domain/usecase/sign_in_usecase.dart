@@ -3,9 +3,11 @@
 import 'package:finance_tracker/core/util/exception/localized_exception.dart';
 import 'package:finance_tracker/core/util/usecase.dart';
 import 'package:result_dart/result_dart.dart';
+import 'package:injectable/injectable.dart';
 
 import '../repository/auth_repository.dart';
 
+@injectable
 class SignInUseCase
     implements UseCase<Future<Result<bool>>, SignInParams> {
   final AuthRepository _authRepository;

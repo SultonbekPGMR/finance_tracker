@@ -5,18 +5,19 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/config/talker.dart';
 import '../../domain/repository/expense_repository.dart';
 import '../model/expense_model.dart';
 
+@LazySingleton(as: ExpenseRepository)
 class ExpenseRepositoryImpl implements ExpenseRepository {
   final FirebaseFirestore firestore;
   final uuid = const Uuid();
   final String collection = 'expenses';
 
-  ExpenseRepositoryImpl({FirebaseFirestore? firestore})
-    : firestore = firestore ?? FirebaseFirestore.instance {
+  ExpenseRepositoryImpl({required this.firestore}) {
     // Call this method once to update all existing expenses
     // generateAmericanAverageSpendingLast3Months();
   }

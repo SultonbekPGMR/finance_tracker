@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../data/model/expense_category_model.dart';
 import '../../../data/model/expense_model.dart';
@@ -8,6 +9,7 @@ import '../../../domain/usecase/get_expenses_by_filter_usecase.dart';
 
 part 'filtered_expenses_state.dart';
 
+@injectable
 class FilteredExpensesCubit extends Cubit<FilteredExpensesState> {
   final GetExpensesByFilterUseCase _getExpensesByFilterUseCase;
   StreamSubscription? _expensesSubscription;

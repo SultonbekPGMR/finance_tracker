@@ -1,12 +1,14 @@
 // Created by Sultonbek Tulanov on 31-August 2025
 import 'package:finance_tracker/core/config/talker.dart';
 import 'package:finance_tracker/core/util/usecase.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/util/no_params.dart';
 import '../../../auth/domain/usecase/get_current_user_usecase.dart';
 import '../../data/model/expense_model.dart';
 import '../repository/expense_repository.dart';
 
+@injectable
 class GetExpensesStreamUseCase implements StreamUseCase<List<ExpenseModel>, GetExpensesParams> {
   final ExpenseRepository _repository;
   final GetCurrentUserUseCase _getCurrentUserUseCase;

@@ -1,11 +1,13 @@
 // Created by Sultonbek Tulanov on 31-August 2025
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/util/no_params.dart';
 import '../../domain/usecase/get_current_user_usecase.dart';
 
 // auth_status_cubit.dart
+@injectable
 class AuthStatusCubit extends Cubit<bool> {
   final GetCurrentUserUseCase getCurrentUserUseCase;
 

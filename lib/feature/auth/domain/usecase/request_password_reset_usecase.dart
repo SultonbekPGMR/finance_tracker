@@ -2,9 +2,11 @@
 import 'package:finance_tracker/core/util/no_params.dart';
 import 'package:finance_tracker/core/util/usecase.dart';
 import 'package:result_dart/result_dart.dart';
+import 'package:injectable/injectable.dart';
 
 import '../repository/auth_repository.dart';
 
+@injectable
 class RequestPasswordResetUseCase
     implements FutureUseCase<Result<Nothing>, PasswordResetParams> {
   final AuthRepository _authRepository;

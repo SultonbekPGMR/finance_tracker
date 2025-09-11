@@ -5,6 +5,7 @@ import 'package:finance_tracker/core/config/talker.dart';
 import 'package:finance_tracker/core/util/exception/localized_exception.dart';
 import 'package:finance_tracker/feature/chart/data/model/category_expense_data.dart';
 import 'package:finance_tracker/feature/expense/data/model/expense_category_model.dart';
+import 'package:injectable/injectable.dart';
 import 'package:result_dart/result_dart.dart';
 
 import '../../../../core/util/no_params.dart';
@@ -12,6 +13,7 @@ import '../../../../core/util/usecase.dart';
 import '../../../auth/domain/usecase/get_current_user_usecase.dart';
 import '../../../expense/domain/repository/expense_repository.dart';
 
+@injectable
 class GetChartDataUseCase
     implements
         StreamUseCase<Result<List<CategoryExpenseData>>, GetChartDataParams> {

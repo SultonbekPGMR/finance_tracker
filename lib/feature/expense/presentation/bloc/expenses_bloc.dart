@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:finance_tracker/core/config/talker.dart';
 import 'package:finance_tracker/core/util/eventbus/global_message_bus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/util/no_params.dart';
@@ -16,6 +17,7 @@ import '../model/expense_list_item.dart';
 part 'expenses_event.dart';
 part 'expenses_state.dart';
 
+@injectable
 class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   final GetExpensesStreamUseCase _getExpensesStreamUseCase;
   final DeleteExpenseUseCase _deleteExpenseUseCase;

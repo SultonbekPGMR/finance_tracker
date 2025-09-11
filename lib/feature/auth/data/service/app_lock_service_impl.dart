@@ -5,7 +5,9 @@ import 'package:crypto/crypto.dart';
 import 'package:finance_tracker/feature/auth/data/service/app_lock_service.dart';
 import 'package:hive/hive.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton(as: AppLockService)
 class AppLockServiceImpl implements AppLockService {
   static const String _boxName = 'app_lock_box';
   static const String _pinKey = 'app_pin';

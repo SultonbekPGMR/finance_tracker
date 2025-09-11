@@ -6,7 +6,9 @@ import 'package:finance_tracker/feature/auth/data/model/user_model.dart';
 import 'package:finance_tracker/feature/auth/domain/repository/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:result_dart/result_dart.dart';
+import 'package:injectable/injectable.dart';
 
+@LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
   FirebaseAuth auth = FirebaseAuth.instance;
 

@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../data/model/category_expense_data.dart';
 import '../../domain/usecase/get_chart_data_usecase.dart';
 
 part 'chart_state.dart';
 
+@injectable
 class ChartCubit extends Cubit<ChartState> {
   final GetChartDataUseCase _getChartDataUseCase;
   StreamSubscription? _chartDataSubscription;

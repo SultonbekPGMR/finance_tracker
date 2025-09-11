@@ -1,8 +1,9 @@
 import 'package:finance_tracker/core/service/notificaion/notification_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/config/talker.dart';
-import '../../../../core/di/app_di.dart';
+import '../../../../core/di/injection.dart';
 import '../../../auth/data/model/user_model.dart';
 import '../../../auth/domain/repository/auth_repository.dart';
 import '../../data/model/user_preferences.dart';
@@ -10,6 +11,7 @@ import '../../domain/repository/user_repository.dart';
 
 part 'profile_state.dart';
 
+@injectable
 class ProfileCubit extends Cubit<ProfileState> {
   final UserRepository _repository;
   final AuthRepository _authRepository;
@@ -96,7 +98,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   Future<bool> _requestNotificationPermission() async {
-    final notificationService = get<NotificationService>();
+    final notificationService = getIt<NotificationService>();
 
     final permissionResult = await notificationService.requestPermission(true);
     if (permissionResult != PermissionResult.granted) {
@@ -121,7 +123,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     String? body,
   }) async {
     if (enabled && title != null && body != null) {
-      await get<NotificationService>().scheduleDailyExpenseReminder(
+      await getIt<NotificationService>().scheduleDailyExpenseReminder(
         noonHour: 13,
         noonMinute: 45,
         eveningHour: 19,
@@ -129,20 +131,20 @@ class ProfileCubit extends Cubit<ProfileState> {
         title: title,
         body: body,
       );
-      // await get<NotificationService>().scheduleDailyExpenseReminder(
+      // await getIt<NotificationService>().scheduleDailyExpenseReminder(
       //   hour: 13,
       //   minute: 45,
       //   title: title,
       //   body: body,
       // );
-      // await get<NotificationService>().scheduleDailyExpenseReminder(
+      // await getIt<NotificationService>().scheduleDailyExpenseReminder(
       //   hour: 20,
       //   minute: 05,
       //   title: title,
       //   body: body,
       // );
     } else {
-      await get<NotificationService>().cancelAllScheduledNotifications();
+      await getIt<NotificationService>().cancelAllScheduledNotifications();
     }
     await _repository.updateNotificationPreference(enabled);
     await _emitUpdatedPreferences(currentState);
@@ -154,7 +156,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   Future<bool> isNotificationEnabled() async =>
-      get<NotificationService>().areNotificationsEnabled();
+      getIt<NotificationService>().areNotificationsEnabled();
 
   Future<void> signOut() async {
     final result = await _authRepository.signOut();

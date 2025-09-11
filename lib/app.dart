@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'core/di/app_di.dart';
+import 'core/di/injection.dart';
 import 'core/l10n/generated/l10n.dart';
 import 'core/navigation/app_router.dart';
 import 'core/presentation/theme/app_theme.dart';
@@ -63,10 +63,10 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => get<AuthStatusCubit>()),
-        BlocProvider(create: (context) => get<AuthBloc>()),
-        BlocProvider(create: (context) => get<AppLockCubit>()),
-        BlocProvider(create: (context) => get<ProfileCubit>()..loadProfile()),
+        BlocProvider(create: (context) => getIt<AuthStatusCubit>()),
+        BlocProvider(create: (context) => getIt<AuthBloc>()),
+        BlocProvider(create: (context) => getIt<AppLockCubit>()),
+        BlocProvider(create: (context) => getIt<ProfileCubit>()..loadProfile()),
       ],
       child: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
