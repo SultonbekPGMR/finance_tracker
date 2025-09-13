@@ -24,8 +24,6 @@ class _AppLockWrapperState extends State<AppLockWrapper>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    
-    // Check app lock status on init
     context.read<AppLockCubit>().checkAppLockStatus();
   }
 
@@ -71,7 +69,6 @@ class _AppLockWrapperState extends State<AppLockWrapper>
             },
           );
         }
-        
         return widget.child;
       },
     );

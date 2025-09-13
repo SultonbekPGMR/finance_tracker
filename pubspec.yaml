@@ -40,7 +40,6 @@ dependencies:
   local_auth: ^2.3.0
   crypto: ^3.0.6
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -63,8 +62,6 @@ flutter_launcher_icons:
 flutter:
   uses-material-design: true
   generate: true
-
-
 
 flutter_intl:
   enabled: true
