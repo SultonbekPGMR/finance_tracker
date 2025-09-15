@@ -7,6 +7,7 @@ import 'package:finance_tracker/feature/expense/presentation/bloc/filtered_expen
 import 'package:finance_tracker/feature/expense/presentation/screen/expenses_by_filter_screen.dart';
 import 'package:finance_tracker/feature/home/presentation/home_screen.dart';
 import 'package:finance_tracker/feature/profile/presentation/screen/profile_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -59,18 +60,22 @@ class AppRouter {
     GoRoute(
       path: '/splash',
       name: 'splash',
-      builder: (context, state) => const SplashScreen(),
+      pageBuilder: (context, state) => CupertinoPage(
+        child: const SplashScreen(),
+      ),
     ),
 
     GoRoute(
       path: '/app-lock',
       name: 'app-lock',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final extra = state.extra as Map<String, dynamic>?;
-        return AppLockScreen(
-          isSettingPin: extra?['isSettingPin'] ?? false,
-          currentPin: extra?['currentPin'],
-          onAuthenticated: extra?['onAuthenticated'],
+        return CupertinoPage(
+          child: AppLockScreen(
+            isSettingPin: extra?['isSettingPin'] ?? false,
+            currentPin: extra?['currentPin'],
+            onAuthenticated: extra?['onAuthenticated'],
+          ),
         );
       },
     ),
@@ -78,43 +83,51 @@ class AppRouter {
     GoRoute(
       path: '/login',
       name: 'login',
-      builder: (context, state) => const LoginScreen(),
+      pageBuilder: (context, state) => CupertinoPage(
+        child: const LoginScreen(),
+      ),
       routes: [
         GoRoute(
           path: '/register',
           name: 'register',
-          builder: (context, state) => const RegisterScreen(),
+          pageBuilder: (context, state) => CupertinoPage(
+            child: const RegisterScreen(),
+          ),
         ),
       ],
     ),
     GoRoute(
       path: '/add-expense',
       name: 'add-expense',
-      builder:
-          (context, state) => BlocProvider.value(
-            value: getIt<ExpenseDetailsCubit>()..loadCategories(),
-            child: const ExpenseDetailsScreen(),
+      pageBuilder:
+          (context, state) => CupertinoPage(
+            child: BlocProvider.value(
+              value: getIt<ExpenseDetailsCubit>()..loadCategories(),
+              child: const ExpenseDetailsScreen(),
+            ),
           ),
     ),
     GoRoute(
       path: '/expenses-by-filter',
       name: 'expenses-by-filter',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final data = state.extra as Map<String, dynamic>;
         final month = data['month'] as DateTime;
         final category = data['category'] as ExpenseCategoryModel;
 
-        return MultiBlocProvider(
-          providers: [
-            BlocProvider.value(
-              value:
-                  getIt<FilteredExpensesCubit>()..loadExpenses(month, category),
+        return CupertinoPage(
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value:
+                    getIt<FilteredExpensesCubit>()..loadExpenses(month, category),
+              ),
+              BlocProvider(create: (context) => getIt<ExpensesBloc>()),
+            ],
+            child: ExpensesByFilterScreen(
+              selectedMonth: month,
+              selectedCategory: category,
             ),
-            BlocProvider(create: (context) => getIt<ExpensesBloc>()),
-          ],
-          child: ExpensesByFilterScreen(
-            selectedMonth: month,
-            selectedCategory: category,
           ),
         );
       },
@@ -122,11 +135,13 @@ class AppRouter {
     GoRoute(
       path: '/update-expense',
       name: 'update-expense',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final expense = state.extra as ExpenseModel;
-        return BlocProvider(
-          create: (context) => getIt<ExpenseDetailsCubit>()..loadCategories(),
-          child: ExpenseDetailsScreen(expense: expense),
+        return CupertinoPage(
+          child: BlocProvider(
+            create: (context) => getIt<ExpenseDetailsCubit>()..loadCategories(),
+            child: ExpenseDetailsScreen(expense: expense),
+          ),
         );
       },
     ),
@@ -140,10 +155,12 @@ class AppRouter {
             GoRoute(
               path: '/home/dashboard',
               name: 'dashboard',
-              builder:
-                  (context, state) => BlocProvider(
-                    create: (context) => getIt<DashboardCubit>(),
-                    child: DashboardScreen(),
+              pageBuilder:
+                  (context, state) => CupertinoPage(
+                    child: BlocProvider(
+                      create: (context) => getIt<DashboardCubit>(),
+                      child: DashboardScreen(),
+                    ),
                   ),
             ),
           ],
@@ -154,11 +171,13 @@ class AppRouter {
             GoRoute(
               path: '/home/expenses',
               name: 'expenses',
-              builder: (context, state) {
+              pageBuilder: (context, state) {
                 final month = state.extra is DateTime ? state.extra as DateTime : null;
-                return BlocProvider.value(
-                  value: getIt<ExpensesBloc>()..add(LoadExpensesEvent(month: month)),
-                  child: ExpensesScreen(),
+                return CupertinoPage(
+                  child: BlocProvider.value(
+                    value: getIt<ExpensesBloc>()..add(LoadExpensesEvent(month: month)),
+                    child: ExpensesScreen(),
+                  ),
                 );
               },
             ),
@@ -169,10 +188,12 @@ class AppRouter {
             GoRoute(
               path: '/home/charts',
               name: 'charts',
-              builder:
-                  (context, state) => BlocProvider(
-                    create: (context) => getIt<ChartCubit>(),
-                    child: ChartScreen(),
+              pageBuilder:
+                  (context, state) => CupertinoPage(
+                    child: BlocProvider(
+                      create: (context) => getIt<ChartCubit>(),
+                      child: ChartScreen(),
+                    ),
                   ),
             ),
           ],
@@ -183,7 +204,9 @@ class AppRouter {
             GoRoute(
               path: '/home/profile',
               name: 'profile',
-              builder: (context, state) => ProfileScreen(),
+              pageBuilder: (context, state) => CupertinoPage(
+                child: ProfileScreen(),
+              ),
             ),
           ],
         ),
