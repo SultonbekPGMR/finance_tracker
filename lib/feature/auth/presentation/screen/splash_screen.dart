@@ -12,7 +12,9 @@ import '../bloc/auth_state_cubit.dart';
 
 // splash_screen.dart
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final String? initialPayload;
+
+  const SplashScreen(this.initialPayload, {super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -48,9 +50,23 @@ class _SplashScreenState extends State<SplashScreen> {
     if (appLockState is AppLockRequired) {
       context.goNamed('app-lock');
     } else {
-      context.goNamed('dashboard');
+      if (widget.initialPayload != null) {
+        switch (widget.initialPayload) {
+          case 'add_expense':
+            context.push('/add-expense');
+            break;
+          case 'view_expenses':
+            context.push('/home/expenses');
+            break;
+          case 'view_charts':
+            context.push('/home/charts');
+            break;
+        }
+      }else{
+        context.pushNamed('dashboard');
+      }
       // Handle notification navigation after going to dashboard
-      NotificationActionHandler.handlePendingNavigation();
+      // NotificationActionHandler.handlePendingNavigation();
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:finance_tracker/app.dart';
+import 'package:finance_tracker/core/navigation/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -10,8 +11,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeUi();
   await AppDi.initialize();
-  await NotificationActionHandler.checkNotificationLaunchDetails();
-  runApp(const App());
+ final launchPayload= await NotificationActionHandler.checkNotificationLaunchDetails();
+ AppRouter.initialPayload = launchPayload;
+  runApp(App());
 }
 
 Future<void> initializeUi() async {

@@ -23,7 +23,7 @@ class NotificationActionHandler {
   }
 
   // Check if app was launched from notification
-  static Future<void> checkNotificationLaunchDetails() async {
+  static Future<String?> checkNotificationLaunchDetails() async {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
 
@@ -31,8 +31,9 @@ class NotificationActionHandler {
         await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
 
     if (notificationAppLaunchDetails?.didNotificationLaunchApp == true) {
-      _notificationPayload = notificationAppLaunchDetails!.notificationResponse?.payload;
+      return notificationAppLaunchDetails?.notificationResponse?.payload;
     }
+    return null;
   }
 
   // Handle pending navigation after splash

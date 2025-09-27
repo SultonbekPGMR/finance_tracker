@@ -478,7 +478,7 @@ class FirebaseNotificationService implements NotificationService {
   void _onNotificationTapped(NotificationResponse response) {
     appTalker?.debug('Notification tapped with payload: ${response.payload}');
     if (response.payload != null) {
-      _handleNotificationAction(response.payload!);
+      // handleNotificationAction(response.payload!);
     }
   }
 
@@ -488,11 +488,12 @@ class FirebaseNotificationService implements NotificationService {
     );
     final action = message.data['action'];
     if (action != null) {
-      _handleNotificationAction(action);
+      // handleNotificationAction(action);
     }
   }
 
-  void _handleNotificationAction(String action) {
+  @override
+  void handleNotificationAction(String action) {
     appTalker?.debug('Handling notification action: $action');
     switch (action) {
       case 'add_expense':

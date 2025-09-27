@@ -27,6 +27,7 @@ import '../di/injection.dart';
 class AppRouter {
   static final navigatorKey = GlobalKey<NavigatorState>();
   static final _shellNavigatorKey = GlobalKey<NavigatorState>();
+  static String? initialPayload;
 
   static final GoRouter router = GoRouter(
     navigatorKey: navigatorKey,
@@ -61,7 +62,7 @@ class AppRouter {
       path: '/splash',
       name: 'splash',
       pageBuilder: (context, state) => CupertinoPage(
-        child: const SplashScreen(),
+        child:  SplashScreen(initialPayload),
       ),
     ),
 
