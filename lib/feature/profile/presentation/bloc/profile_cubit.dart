@@ -123,14 +123,18 @@ class ProfileCubit extends Cubit<ProfileState> {
     String? body,
   }) async {
     if (enabled && title != null && body != null) {
+
+
+      final now = DateTime.now();
       await getIt<NotificationService>().scheduleDailyExpenseReminder(
-        noonHour: 13,
-        noonMinute: 45,
-        eveningHour: 19,
-        eveningMinute: 45,
-        title: title,
-        body: body,
+        noonHour: now.hour,
+        noonMinute: now.minute + 1,
+        eveningHour: now.hour,
+        eveningMinute: now.minute + 3,
+        title: 'First Reminder',
+        body: 'This is the first notification',
       );
+
       // await getIt<NotificationService>().scheduleDailyExpenseReminder(
       //   hour: 13,
       //   minute: 45,

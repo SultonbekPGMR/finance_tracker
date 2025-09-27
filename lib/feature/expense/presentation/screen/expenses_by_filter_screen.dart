@@ -408,7 +408,7 @@ class _ExpensesByFilterScreenState extends State<ExpensesByFilterScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+Text(
               context.l10n.noExpensesFound,
               style: context.textTheme.headlineSmall?.copyWith(
                 color: context.colorScheme.onSurface.withValues(alpha: 0.6),

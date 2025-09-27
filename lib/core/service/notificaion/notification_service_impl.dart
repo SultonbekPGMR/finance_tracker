@@ -239,6 +239,7 @@ class FirebaseNotificationService implements NotificationService {
     required String body,
   }) async {
     try {
+
       await cancelDailyExpenseReminder();
 
       const androidDetails = AndroidNotificationDetails(
@@ -254,6 +255,7 @@ class FirebaseNotificationService implements NotificationService {
         android: androidDetails,
         iOS: iosDetails,
       );
+
 
       var noonScheduledDate = _nextInstanceOfTime(noonHour, noonMinute);
       await _localNotifications.zonedSchedule(
@@ -374,9 +376,9 @@ class FirebaseNotificationService implements NotificationService {
       '@mipmap/ic_launcher',
     );
     const iosSettings = DarwinInitializationSettings(
-      requestSoundPermission: false,
-      requestBadgePermission: false,
-      requestAlertPermission: false,
+      requestSoundPermission: true,
+      requestBadgePermission: true,
+      requestAlertPermission: true,
     );
 
     const initializationSettings = InitializationSettings(

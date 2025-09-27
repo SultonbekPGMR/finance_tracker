@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/config/talker.dart';
+import '../../../../core/navigation/notificaion_action_handler.dart';
 import '../bloc/auth_state_cubit.dart';
 
 // splash_screen.dart
@@ -48,6 +49,8 @@ class _SplashScreenState extends State<SplashScreen> {
       context.goNamed('app-lock');
     } else {
       context.goNamed('dashboard');
+      // Handle notification navigation after going to dashboard
+      NotificationActionHandler.handlePendingNavigation();
     }
   }
 
