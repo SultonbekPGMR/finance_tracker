@@ -397,15 +397,7 @@ class FirebaseNotificationService implements NotificationService {
 
   Future<void> _initializeFirebaseMessaging() async {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
     onMessageReceived.listen(_handleForegroundMessage);
-
-    final initialMessage = await _firebaseMessaging.getInitialMessage();
-    if (initialMessage != null) {
-      _handleMessageTap(initialMessage);
-    }
-
-    onMessageOpenedApp.listen(_handleMessageTap);
   }
 
   Future<void> _createNotificationChannels() async {
@@ -478,37 +470,10 @@ class FirebaseNotificationService implements NotificationService {
   void _onNotificationTapped(NotificationResponse response) {
     appTalker?.debug('Notification tapped with payload: ${response.payload}');
     if (response.payload != null) {
-      // handleNotificationAction(response.payload!);
+      NotificationActionHandler.handlePendingNavigation(response.payload!);
     }
   }
 
-  void _handleMessageTap(RemoteMessage message) {
-    appTalker?.debug(
-      'App opened from notification: ${message.notification?.title}',
-    );
-    final action = message.data['action'];
-    if (action != null) {
-      // handleNotificationAction(action);
-    }
-  }
-
-  @override
-  void handleNotificationAction(String action) {
-    appTalker?.debug('Handling notification action: $action');
-    switch (action) {
-      case 'add_expense':
-        NotificationActionHandler.navigateToAddExpense();
-        break;
-      case 'view_expenses':
-        NotificationActionHandler.navigateToExpenses();
-        break;
-      case 'view_charts':
-        NotificationActionHandler.navigateToCharts();
-        break;
-      default:
-        NotificationActionHandler.navigateToHome();
-    }
-  }
 
   Future<bool> _shouldAutoOpenSettings() async {
     try {

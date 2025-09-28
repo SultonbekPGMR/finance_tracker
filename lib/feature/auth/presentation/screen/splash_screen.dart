@@ -50,23 +50,10 @@ class _SplashScreenState extends State<SplashScreen> {
     if (appLockState is AppLockRequired) {
       context.goNamed('app-lock');
     } else {
-      if (widget.initialPayload != null) {
-        switch (widget.initialPayload) {
-          case 'add_expense':
-            context.push('/add-expense');
-            break;
-          case 'view_expenses':
-            context.push('/home/expenses');
-            break;
-          case 'view_charts':
-            context.push('/home/charts');
-            break;
-        }
-      }else{
-        context.pushNamed('dashboard');
-      }
-      // Handle notification navigation after going to dashboard
-      // NotificationActionHandler.handlePendingNavigation();
+
+      context.pushNamed('dashboard');
+      NotificationActionHandler.handlePendingNavigation(widget.initialPayload);
+      return;
     }
   }
 

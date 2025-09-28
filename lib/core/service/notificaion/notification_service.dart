@@ -15,7 +15,6 @@ abstract class NotificationService {
   Future<String?> getToken();
 
   Future<PermissionResult> requestPermission(bool autoOpenSettings);
-  void handleNotificationAction(String action);
 
   Future<bool> areNotificationsEnabled();
 

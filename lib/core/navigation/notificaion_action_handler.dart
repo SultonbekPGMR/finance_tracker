@@ -4,24 +4,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'app_router.dart';
 
 class NotificationActionHandler {
-  static String? _notificationPayload;
-
-  static void navigateToAddExpense() {
-    AppRouter.router.push('/add-expense');
-  }
-
-  static void navigateToExpenses() {
-    AppRouter.router.push('/home/expenses');
-  }
-
-  static void navigateToCharts() {
-    AppRouter.router.push('/home/charts');
-  }
-
-  static void navigateToHome() {
-    AppRouter.router.go('/');
-  }
-
   // Check if app was launched from notification
   static Future<String?> checkNotificationLaunchDetails() async {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -37,29 +19,34 @@ class NotificationActionHandler {
   }
 
   // Handle pending navigation after splash
-  static void handlePendingNavigation() {
-    if (_notificationPayload != null) {
-      final payload = _notificationPayload!;
-      _notificationPayload = null; // Clear after use
+  static void handlePendingNavigation(String? payload) {
 
-      // Small delay to ensure shell navigation is ready
       Future.delayed(const Duration(milliseconds: 100), () {
         switch (payload) {
           case 'add_expense':
-            AppRouter.router.push('/add-expense');
+            _navigateToAddExpense();
             break;
           case 'view_expenses':
-            AppRouter.router.push('/home/expenses');
+            _navigateToExpenses();
             break;
           case 'view_charts':
-            AppRouter.router.push('/home/charts');
+            _navigateToCharts();
             break;
-          default:
-            break;
+
         }
       });
-    }
   }
 
-  static bool get hasNotificationPayload => _notificationPayload != null;
+  static void _navigateToAddExpense() {
+    AppRouter.router.push('/add-expense');
+  }
+
+  static void _navigateToExpenses() {
+    AppRouter.router.push('/home/expenses');
+  }
+
+  static void _navigateToCharts() {
+    AppRouter.router.push('/home/charts');
+  }
+
 }
