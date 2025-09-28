@@ -51,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
       context.goNamed('app-lock');
     } else {
 
-      context.pushNamed('dashboard');
+      context.goNamed('dashboard');
       NotificationActionHandler.handlePendingNavigation(widget.initialPayload);
       return;
     }

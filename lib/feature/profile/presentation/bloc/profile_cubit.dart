@@ -126,6 +126,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
 
       final now = DateTime.now();
+      await getIt<NotificationService>().scheduleOneTimeReminder(dateTime: now.add(Duration(seconds: 5)), title: 'title', body: 'body');
       await getIt<NotificationService>().scheduleDailyExpenseReminder(
         noonHour: now.hour,
         noonMinute: now.minute + 1,

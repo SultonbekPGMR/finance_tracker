@@ -1,4 +1,5 @@
 // Created by Sultonbek Tulanov on 03-September 2025
+import 'package:finance_tracker/core/util/extension/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'app_router.dart';
@@ -38,7 +39,7 @@ class NotificationActionHandler {
   }
 
   static void _navigateToAddExpense() {
-    AppRouter.router.push('/add-expense');
+    AppRouter.router.pushOrReplaceNamed('add-expense');
   }
 
   static void _navigateToExpenses() {
