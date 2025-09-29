@@ -125,29 +125,25 @@ class ProfileCubit extends Cubit<ProfileState> {
     if (enabled && title != null && body != null) {
 
 
-      final now = DateTime.now();
-      await getIt<NotificationService>().scheduleOneTimeReminder(dateTime: now.add(Duration(seconds: 5)), title: 'title', body: 'body');
-      await getIt<NotificationService>().scheduleDailyExpenseReminder(
-        noonHour: now.hour,
-        noonMinute: now.minute + 1,
-        eveningHour: now.hour,
-        eveningMinute: now.minute + 3,
-        title: 'First Reminder',
-        body: 'This is the first notification',
-      );
+      // final now = DateTime.now();
+      // await getIt<NotificationService>().scheduleOneTimeReminder(dateTime: now.add(Duration(seconds: 5)), title: 'title', body: 'body');
+      // await getIt<NotificationService>().scheduleDailyExpenseReminder(
+      //   noonHour: now.hour,
+      //   noonMinute: now.minute + 1,
+      //   eveningHour: now.hour,
+      //   eveningMinute: now.minute + 3,
+      //   title: 'First Reminder',
+      //   body: 'This is the first notification',
+      // );
 
-      // await getIt<NotificationService>().scheduleDailyExpenseReminder(
-      //   hour: 13,
-      //   minute: 45,
-      //   title: title,
-      //   body: body,
-      // );
-      // await getIt<NotificationService>().scheduleDailyExpenseReminder(
-      //   hour: 20,
-      //   minute: 05,
-      //   title: title,
-      //   body: body,
-      // );
+      await getIt<NotificationService>().scheduleDailyExpenseReminder(
+        noonHour: 13,
+        noonMinute: 45,
+        eveningHour: 20,
+        eveningMinute: 15,
+        title: title,
+        body: body,
+      );
     } else {
       await getIt<NotificationService>().cancelAllScheduledNotifications();
     }
